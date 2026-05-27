@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Nexus{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,19 +29,141 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     
+    <style>
+        /* 隐藏滚动条但保留滚动 */
+        html {
+            scrollbar-width: none;  /* Firefox */
+        }
+        html::-webkit-scrollbar {
+            display: none;  /* Chrome/Safari */
+        }
+        
+        /* 导航栏 */
+        .nav-wrapper {
+            transition: transform 0.3s ease,
+                        background-color 0.3s ease,
+                        border-color 0.3s ease,
+                        box-shadow 0.3s ease;
+            will-change: transform;
+        }
+        .nav-wrapper.nav-hidden {
+            transform: translateY(-100%);
+            box-shadow: none;
+        }
+        .nav-wrapper.nav-solid {
+            background-color: rgba(6, 6, 14, 0.85);
+            border-color: rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        .nav-wrapper.nav-transparent {
+            background-color: transparent;
+            border-color: transparent;
+        }
+        
+        /* 导航底部微光 */
+        .nav-glow {
+            position: absolute;
+            bottom: -1px;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .nav-solid .nav-glow {
+            opacity: 1;
+        }
+        
+        /* 当前页指示器 */
+        .nav-link {
+            position: relative;
+            transition: color 0.2s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            border-radius: 1px;
+            transition: width 0.2s ease, left 0.2s ease;
+        }
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+            left: 0;
+        }
+        .nav-link.active {
+            color: #e5e7eb;
+        }
+        
+        /* 回到顶部 */
+        #back-to-top {
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        /* 快捷键提示 */
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 5px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #9ca3af;
+            background: rgba(31, 41, 55, 0.6);
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            border-radius: 4px;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen">
     <!-- 导航栏 -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-gray-800/50">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="{% url 'nexus_core:home' %}" class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                Nexus
+    <nav id="navbar" class="nav-wrapper nav-transparent fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b">
+        <div class="nav-glow"></div>
+        <div class="mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
+            <a href="{% url 'nexus_core:home' %}" class="flex items-center gap-2 group">
+                <img src="{% static 'favicon.svg' %}" alt="N" class="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform duration-200">
+                <span class="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent tracking-tight">
+                    Nexus
+                </span>
             </a>
-            <div class="flex items-center space-x-6">
-                <a href="{% url 'blog:post_list' %}" class="text-gray-400 hover:text-white transition-colors">笔记</a>
-                <a href="{% url 'links:link_list' %}" class="text-gray-400 hover:text-white transition-colors">链接</a>
-                <button id="pin-toggle" class="text-gray-500 hover:text-gray-300 transition-colors text-xl" onclick="togglePin()">
+            <div class="flex items-center gap-1">
+                <a href="{% url 'nexus_core:home' %}" 
+                   class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    首页
+                </a>
+                <a href="{% url 'blog:post_list' %}" 
+                   class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'blog' in request.resolver_match.app_name %}active{% endif %}">
+                    笔记
+                </a>
+                <a href="{% url 'links:link_list' %}" 
+                   class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'links' in request.resolver_match.app_name %}active{% endif %}">
+                    链接
+                </a>
+                
+                <!-- 分隔线 -->
+                <div class="w-px h-4 bg-gray-700/50 mx-2"></div>
+                
+                <!-- 时间 -->
+                <span id="nav-clock" class="text-xs text-gray-500 font-mono tabular-nums hidden sm:inline"></span>
+                
+                <!-- PIN按钮 -->
+                <button id="pin-toggle" class="ml-2 text-gray-500 hover:text-gray-300 transition-colors text-base w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5" onclick="togglePin()">
                     🔒
                 </button>
             </div>
@@ -48,16 +171,30 @@
     </nav>
 
     <!-- 主内容 -->
-    <main class="pt-16">
+    <main class="pt-14">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
     <footer class="border-t border-gray-800/50 py-8 mt-20">
-        <div class="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
-            © 2026 Nexus · Powered by Django
+        <div class="mx-auto px-6 md:px-10 text-center text-gray-600 text-xs space-y-2">
+            <div>© 2026 Nexus · Powered by Django</div>
+            <div class="flex items-center justify-center gap-4 text-gray-700">
+                <span><kbd class="kbd">/</kbd> 搜索</span>
+                <span><kbd class="kbd">E</kbd> 解锁</span>
+                <span><kbd class="kbd">↑</kbd> 回顶</span>
+            </div>
         </div>
     </footer>
+
+    <!-- 回到顶部 -->
+    <button id="back-to-top" 
+            class="fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-gray-900/80 backdrop-blur-xl border border-gray-700/40 text-gray-400 hover:text-white hover:border-blue-500/40 hover:bg-gray-800/80 transition-all duration-300 flex items-center justify-center shadow-lg shadow-black/30"
+            onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+        </svg>
+    </button>
 
     <!-- PIN验证模态框 -->
     <div id="pin-modal" class="fixed inset-0 z-50 hidden">
@@ -156,35 +293,119 @@
     </style>
 
     <script>
-        // PIN输入框自动跳转逻辑
+        // ========== 导航栏：滚动隐藏 + 透明变色 ==========
+        (function() {
+            const nav = document.getElementById('navbar');
+            let lastScroll = 0;
+            let ticking = false;
+            const threshold = 80;
+            
+            function updateNav() {
+                const scrollY = window.scrollY;
+                
+                // 透明/实色切换
+                if (scrollY > 20) {
+                    nav.classList.remove('nav-transparent');
+                    nav.classList.add('nav-solid');
+                } else {
+                    nav.classList.remove('nav-solid');
+                    nav.classList.add('nav-transparent');
+                }
+                
+                // 隐藏/显示
+                if (scrollY > threshold) {
+                    if (scrollY > lastScroll + 8) {
+                        nav.classList.add('nav-hidden');
+                    } else if (scrollY < lastScroll - 3) {
+                        nav.classList.remove('nav-hidden');
+                    }
+                } else {
+                    nav.classList.remove('nav-hidden');
+                }
+                
+                lastScroll = scrollY;
+                ticking = false;
+            }
+            
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(() => updateNav());
+                    ticking = true;
+                }
+            }, { passive: true });
+            updateNav();
+        })();
+        
+        // ========== 回到顶部按钮 ==========
+        (function() {
+            const btn = document.getElementById('back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            }, { passive: true });
+        })();
+        
+        // ========== 时钟 ==========
+        (function() {
+            const clock = document.getElementById('nav-clock');
+            function updateClock() {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                clock.textContent = h + ':' + m;
+            }
+            updateClock();
+            setInterval(updateClock, 30000);
+        })();
+        
+        // ========== 快捷键 ==========
+        document.addEventListener('keydown', (e) => {
+            // 忽略输入框内的按键
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+            
+            if (e.key === '/') {
+                e.preventDefault();
+                // 跳到笔记页搜索框
+                const searchInput = document.querySelector('input[name="q"]');
+                if (searchInput) {
+                    searchInput.focus();
+                } else {
+                    window.location.href = '{% url "blog:post_list" %}';
+                }
+            }
+            
+            if (e.key === 'e' || e.key === 'E') {
+                e.preventDefault();
+                togglePin();
+            }
+            
+            if (e.key === 'Escape') {
+                closePinModal();
+            }
+        });
+        
+        // ========== PIN输入框自动跳转逻辑 ==========
         const pinBoxes = document.querySelectorAll('.pin-box');
         
         pinBoxes.forEach((box, index) => {
-            // 输入时自动跳到下一个
             box.addEventListener('input', (e) => {
                 const value = e.target.value;
-                
-                // 只允许数字
                 if (!/^\d$/.test(value)) {
                     e.target.value = '';
                     return;
                 }
-                
-                // 标记已填充
                 box.classList.add('filled');
-                
-                // 跳到下一个
                 if (value && index < 5) {
                     pinBoxes[index + 1].focus();
                 }
-                
-                // 全部填完自动提交
                 if (index === 5 && value) {
                     setTimeout(verifyPin, 100);
                 }
             });
             
-            // 退格键跳到上一个
             box.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && !e.target.value && index > 0) {
                     pinBoxes[index - 1].focus();
@@ -193,7 +414,6 @@
                 }
             });
             
-            // 聚焦时全选
             box.addEventListener('focus', () => {
                 box.select();
             });
@@ -241,7 +461,6 @@
             const pin = getPin();
             if (pin.length !== 6) return;
             
-            // 获取CSRF token
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value 
                 || document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1]
                 || '';
