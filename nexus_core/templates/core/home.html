@@ -294,32 +294,30 @@
     resize();
     window.addEventListener('resize', resize);
     
-    // 波纹参数
+    // 波纹参数 - 调大效果更明显
     const GRID_SIZE = 50;
-    const WAVE_SPEED = 0.0008;
-    const WAVE_LENGTH = 300;
-    const WAVE_DECAY = 0.003;
+    const WAVE_SPEED = 0.0015;     // 速度加快
+    const WAVE_LENGTH = 200;       // 波长缩短，波纹更密集
+    const WAVE_AMPLITUDE = 8;      // 振幅加大，更明显
+    const WAVE_DECAY = 0.001;      // 衰减减慢，影响范围更大
     let time = 0;
     
     function drawGrid() {
         ctx.clearRect(0, 0, W, H);
         
-        // 计算波纹相位
         const phase = time * WAVE_SPEED;
         
         // 画竖线
         for (let x = 0; x <= W; x += GRID_SIZE) {
             ctx.beginPath();
             
-            // 计算这条线距离中心的水平距离
             const distX = Math.abs(x - centerX);
             
-            for (let y = 0; y <= H; y += 2) {
-                // 距离中心的总距离
+            for (let y = 0; y <= H; y += 3) {
                 const dist = Math.sqrt(distX * distX + (y - centerY) * (y - centerY));
                 
-                // 波纹偏移
-                const wave = Math.sin(dist / WAVE_LENGTH - phase * 4) * 3 * Math.exp(-dist * WAVE_DECAY);
+                // 波纹偏移 - 更明显
+                const wave = Math.sin(dist / WAVE_LENGTH - phase * 3) * WAVE_AMPLITUDE * Math.exp(-dist * WAVE_DECAY);
                 
                 const px = x + wave;
                 
@@ -330,10 +328,10 @@
                 }
             }
             
-            // 透明度随距离衰减
-            const alpha = 0.04 * Math.exp(distX * 0.002);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.min(alpha, 0.08)})`;
-            ctx.lineWidth = 0.5;
+            // 透明度 - 更亮
+            const alpha = 0.06 * Math.exp(-distX * 0.001);
+            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.max(alpha, 0.015)})`;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
         }
         
@@ -343,10 +341,10 @@
             
             const distY = Math.abs(y - centerY);
             
-            for (let x = 0; x <= W; x += 2) {
+            for (let x = 0; x <= W; x += 3) {
                 const dist = Math.sqrt((x - centerX) * (x - centerX) + distY * distY);
                 
-                const wave = Math.sin(dist / WAVE_LENGTH - phase * 4) * 3 * Math.exp(-dist * WAVE_DECAY);
+                const wave = Math.sin(dist / WAVE_LENGTH - phase * 3) * WAVE_AMPLITUDE * Math.exp(-dist * WAVE_DECAY);
                 
                 const py = y + wave;
                 
@@ -357,9 +355,9 @@
                 }
             }
             
-            const alpha = 0.04 * Math.exp(distY * 0.002);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.min(alpha, 0.08)})`;
-            ctx.lineWidth = 0.5;
+            const alpha = 0.06 * Math.exp(-distY * 0.001);
+            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.max(alpha, 0.015)})`;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
         }
         
