@@ -5,8 +5,8 @@
 
 {% block extra_css %}
 <style>
-    /* 星空粒子画布 */
-    #starfield {
+    /* 网格画布 */
+    #grid-canvas {
         position: fixed;
         top: 0;
         left: 0;
@@ -16,21 +16,24 @@
         z-index: 0;
     }
     
-    /* 星云/雾气背景 */
+    /* 星空画布 */
+    #starfield {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    /* 星云背景 */
     .nebula-bg {
         background: 
             radial-gradient(ellipse at 20% 30%, rgba(40,20,80,0.35) 0%, transparent 50%),
             radial-gradient(ellipse at 75% 60%, rgba(20,40,80,0.25) 0%, transparent 50%),
             radial-gradient(ellipse at 50% 80%, rgba(60,20,60,0.15) 0%, transparent 50%),
             #06060e;
-    }
-    
-    /* 网格背景 */
-    .grid-bg {
-        background-image: 
-            linear-gradient(rgba(99, 102, 241, 0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(99, 102, 241, 0.025) 1px, transparent 1px);
-        background-size: 60px 60px;
     }
     
     /* 浮动光球 */
@@ -56,13 +59,12 @@
     .orb-2 { animation: float-2 25s ease-in-out infinite; }
     .orb-3 { animation: float-3 18s ease-in-out infinite; }
     
-    /* 文字渐变动画 */
+    /* 文字渐变 */
     @keyframes gradient-shift {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-    
     .animated-gradient {
         background-size: 200% 200%;
         animation: gradient-shift 4s ease infinite;
@@ -122,7 +124,7 @@
         border-color: rgba(99, 102, 241, 0.3);
     }
     
-    /* 分割线 - 纯渐变 */
+    /* 分割线 */
     .section-divider {
         height: 1px;
         background: linear-gradient(90deg, transparent 5%, rgba(99, 102, 241, 0.25) 50%, transparent 95%);
@@ -149,12 +151,12 @@
         100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
     }
     
-    /* 深度层 - 视差 */
+    /* 视差层 */
     .depth-layer {
-        transition: transform 0.1s ease-out;
+        transition: transform 0.15s ease-out;
     }
     
-    /* 雾气底部 */
+    /* 底部雾气 */
     .fog-bottom {
         background: linear-gradient(to top, #06060e 0%, rgba(6,6,14,0.8) 30%, transparent 100%);
     }
@@ -162,18 +164,16 @@
 {% endblock %}
 
 {% block content %}
+<!-- 水波网格画布 -->
+<canvas id="grid-canvas"></canvas>
 <!-- 星空画布 -->
 <canvas id="starfield"></canvas>
-
-<!-- 浮动粒子容器 -->
-<div id="particles" class="fixed inset-0 pointer-events-none z-[1]"></div>
+<!-- 浮动粒子 -->
+<div id="particles" class="fixed inset-0 pointer-events-none z-[2]"></div>
 
 <!-- Hero Section -->
 <section class="relative h-screen flex items-center justify-center overflow-hidden nebula-bg">
-    <!-- 网格 -->
-    <div class="absolute inset-0 grid-bg"></div>
-    
-    <!-- 浮动光球 - 不同深度 -->
+    <!-- 浮动光球 -->
     <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/6 rounded-full blur-[120px] orb-1 depth-layer" data-depth="0.02"></div>
     <div class="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-purple-600/6 rounded-full blur-[120px] orb-2 depth-layer" data-depth="0.03"></div>
     <div class="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-indigo-600/4 rounded-full blur-[100px] orb-3 depth-layer" data-depth="0.015"></div>
@@ -196,7 +196,6 @@
     </div>
 </section>
 
-<!-- 分割线 -->
 <div class="section-divider my-0"></div>
 
 <!-- 服务聚合 -->
@@ -206,7 +205,6 @@
             <h2 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Services</h2>
             <h3 class="text-2xl md:text-3xl font-bold text-white">服务聚合</h3>
         </div>
-        
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {% for link in all_links %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
@@ -218,9 +216,7 @@
                     <h4 class="font-semibold text-white text-sm md:text-base mb-1 group-hover:text-blue-400 transition-colors">
                         {{ link.name }}
                     </h4>
-                    <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">
-                        {{ link.description }}
-                    </p>
+                    <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">{{ link.description }}</p>
                 </div>
             </a>
             {% empty %}
@@ -230,7 +226,6 @@
     </div>
 </section>
 
-<!-- 分割线 -->
 <div class="section-divider my-0"></div>
 
 <!-- 最新笔记 -->
@@ -240,7 +235,6 @@
             <h2 class="text-xs font-medium text-purple-400/70 uppercase tracking-[0.3em] mb-2">Notes</h2>
             <h3 class="text-2xl md:text-3xl font-bold text-white">最新笔记</h3>
         </div>
-        
         <div class="space-y-3">
             {% for post in recent_posts %}
             <a href="{% url 'blog:post_detail' post.slug %}"
@@ -250,28 +244,21 @@
                         {% if post.is_pinned %}
                         <span class="inline-block text-xs text-blue-400/80 bg-blue-500/10 px-2 py-0.5 rounded mb-2">置顶</span>
                         {% endif %}
-                        <h4 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors mb-1">
-                            {{ post.title }}
-                        </h4>
-                        <p class="text-gray-400 text-sm line-clamp-1">
-                            {{ post.summary|default:post.content|truncatewords:30 }}
-                        </p>
+                        <h4 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors mb-1">{{ post.title }}</h4>
+                        <p class="text-gray-400 text-sm line-clamp-1">{{ post.summary|default:post.content|truncatewords:30 }}</p>
                         <div class="flex flex-wrap gap-1.5 mt-2">
                             {% for tag in post.tags.all|slice:":3" %}
                             <span class="text-xs px-2 py-0.5 bg-gray-800/60 text-gray-500 rounded-full">{{ tag.name }}</span>
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="text-xs text-gray-600 whitespace-nowrap">
-                        {{ post.published_at|date:"Y-m-d" }}
-                    </div>
+                    <div class="text-xs text-gray-600 whitespace-nowrap">{{ post.published_at|date:"Y-m-d" }}</div>
                 </div>
             </a>
             {% empty %}
             <div class="text-center text-gray-600 py-12">暂无笔记</div>
             {% endfor %}
         </div>
-        
         {% if recent_posts %}
         <div class="text-center mt-10">
             <a href="{% url 'blog:post_list' %}" 
@@ -286,13 +273,104 @@
     </div>
 </section>
 
-<!-- 底部雾气 -->
-<div class="fixed bottom-0 left-0 right-0 h-32 fog-bottom pointer-events-none z-[2]"></div>
+<div class="fixed bottom-0 left-0 right-0 h-32 fog-bottom pointer-events-none z-[20]"></div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// 星空粒子
+// ========== 水波纹网格 ==========
+(function() {
+    const canvas = document.getElementById('grid-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    let centerX, centerY;
+    
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        centerX = W / 2;
+        centerY = H / 2;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    
+    // 波纹参数
+    const GRID_SIZE = 50;
+    const WAVE_SPEED = 0.0008;
+    const WAVE_LENGTH = 300;
+    const WAVE_DECAY = 0.003;
+    let time = 0;
+    
+    function drawGrid() {
+        ctx.clearRect(0, 0, W, H);
+        
+        // 计算波纹相位
+        const phase = time * WAVE_SPEED;
+        
+        // 画竖线
+        for (let x = 0; x <= W; x += GRID_SIZE) {
+            ctx.beginPath();
+            
+            // 计算这条线距离中心的水平距离
+            const distX = Math.abs(x - centerX);
+            
+            for (let y = 0; y <= H; y += 2) {
+                // 距离中心的总距离
+                const dist = Math.sqrt(distX * distX + (y - centerY) * (y - centerY));
+                
+                // 波纹偏移
+                const wave = Math.sin(dist / WAVE_LENGTH - phase * 4) * 3 * Math.exp(-dist * WAVE_DECAY);
+                
+                const px = x + wave;
+                
+                if (y === 0) {
+                    ctx.moveTo(px, y);
+                } else {
+                    ctx.lineTo(px, y);
+                }
+            }
+            
+            // 透明度随距离衰减
+            const alpha = 0.04 * Math.exp(distX * 0.002);
+            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.min(alpha, 0.08)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+        }
+        
+        // 画横线
+        for (let y = 0; y <= H; y += GRID_SIZE) {
+            ctx.beginPath();
+            
+            const distY = Math.abs(y - centerY);
+            
+            for (let x = 0; x <= W; x += 2) {
+                const dist = Math.sqrt((x - centerX) * (x - centerX) + distY * distY);
+                
+                const wave = Math.sin(dist / WAVE_LENGTH - phase * 4) * 3 * Math.exp(-dist * WAVE_DECAY);
+                
+                const py = y + wave;
+                
+                if (x === 0) {
+                    ctx.moveTo(x, py);
+                } else {
+                    ctx.lineTo(x, py);
+                }
+            }
+            
+            const alpha = 0.04 * Math.exp(distY * 0.002);
+            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.min(alpha, 0.08)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+        }
+        
+        time++;
+        requestAnimationFrame(drawGrid);
+    }
+    
+    drawGrid();
+})();
+
+// ========== 星空 ==========
 (function() {
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
@@ -305,76 +383,55 @@
     resize();
     window.addEventListener('resize', resize);
     
-    // 生成星星
-    const stars = Array.from({length: 200}, () => ({
+    const stars = Array.from({length: 150}, () => ({
         x: Math.random() * W,
         y: Math.random() * H,
         r: Math.random() * 1.2 + 0.2,
-        speed: Math.random() * 0.15 + 0.02,
-        opacity: Math.random() * 0.6 + 0.2,
+        opacity: Math.random() * 0.5 + 0.15,
         twinkle: Math.random() * Math.PI * 2
     }));
     
     function draw() {
         ctx.clearRect(0, 0, W, H);
-        
         stars.forEach(s => {
-            s.twinkle += 0.01;
-            const opacity = s.opacity * (0.6 + 0.4 * Math.sin(s.twinkle));
-            
+            s.twinkle += 0.008;
+            const opacity = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(200, 210, 255, ${opacity})`;
             ctx.fill();
-            
-            // 微光晕
-            if (s.r > 0.8) {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(150, 170, 255, ${opacity * 0.1})`;
-                ctx.fill();
-            }
         });
-        
         requestAnimationFrame(draw);
     }
     draw();
 })();
 
-// 浮动粒子
+// ========== 浮动粒子 ==========
 (function() {
     const container = document.getElementById('particles');
-    const count = 15;
-    
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < 12; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         const size = Math.random() * 2 + 1;
-        const x = Math.random() * 100;
-        const duration = Math.random() * 15 + 15;
-        const delay = Math.random() * 15;
-        
         p.style.cssText = `
             width: ${size}px;
             height: ${size}px;
-            left: ${x}%;
-            background: rgba(150, 180, 255, ${Math.random() * 0.3 + 0.1});
-            box-shadow: 0 0 ${size * 3}px rgba(150, 180, 255, 0.2);
-            animation-duration: ${duration}s;
-            animation-delay: -${delay}s;
+            left: ${Math.random() * 100}%;
+            background: rgba(150, 180, 255, ${Math.random() * 0.25 + 0.1});
+            box-shadow: 0 0 ${size * 3}px rgba(150, 180, 255, 0.15);
+            animation-duration: ${Math.random() * 15 + 15}s;
+            animation-delay: -${Math.random() * 15}s;
         `;
         container.appendChild(p);
     }
 })();
 
-// 鼠标视差
+// ========== 鼠标视差 ==========
 (function() {
     const layers = document.querySelectorAll('.depth-layer');
-    
     document.addEventListener('mousemove', (e) => {
         const x = (e.clientX / window.innerWidth - 0.5) * 2;
         const y = (e.clientY / window.innerHeight - 0.5) * 2;
-        
         layers.forEach(el => {
             const depth = parseFloat(el.dataset.depth) || 0.01;
             el.style.transform = `translate(${x * depth * 100}px, ${y * depth * 100}px)`;
