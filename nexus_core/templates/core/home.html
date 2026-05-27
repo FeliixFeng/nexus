@@ -51,6 +51,16 @@
     }
     body:hover #spotlight { opacity: 1; }
 
+    .top-area {
+        padding-top: 2rem;
+        text-align: center;
+    }
+    .top-quote {
+        font-size: 0.8rem;
+        color: rgba(156, 163, 175, 0.4);
+        letter-spacing: 0.08em;
+    }
+    
     /* ========== Grid ========== */
     .bento {
         display: grid;
@@ -220,6 +230,10 @@
 <div class="aurora-blob aurora-2"></div>
 <div id="spotlight"></div>
 
+<div class="top-area relative z-10">
+    <p class="top-quote" id="quote"></p>
+</div>
+
 <div class="bento relative z-10">
     
     <!-- 时间 (左上，小) -->
@@ -337,6 +351,19 @@
     let mx=0,my=0,sx=0,sy=0;
     addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
     (function r() { sx+=(mx-sx)*0.1; sy+=(my-sy)*0.1; s.style.transform=`translate(${sx-200}px,${sy-200}px)`; requestAnimationFrame(r); })();
+})();
+
+// 语录
+(function() {
+    const quotes = [
+        '代码是写给人看的，顺便让机器执行。',
+        'Talk is cheap. Show me the code. — Linus Torvalds',
+        '任何足够先进的技术，都与魔法无异。 — Arthur C. Clarke',
+        '先让它能用，再让它好用，最后让它快。',
+        '过早优化是万恶之源。 — Donald Knuth',
+        '简单是可靠的前提。 — Edsger Dijkstra',
+    ];
+    document.getElementById('quote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
 })();
 
 // 时钟
