@@ -5,17 +5,6 @@
 
 {% block extra_css %}
 <style>
-    /* 网格画布 */
-    #grid-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 0;
-    }
-    
     /* 星空画布 */
     #starfield {
         position: fixed;
@@ -164,8 +153,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- 水波网格画布 -->
-<canvas id="grid-canvas"></canvas>
 <!-- 星空画布 -->
 <canvas id="starfield"></canvas>
 <!-- 浮动粒子 -->
@@ -180,12 +167,12 @@
     
     <!-- 内容 -->
     <div class="relative z-10 text-center px-6 depth-layer" data-depth="0.01">
-        <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold mb-4 tracking-tight glow-text">
-            <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animated-gradient">
-                Nexus
-            </span>
+        <h1 class="text-6xl md:text-8xl lg:text-[10rem] font-bold mb-4 tracking-tight glow-text">
+        <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animated-gradient">
+            Nexus
+        </span>
         </h1>
-        <p class="text-base md:text-lg text-gray-500 mb-12 tracking-widest">
+        <p class="text-base md:text-xl lg:text-2xl text-gray-500 mb-12 tracking-widest">
             个人数字空间 · 聚合一切
         </p>
         <a href="#services" class="inline-block scroll-arrow text-gray-600 hover:text-gray-400 transition-colors">
@@ -200,12 +187,12 @@
 
 <!-- 服务聚合 -->
 <section id="services" class="relative min-h-screen flex flex-col justify-center py-16 px-6">
-    <div class="max-w-5xl mx-auto w-full">
+    <div class="mx-auto w-full px-4 md:px-10">
         <div class="text-center mb-10">
             <h2 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Services</h2>
-            <h3 class="text-2xl md:text-3xl font-bold text-white">服务聚合</h3>
+            <h3 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white">服务聚合</h3>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
             {% for link in all_links %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
                class="link-card group block bg-gray-900/50 backdrop-blur-sm border border-gray-800/60 rounded-xl p-4 md:p-5">
@@ -230,10 +217,10 @@
 
 <!-- 最新笔记 -->
 <section class="relative py-20 px-6">
-    <div class="max-w-5xl mx-auto">
+    <div class="mx-auto px-4 md:px-10">
         <div class="text-center mb-12">
             <h2 class="text-xs font-medium text-purple-400/70 uppercase tracking-[0.3em] mb-2">Notes</h2>
-            <h3 class="text-2xl md:text-3xl font-bold text-white">最新笔记</h3>
+            <h3 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white">最新笔记</h3>
         </div>
         <div class="space-y-3">
             {% for post in recent_posts %}
@@ -278,96 +265,6 @@
 
 {% block extra_js %}
 <script>
-// ========== 水波纹网格 ==========
-(function() {
-    const canvas = document.getElementById('grid-canvas');
-    const ctx = canvas.getContext('2d');
-    let W, H;
-    let centerX, centerY;
-    
-    function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-        centerX = W / 2;
-        centerY = H / 2;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-    
-    // 波纹参数 - 调大效果更明显
-    const GRID_SIZE = 50;
-    const WAVE_SPEED = 0.0015;     // 速度加快
-    const WAVE_LENGTH = 200;       // 波长缩短，波纹更密集
-    const WAVE_AMPLITUDE = 8;      // 振幅加大，更明显
-    const WAVE_DECAY = 0.001;      // 衰减减慢，影响范围更大
-    let time = 0;
-    
-    function drawGrid() {
-        ctx.clearRect(0, 0, W, H);
-        
-        const phase = time * WAVE_SPEED;
-        
-        // 画竖线
-        for (let x = 0; x <= W; x += GRID_SIZE) {
-            ctx.beginPath();
-            
-            const distX = Math.abs(x - centerX);
-            
-            for (let y = 0; y <= H; y += 3) {
-                const dist = Math.sqrt(distX * distX + (y - centerY) * (y - centerY));
-                
-                // 波纹偏移 - 更明显
-                const wave = Math.sin(dist / WAVE_LENGTH - phase * 3) * WAVE_AMPLITUDE * Math.exp(-dist * WAVE_DECAY);
-                
-                const px = x + wave;
-                
-                if (y === 0) {
-                    ctx.moveTo(px, y);
-                } else {
-                    ctx.lineTo(px, y);
-                }
-            }
-            
-            // 透明度 - 更亮
-            const alpha = 0.06 * Math.exp(-distX * 0.001);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.max(alpha, 0.015)})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-        }
-        
-        // 画横线
-        for (let y = 0; y <= H; y += GRID_SIZE) {
-            ctx.beginPath();
-            
-            const distY = Math.abs(y - centerY);
-            
-            for (let x = 0; x <= W; x += 3) {
-                const dist = Math.sqrt((x - centerX) * (x - centerX) + distY * distY);
-                
-                const wave = Math.sin(dist / WAVE_LENGTH - phase * 3) * WAVE_AMPLITUDE * Math.exp(-dist * WAVE_DECAY);
-                
-                const py = y + wave;
-                
-                if (x === 0) {
-                    ctx.moveTo(x, py);
-                } else {
-                    ctx.lineTo(x, py);
-                }
-            }
-            
-            const alpha = 0.06 * Math.exp(-distY * 0.001);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${Math.max(alpha, 0.015)})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-        }
-        
-        time++;
-        requestAnimationFrame(drawGrid);
-    }
-    
-    drawGrid();
-})();
-
 // ========== 星空 ==========
 (function() {
     const canvas = document.getElementById('starfield');
