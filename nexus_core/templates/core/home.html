@@ -412,12 +412,12 @@
     const w=['日','一','二','三','四','五','六'];
     function t() {
         const n=new Date();
-        const time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+        const time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
         const date=(n.getMonth()+1)+'/'+n.getDate()+' 周'+w[n.getDay()];
         el.textContent=time; d.textContent=date;
         if(el2){ el2.textContent=time; d2.textContent=date; }
     }
-    t(); setInterval(t,10000);
+    t(); setInterval(t,1000);
 })();
 
 // 入场
