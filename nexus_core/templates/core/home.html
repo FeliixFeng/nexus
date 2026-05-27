@@ -57,9 +57,9 @@
         grid-template-columns: repeat(6, 1fr);
         grid-template-rows: repeat(3, 1fr);
         gap: 10px;
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 4.5rem 16px 16px;
+        padding: 4.5rem 24px 16px;
         height: 100vh;
         box-sizing: border-box;
     }
@@ -68,7 +68,7 @@
         .bento {
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            padding: 4rem 10px 10px;
+            padding: 4rem 8px 8px;
         }
     }
     
@@ -76,7 +76,7 @@
         background: rgba(17, 24, 39, 0.5);
         border: 1px solid rgba(55, 65, 81, 0.35);
         border-radius: 14px;
-        padding: 18px;
+        padding: 20px;
         backdrop-blur-sm;
         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -103,7 +103,7 @@
     .card:hover::before { opacity: 1; }
     
     .card-label {
-        font-size: 0.6rem;
+        font-size: 0.68rem;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.15em;
@@ -113,7 +113,7 @@
     }
     
     .view-all {
-        font-size: 0.7rem;
+        font-size: 0.78rem;
         color: rgba(129, 140, 248, 0.5);
         transition: color 0.2s;
         text-decoration: none;
@@ -131,12 +131,12 @@
     .note-item:hover { padding-left: 3px; }
     .note-item:hover .note-title { color: #818cf8; }
     .note-title {
-        color: #d1d5db; font-size: 0.82rem; font-weight: 500;
+        color: #d1d5db; font-size: 0.9rem; font-weight: 500;
         transition: color 0.2s;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .note-date {
-        font-size: 0.65rem; color: rgba(107, 114, 128, 0.7);
+        font-size: 0.72rem; color: rgba(107, 114, 128, 0.7);
         white-space: nowrap; flex-shrink: 0;
     }
     .note-dot {
@@ -152,18 +152,18 @@
     }
     .service-item:hover { background: rgba(99, 102, 241, 0.08); }
     .service-item:hover .service-name { color: #e5e7eb; }
-    .service-icon { font-size: 1.1rem; }
-    .service-name { font-size: 0.78rem; color: #9ca3af; transition: color 0.2s; }
+    .service-icon { font-size: 1.25rem; }
+    .service-name { font-size: 0.88rem; color: #9ca3af; transition: color 0.2s; }
     
     /* ---- 时间 ---- */
     .time-big {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 2.2rem; font-weight: 700;
+        font-size: 2.8rem; font-weight: 700;
         color: rgba(255, 255, 255, 0.88);
         letter-spacing: -0.02em; line-height: 1;
     }
     .time-sub {
-        font-size: 0.7rem; color: rgba(156, 163, 175, 0.5);
+        font-size: 0.82rem; color: rgba(156, 163, 175, 0.5);
         margin-top: 5px;
     }
     
@@ -174,14 +174,14 @@
         padding-left: 10px; margin-left: 3px;
     }
     .act-item:not(:last-child) { margin-bottom: 2px; }
-    .act-text { font-size: 0.78rem; color: #9ca3af; line-height: 1.4; }
-    .act-date { font-size: 0.6rem; color: rgba(107, 114, 128, 0.6); margin-top: 1px; }
+    .act-text { font-size: 0.88rem; color: #9ca3af; line-height: 1.5; }
+    .act-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-top: 2px; }
     
     /* ---- 技能标签 ---- */
     .tag {
         display: inline-block;
         padding: 3px 8px; border-radius: 6px;
-        font-size: 0.7rem; font-weight: 500;
+        font-size: 0.8rem; font-weight: 500;
         transition: transform 0.2s;
     }
     .tag:hover { transform: scale(1.05); }
@@ -218,16 +218,16 @@
 <div class="bento relative z-10">
     
     <!-- 时间 + 状态 (2列) -->
-    <div class="card fade-up" style="grid-column: span 2;">
+    <div class="card fade-up" style="grid-column: span 2; grid-row: span 2;">
         <span class="card-label">Now</span>
-        <div class="flex-1 flex flex-col justify-center">
+        <div class="flex-1 flex flex-col justify-center items-center">
             <div class="time-big" id="clock">--:--</div>
             <div class="time-sub" id="clock-date"></div>
         </div>
     </div>
     
     <!-- 最新笔记 (4列) -->
-    <div class="card fade-up" style="grid-column: span 4;">
+    <div class="card fade-up" style="grid-column: span 4; grid-row: span 1;">
         <div class="flex items-center justify-between">
             <span class="card-label">Latest Notes</span>
             <a href="{% url 'blog:post_list' %}" class="view-all">全部 →</a>
@@ -246,12 +246,12 @@
     </div>
     
     <!-- 服务入口 (3列) -->
-    <div class="card fade-up" style="grid-column: span 3;">
+    <div class="card fade-up" style="grid-column: span 2;">
         <div class="flex items-center justify-between">
             <span class="card-label">Services</span>
             <a href="{% url 'links:link_list' %}" class="view-all">全部 →</a>
         </div>
-        <div class="flex-1 grid grid-cols-2 gap-0.5">
+        <div class="flex-1 flex flex-col justify-center gap-1">
             {% for link in all_links|slice:":6" %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-item">
                 <span class="service-icon">{{ link.icon|default:"🔗" }}</span>
@@ -262,7 +262,7 @@
     </div>
     
     <!-- 最近动态 (3列) -->
-    <div class="card fade-up" style="grid-column: span 3;">
+    <div class="card fade-up" style="grid-column: span 2;">
         <span class="card-label">Activity</span>
         <div class="flex-1 overflow-hidden">
             <div class="act-item">
@@ -285,7 +285,7 @@
     </div>
     
     <!-- 技术栈 (3列) -->
-    <div class="card fade-up" style="grid-column: span 3;">
+    <div class="card fade-up" style="grid-column: span 2;">
         <span class="card-label">Tech Stack</span>
         <div class="flex flex-wrap gap-1.5 content-center flex-1">
             <span class="tag bg-orange-500/10 text-orange-400">Java</span>
@@ -302,7 +302,7 @@
     </div>
     
     <!-- 快捷入口 (3列) -->
-    <div class="card fade-up" style="grid-column: span 3;">
+    <div class="card fade-up" style="grid-column: span 2;">
         <span class="card-label">Quick Links</span>
         <div class="flex-1 flex flex-col justify-center gap-2">
             <a href="{% url 'links:link_list' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all text-sm text-gray-400 hover:text-gray-200">
