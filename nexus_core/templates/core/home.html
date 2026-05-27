@@ -51,13 +51,13 @@
     }
     body:hover #spotlight { opacity: 1; }
 
-    /* ========== Bento ========== */
+    /* ========== Grid ========== */
     .bento {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        grid-template-rows: repeat(3, 1fr);
+        grid-template-columns: 1fr 2.5fr;
+        grid-template-rows: 1fr 1fr;
         gap: 10px;
-        max-width: 1200px;
+        max-width: 1100px;
         margin: 0 auto;
         padding: 4.5rem 24px 16px;
         height: 100vh;
@@ -67,11 +67,15 @@
     @media (max-width: 768px) {
         .bento {
             grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
             gap: 8px;
             padding: 4rem 8px 8px;
+            height: auto;
+            min-height: 100vh;
         }
     }
     
+    /* ========== Card ========== */
     .card {
         background: rgba(17, 24, 39, 0.5);
         border: 1px solid rgba(55, 65, 81, 0.35);
@@ -108,22 +112,37 @@
         text-transform: uppercase;
         letter-spacing: 0.15em;
         color: rgba(156, 163, 175, 0.5);
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         flex-shrink: 0;
     }
     
     .view-all {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         color: rgba(129, 140, 248, 0.5);
         transition: color 0.2s;
         text-decoration: none;
     }
     .view-all:hover { color: #818cf8; }
     
+    /* ---- 时间 ---- */
+    .time-big {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.88);
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+    .time-sub {
+        font-size: 0.75rem;
+        color: rgba(156, 163, 175, 0.5);
+        margin-top: 6px;
+    }
+    
     /* ---- 笔记 ---- */
     .note-item {
-        display: flex; align-items: center; gap: 8px;
-        padding: 7px 0;
+        display: flex; align-items: center; gap: 10px;
+        padding: 8px 0;
         border-bottom: 1px solid rgba(55, 65, 81, 0.2);
         transition: all 0.2s;
     }
@@ -131,60 +150,47 @@
     .note-item:hover { padding-left: 3px; }
     .note-item:hover .note-title { color: #818cf8; }
     .note-title {
-        color: #d1d5db; font-size: 0.9rem; font-weight: 500;
+        color: #d1d5db; font-size: 0.88rem; font-weight: 500;
         transition: color 0.2s;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .note-date {
-        font-size: 0.72rem; color: rgba(107, 114, 128, 0.7);
+        font-size: 0.7rem; color: rgba(107, 114, 128, 0.7);
         white-space: nowrap; flex-shrink: 0;
     }
     .note-dot {
         width: 4px; height: 4px; border-radius: 50%;
         background: rgba(99, 102, 241, 0.4); flex-shrink: 0;
     }
+    .note-tag {
+        font-size: 0.6rem;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: rgba(99, 102, 241, 0.08);
+        color: rgba(129, 140, 248, 0.6);
+        flex-shrink: 0;
+    }
     
     /* ---- 服务 ---- */
     .service-item {
-        display: flex; align-items: center; gap: 6px;
-        padding: 5px 8px; border-radius: 8px;
+        display: flex; align-items: center; gap: 8px;
+        padding: 7px 10px; border-radius: 8px;
         transition: all 0.2s; text-decoration: none;
     }
     .service-item:hover { background: rgba(99, 102, 241, 0.08); }
     .service-item:hover .service-name { color: #e5e7eb; }
-    .service-icon { font-size: 1.25rem; }
-    .service-name { font-size: 0.88rem; color: #9ca3af; transition: color 0.2s; }
-    
-    /* ---- 时间 ---- */
-    .time-big {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 2.8rem; font-weight: 700;
-        color: rgba(255, 255, 255, 0.88);
-        letter-spacing: -0.02em; line-height: 1;
-    }
-    .time-sub {
-        font-size: 0.82rem; color: rgba(156, 163, 175, 0.5);
-        margin-top: 5px;
-    }
+    .service-icon { font-size: 1.2rem; }
+    .service-name { font-size: 0.85rem; color: #9ca3af; transition: color 0.2s; }
     
     /* ---- 动态 ---- */
     .act-item {
         padding: 6px 0;
         border-left: 2px solid rgba(99, 102, 241, 0.15);
-        padding-left: 10px; margin-left: 3px;
+        padding-left: 12px; margin-left: 4px;
     }
-    .act-item:not(:last-child) { margin-bottom: 2px; }
-    .act-text { font-size: 0.88rem; color: #9ca3af; line-height: 1.5; }
-    .act-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-top: 2px; }
-    
-    /* ---- 技能标签 ---- */
-    .tag {
-        display: inline-block;
-        padding: 3px 8px; border-radius: 6px;
-        font-size: 0.8rem; font-weight: 500;
-        transition: transform 0.2s;
-    }
-    .tag:hover { transform: scale(1.05); }
+    .act-item:not(:last-child) { margin-bottom: 4px; }
+    .act-text { font-size: 0.85rem; color: #9ca3af; line-height: 1.5; }
+    .act-date { font-size: 0.65rem; color: rgba(107, 114, 128, 0.6); margin-top: 2px; }
     
     /* ---- 入场 ---- */
     .fade-up {
@@ -193,7 +199,6 @@
     }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
     
-    /* 粒子 */
     .particle {
         position: fixed; border-radius: 50%;
         pointer-events: none; z-index: 2;
@@ -214,11 +219,10 @@
 <div class="aurora-blob aurora-2"></div>
 <div id="spotlight"></div>
 
-<!-- ====== Bento Grid ====== -->
 <div class="bento relative z-10">
     
-    <!-- 时间 + 状态 (2列) -->
-    <div class="card fade-up" style="grid-column: span 2; grid-row: span 2;">
+    <!-- 时间 (左上，小) -->
+    <div class="card fade-up">
         <span class="card-label">Now</span>
         <div class="flex-1 flex flex-col justify-center items-center">
             <div class="time-big" id="clock">--:--</div>
@@ -226,17 +230,20 @@
         </div>
     </div>
     
-    <!-- 最新笔记 (4列) -->
-    <div class="card fade-up" style="grid-column: span 4; grid-row: span 1;">
+    <!-- 最新笔记 (右上，大) -->
+    <div class="card fade-up" style="grid-row: span 2;">
         <div class="flex items-center justify-between">
             <span class="card-label">Latest Notes</span>
             <a href="{% url 'blog:post_list' %}" class="view-all">全部 →</a>
         </div>
-        <div class="flex-1">
-            {% for post in recent_posts|slice:":4" %}
+        <div class="flex-1 overflow-auto">
+            {% for post in recent_posts|slice:":6" %}
             <a href="{% url 'blog:post_detail' post.slug %}" class="note-item">
                 <span class="note-dot"></span>
                 <span class="note-title flex-1">{{ post.title }}</span>
+                {% for tag in post.tags.all|slice:":1" %}
+                <span class="note-tag">{{ tag.name }}</span>
+                {% endfor %}
                 <span class="note-date">{{ post.published_at|date:"m/d" }}</span>
             </a>
             {% empty %}
@@ -245,14 +252,14 @@
         </div>
     </div>
     
-    <!-- 服务入口 (3列) -->
-    <div class="card fade-up" style="grid-column: span 2;">
+    <!-- 服务入口 (左下) -->
+    <div class="card fade-up">
         <div class="flex items-center justify-between">
             <span class="card-label">Services</span>
             <a href="{% url 'links:link_list' %}" class="view-all">全部 →</a>
         </div>
         <div class="flex-1 flex flex-col justify-center gap-1">
-            {% for link in all_links|slice:":6" %}
+            {% for link in all_links|slice:":5" %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-item">
                 <span class="service-icon">{{ link.icon|default:"🔗" }}</span>
                 <span class="service-name">{{ link.name }}</span>
@@ -261,56 +268,22 @@
         </div>
     </div>
     
-    <!-- 最近动态 (3列) -->
-    <div class="card fade-up" style="grid-column: span 2;">
+    <!-- 最近动态 (右下) -->
+    <div class="card fade-up" style="grid-column: 2; grid-row: 2;">
         <span class="card-label">Activity</span>
-        <div class="flex-1 overflow-hidden">
-            <div class="act-item">
+        <div class="flex-1 overflow-hidden flex gap-4">
+            <div class="act-item flex-1">
                 <p class="act-text">搭建个人数字空间 Nexus</p>
                 <p class="act-date">2026.05</p>
             </div>
-            <div class="act-item">
+            <div class="act-item flex-1">
                 <p class="act-text">开始学习微服务架构</p>
                 <p class="act-date">2026.05</p>
             </div>
-            <div class="act-item">
+            <div class="act-item flex-1">
                 <p class="act-text">自建 DERP 中继服务器</p>
                 <p class="act-date">2026.04</p>
             </div>
-            <div class="act-item">
-                <p class="act-text">部署 Immich 私有照片管理</p>
-                <p class="act-date">2026.03</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 技术栈 -->
-    <div class="card fade-up" style="grid-column: span 3;">
-        <span class="card-label">Tech Stack</span>
-        <div class="flex flex-wrap gap-1.5 content-center flex-1">
-            <span class="tag bg-orange-500/10 text-orange-400">Java</span>
-            <span class="tag bg-blue-500/10 text-blue-400">Python</span>
-            <span class="tag bg-cyan-500/10 text-cyan-400">Django</span>
-            <span class="tag bg-red-500/10 text-red-400">Spring Boot</span>
-            <span class="tag bg-blue-500/10 text-blue-400">Docker</span>
-            <span class="tag bg-yellow-500/10 text-yellow-400">MySQL</span>
-            <span class="tag bg-green-500/10 text-green-400">Redis</span>
-            <span class="tag bg-purple-500/10 text-purple-400">Nginx</span>
-            <span class="tag bg-gray-500/10 text-gray-400">Linux</span>
-            <span class="tag bg-indigo-500/10 text-indigo-400">Git</span>
-        </div>
-    </div>
-    
-    <!-- 快捷入口 -->
-    <div class="card fade-up" style="grid-column: span 3;">
-        <span class="card-label">Quick Links</span>
-        <div class="flex-1 flex flex-col justify-center gap-2">
-            <a href="{% url 'links:link_list' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all text-sm text-gray-400 hover:text-gray-200">
-                <span>🔗</span> 全部链接
-            </a>
-            <a href="{% url 'blog:post_list' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all text-sm text-gray-400 hover:text-gray-200">
-                <span>📝</span> 全部笔记
-            </a>
         </div>
     </div>
     
