@@ -31,8 +31,11 @@ def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug, status='published')
     
     # 上一篇/下一篇
-    prev_post = Post.objects.filter(status='published', published_at__lt=post.published_at).order_by('-published_at').first()
-    next_post = Post.objects.filter(status='published', published_at__gt=post.published_at).order_by('published_at').first()
+    prev_post = None
+    next_post = None
+    if post.published_at:
+        prev_post = Post.objects.filter(status='published', published_at__lt=post.published_at).order_by('-published_at').first()
+        next_post = Post.objects.filter(status='published', published_at__gt=post.published_at).order_by('published_at').first()
     
     context = {
         'post': post,
