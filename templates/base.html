@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nexus{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-gray-800/50">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="{% url 'nexus_core:home' %}" class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                Nexus
+            </a>
+            <div class="flex items-center space-x-6">
+                <a href="{% url 'blog:post_list' %}" class="text-gray-400 hover:text-white transition-colors">笔记</a>
+                <a href="{% url 'links:link_list' %}" class="text-gray-400 hover:text-white transition-colors">链接</a>
+                <button id="pin-toggle" class="text-gray-500 hover:text-gray-300 transition-colors" onclick="togglePin()">
+                    🔒
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="pt-16">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800/50 py-8 mt-20">
+        <div class="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
+            © 2026 Nexus · Powered by Django
+        </div>
+    </footer>
+
+    <!-- PIN验证模态框 -->
+    <div id="pin-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closePinModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 rounded-2xl p-8 border border-gray-800 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-4">输入管理密码</h3>
+            <input type="password" id="pin-input" 
+                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 text-white"
+                   placeholder="PIN码"
+                   onkeydown="if(event.key==='Enter')verifyPin()">
+            <div class="flex justify-end space-x-3 mt-4">
+                <button onclick="closePinModal()" class="px-4 py-2 text-gray-400 hover:text-white transition-colors">取消</button>
+                <button onclick="verifyPin()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePin() {
+            const modal = document.getElementById('pin-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.getElementById('pin-input').focus();
+            } else {
+                closePinModal();
+            }
+        }
+        
+        function closePinModal() {
+            document.getElementById('pin-modal').classList.add('hidden');
+            document.getElementById('pin-input').value = '';
+        }
+        
+        function verifyPin() {
+            const pin = document.getElementById('pin-input').value;
+            fetch('/api/verify-pin/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                },
+                body: JSON.stringify({pin: pin})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('pin-toggle').textContent = '🔓';
+                    document.body.classList.add('pin-unlocked');
+                    closePinModal();
+                    location.reload();
+                } else {
+                    alert('密码错误');
+                }
+            });
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}链接聚合 - Nexus{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold text-white mb-8">链接聚合</h1>
+    
+    <!-- 服务器服务 -->
+    {% if services %}
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold text-gray-300 mb-4">🖥️ 服务器服务</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for link in services %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="group bg-gray-900/50 border border-gray-800 rounded-xl p-5 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">{{ link.icon|default:"🔗" }}</span>
+                    <div>
+                        <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
+                        <p class="text-sm text-gray-400">{{ link.description }}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- 个人项目 -->
+    {% if projects %}
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold text-gray-300 mb-4">🚀 个人项目</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for link in projects %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="group bg-gray-900/50 border border-gray-800 rounded-xl p-5 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">{{ link.icon|default:"📦" }}</span>
+                    <div>
+                        <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
+                        <p class="text-sm text-gray-400">{{ link.description }}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- 外部链接 -->
+    {% if external %}
+    <section class="mb-12">
+        <h2 class="text-xl font-semibold text-gray-300 mb-4">🌐 外部链接</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for link in external %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="group bg-gray-900/50 border border-gray-800 rounded-xl p-5 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl">{{ link.icon|default:"🔗" }}</span>
+                    <div>
+                        <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
+                        <p class="text-sm text-gray-400">{{ link.description }}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    {% if not services and not projects and not external %}
+    <div class="text-center text-gray-500 py-16">
+        暂无链接
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

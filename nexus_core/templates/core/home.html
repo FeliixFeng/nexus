@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nexus{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- 渐变背景 -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-950 via-blue-950/30 to-purple-950/20"></div>
+    
+    <!-- 动态光晕 -->
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    
+    <!-- 内容 -->
+    <div class="relative z-10 text-center px-4">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6">
+            <span class="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Nexus
+            </span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-400 mb-8">个人数字空间 · 聚合一切</p>
+        
+        <!-- 向下滚动提示 -->
+        <div class="animate-bounce mt-16">
+            <svg class="w-6 h-6 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<!-- 服务聚合 Section -->
+<section class="py-20 px-4">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="text-2xl font-semibold text-center mb-12 text-gray-300">服务聚合</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for link in all_links %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="group relative bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-start space-x-4">
+                    <div class="text-3xl">{{ link.icon|default:"🔗" }}</div>
+                    <div>
+                        <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
+                        <p class="text-sm text-gray-400 mt-1">{{ link.description }}</p>
+                    </div>
+                </div>
+                <!-- 悬浮发光效果 -->
+                <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 transition-all duration-300"></div>
+            </a>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500 py-12">
+                暂无链接，PIN解锁后可添加
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 最新笔记 Section -->
+<section class="py-20 px-4 bg-gray-900/30">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="text-2xl font-semibold text-center mb-12 text-gray-300">最新笔记</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for post in recent_posts %}
+            <a href="{% url 'blog:post_detail' post.slug %}"
+               class="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors mb-2">
+                    {{ post.title }}
+                </h3>
+                <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ post.summary|default:post.content|truncatewords:30 }}</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        {% for tag in post.tags.all|slice:":3" %}
+                        <span class="text-xs px-2 py-1 bg-gray-800 text-gray-400 rounded-full">{{ tag.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <span class="text-xs text-gray-500">{{ post.published_at|date:"Y-m-d" }}</span>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500 py-12">
+                暂无笔记，PIN解锁后可添加
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if recent_posts %}
+        <div class="text-center mt-8">
+            <a href="{% url 'blog:post_list' %}" class="text-blue-400 hover:text-blue-300 transition-colors">
+                查看全部笔记 →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
