@@ -13,7 +13,7 @@
         background-size: 60px 60px;
     }
     
-    /* 浮动光斑 */
+    /* 浮动光球 */
     @keyframes float-1 {
         0%, 100% { transform: translate(0, 0) scale(1); }
         25% { transform: translate(100px, -50px) scale(1.1); }
@@ -42,7 +42,18 @@
         animation: gradient-shift 4s ease infinite;
     }
     
-    /* 卡片悬浮效果 */
+    /* 滚动箭头动画 */
+    @keyframes scroll-hint {
+        0% { transform: translateY(0); opacity: 1; }
+        50% { transform: translateY(12px); opacity: 0.5; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    .scroll-arrow {
+        animation: scroll-hint 2s ease-in-out infinite;
+    }
+    
+    /* 链接卡片效果 */
     .link-card {
         position: relative;
         overflow: hidden;
@@ -82,15 +93,15 @@
         border-color: rgba(99, 102, 241, 0.4);
     }
     
-    /* 滚动指示器 */
-    .scroll-indicator {
-        animation: bounce 2s ease-in-out infinite;
-    }
-    
     /* 装饰线条 */
     .deco-line {
         background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
         height: 1px;
+    }
+    
+    /* Hero区域渐变遮罩 */
+    .hero-fade {
+        background: linear-gradient(to bottom, transparent 70%, #030712 100%);
     }
 </style>
 {% endblock %}
@@ -106,14 +117,11 @@
     <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/8 rounded-full blur-[100px] orb-2"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-pink-600/5 rounded-full blur-[80px] orb-1"></div>
     
+    <!-- 底部渐变遮罩 -->
+    <div class="absolute bottom-0 left-0 right-0 h-48 hero-fade"></div>
+    
     <!-- 内容 -->
     <div class="relative z-10 text-center px-6">
-        <!-- 装饰标签 -->
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-full text-sm text-gray-400 mb-8 backdrop-blur-sm">
-            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-            <span>在线</span>
-        </div>
-        
         <!-- 主标题 -->
         <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold mb-6 tracking-tight">
             <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animated-gradient">
@@ -125,21 +133,21 @@
         <p class="text-lg md:text-xl text-gray-400 mb-4 max-w-md mx-auto">
             个人数字空间
         </p>
-        <p class="text-sm text-gray-500 mb-12">
+        <p class="text-sm text-gray-600 mb-16">
             聚合服务 · 记录思考 · 探索世界
         </p>
         
-        <!-- 向下滚动 -->
-        <div class="scroll-indicator">
-            <div class="w-6 h-10 border-2 border-gray-600 rounded-full mx-auto flex justify-center">
-                <div class="w-1.5 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
-            </div>
-        </div>
+        <!-- 向下滚动 - 简洁箭头 -->
+        <a href="#services" class="inline-block scroll-arrow text-gray-600 hover:text-gray-400 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </a>
     </div>
 </section>
 
 <!-- 服务聚合 Section -->
-<section class="relative py-24 px-6">
+<section id="services" class="relative py-24 px-6">
     <div class="max-w-5xl mx-auto">
         <!-- 标题 -->
         <div class="text-center mb-16">
