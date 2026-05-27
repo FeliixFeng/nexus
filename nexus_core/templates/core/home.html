@@ -5,7 +5,6 @@
 
 {% block extra_css %}
 <style>
-    /* ========== 背景 ========== */
     body { background: #06060e; }
     
     #starfield {
@@ -40,7 +39,6 @@
         50% { transform: translate(-50px, -30px); }
     }
 
-    /* Spotlight */
     #spotlight {
         position: fixed; left: 0; top: 0;
         width: 400px; height: 400px;
@@ -53,21 +51,19 @@
     }
     body:hover #spotlight { opacity: 1; }
 
-    /* ========== 顶部区域 ========== */
+    /* ========== 顶部 ========== */
     .hero-area {
-        min-height: 35vh;
+        min-height: 28vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding-top: 4rem;
+        padding-top: 3.5rem;
     }
     
-    /* 轮播 */
     .tagline-container {
         height: 1.8em;
         overflow: hidden;
-        position: relative;
     }
     .tagline-track {
         animation: tagline-slide 10s cubic-bezier(0.65, 0, 0.35, 1) infinite;
@@ -79,42 +75,37 @@
         100%      { transform: translateY(0); }
     }
     
-    /* 社交 */
-    .social-link {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .social-link { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .social-link:hover {
-        transform: translateY(-3px);
-        color: white;
+        transform: translateY(-3px); color: white;
         filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
     }
 
-    /* ========== Bento 网格 ========== */
-    .bento-grid {
+    /* ========== Bento ========== */
+    .bento {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-auto-rows: minmax(180px, auto);
-        gap: 12px;
-        max-width: 1100px;
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-rows: minmax(160px, auto);
+        gap: 10px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 0 16px 80px;
     }
     
     @media (max-width: 768px) {
-        .bento-grid {
-            grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: minmax(150px, auto);
-            gap: 10px;
-            padding: 0 12px 60px;
+        .bento {
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: minmax(140px, auto);
+            gap: 8px;
+            padding: 0 10px 60px;
         }
     }
     
-    /* 卡片基础 */
-    .bento-card {
+    .card {
         background: rgba(17, 24, 39, 0.5);
-        border: 1px solid rgba(55, 65, 81, 0.4);
-        border-radius: 16px;
-        padding: 20px;
+        border: 1px solid rgba(55, 65, 81, 0.35);
+        border-radius: 14px;
+        padding: 18px;
         backdrop-blur-sm;
         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -122,213 +113,143 @@
         display: flex;
         flex-direction: column;
     }
-    .bento-card:hover {
-        border-color: rgba(99, 102, 241, 0.25);
+    .card:hover {
+        border-color: rgba(99, 102, 241, 0.2);
         transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
     }
-    .bento-card::before {
+    .card::before {
         content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        padding: 1px;
-        background: linear-gradient(135deg, transparent 40%, rgba(99, 102, 241, 0.3), transparent 60%);
+        position: absolute; inset: 0;
+        border-radius: inherit; padding: 1px;
+        background: linear-gradient(135deg, transparent 40%, rgba(99, 102, 241, 0.25), transparent 60%);
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
-        opacity: 0;
-        transition: opacity 0.35s;
+        opacity: 0; transition: opacity 0.35s;
         pointer-events: none;
     }
-    .bento-card:hover::before { opacity: 1; }
+    .card:hover::before { opacity: 1; }
     
     .card-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.15em;
-        color: rgba(156, 163, 175, 0.6);
-        margin-bottom: 12px;
-    }
-    
-    /* 最新笔记 - 大卡片 */
-    .card-notes { grid-column: span 2; grid-row: span 2; }
-    
-    /* 服务入口 */
-    .card-services { grid-column: span 2; }
-    
-    /* 时间 */
-    .card-time { }
-    
-    /* 动态 */
-    .card-activity { grid-column: span 1; grid-row: span 2; }
-    
-    /* 快捷操作 */
-    .card-actions { }
-    
-    /* 笔记列表 */
-    .note-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(55, 65, 81, 0.25);
-        transition: all 0.2s;
-    }
-    .note-item:last-child { border-bottom: none; }
-    .note-item:hover { padding-left: 4px; }
-    .note-item:hover .note-title { color: #818cf8; }
-    .note-title {
-        color: #e5e7eb;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: color 0.2s;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .note-date {
-        font-size: 0.7rem;
-        color: rgba(107, 114, 128, 0.8);
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-    .note-dot {
-        width: 4px; height: 4px;
-        border-radius: 50%;
-        background: rgba(99, 102, 241, 0.5);
+        color: rgba(156, 163, 175, 0.5);
+        margin-bottom: 10px;
         flex-shrink: 0;
     }
     
-    /* 服务图标 */
-    .service-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 10px;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-    .service-item:hover {
-        background: rgba(99, 102, 241, 0.08);
-    }
-    .service-item:hover .service-name { color: #e5e7eb; }
-    .service-icon { font-size: 1.2rem; }
-    .service-name {
-        font-size: 0.8rem;
-        color: #9ca3af;
-        transition: color 0.2s;
-    }
-    
-    /* 时间 */
-    .time-display {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.9);
-        letter-spacing: -0.02em;
-        line-height: 1;
-    }
-    .time-date {
-        font-size: 0.75rem;
-        color: rgba(156, 163, 175, 0.6);
-        margin-top: 6px;
-    }
-    
-    /* 动态 */
-    .activity-item {
-        padding: 8px 0;
-        border-left: 2px solid rgba(99, 102, 241, 0.2);
-        padding-left: 12px;
-        margin-left: 4px;
-    }
-    .activity-item:not(:last-child) { margin-bottom: 4px; }
-    .activity-text {
-        font-size: 0.8rem;
-        color: #9ca3af;
-        line-height: 1.5;
-    }
-    .activity-date {
-        font-size: 0.65rem;
-        color: rgba(107, 114, 128, 0.7);
-        margin-top: 2px;
-    }
-    
-    /* 快捷操作 */
-    .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        background: rgba(99, 102, 241, 0.06);
-        border: 1px solid rgba(99, 102, 241, 0.1);
-        color: #9ca3af;
-        font-size: 0.8rem;
-        transition: all 0.2s;
-        cursor: pointer;
-        text-decoration: none;
-    }
-    .action-btn:hover {
-        background: rgba(99, 102, 241, 0.12);
-        border-color: rgba(99, 102, 241, 0.25);
-        color: #e5e7eb;
-    }
-    
-    /* 看全部 */
     .view-all {
-        font-size: 0.75rem;
-        color: rgba(129, 140, 248, 0.6);
+        font-size: 0.7rem;
+        color: rgba(129, 140, 248, 0.5);
         transition: color 0.2s;
         text-decoration: none;
     }
     .view-all:hover { color: #818cf8; }
     
-    /* 入场动画 */
-    .fade-up {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+    /* ---- 笔记 ---- */
+    .note-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 7px 0;
+        border-bottom: 1px solid rgba(55, 65, 81, 0.2);
+        transition: all 0.2s;
     }
-    .fade-up.visible {
-        opacity: 1;
-        transform: translateY(0);
+    .note-item:last-child { border-bottom: none; }
+    .note-item:hover { padding-left: 3px; }
+    .note-item:hover .note-title { color: #818cf8; }
+    .note-title {
+        color: #d1d5db; font-size: 0.82rem; font-weight: 500;
+        transition: color 0.2s;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .note-date {
+        font-size: 0.65rem; color: rgba(107, 114, 128, 0.7);
+        white-space: nowrap; flex-shrink: 0;
+    }
+    .note-dot {
+        width: 4px; height: 4px; border-radius: 50%;
+        background: rgba(99, 102, 241, 0.4); flex-shrink: 0;
     }
     
-    /* 浮动粒子 */
-    .particle {
-        position: fixed;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 2;
-        animation: particle-float linear infinite;
+    /* ---- 服务 ---- */
+    .service-item {
+        display: flex; align-items: center; gap: 6px;
+        padding: 5px 8px; border-radius: 8px;
+        transition: all 0.2s; text-decoration: none;
     }
-    @keyframes particle-float {
-        0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+    .service-item:hover { background: rgba(99, 102, 241, 0.08); }
+    .service-item:hover .service-name { color: #e5e7eb; }
+    .service-icon { font-size: 1.1rem; }
+    .service-name { font-size: 0.78rem; color: #9ca3af; transition: color 0.2s; }
+    
+    /* ---- 时间 ---- */
+    .time-big {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 2.2rem; font-weight: 700;
+        color: rgba(255, 255, 255, 0.88);
+        letter-spacing: -0.02em; line-height: 1;
+    }
+    .time-sub {
+        font-size: 0.7rem; color: rgba(156, 163, 175, 0.5);
+        margin-top: 5px;
+    }
+    
+    /* ---- 动态 ---- */
+    .act-item {
+        padding: 6px 0;
+        border-left: 2px solid rgba(99, 102, 241, 0.15);
+        padding-left: 10px; margin-left: 3px;
+    }
+    .act-item:not(:last-child) { margin-bottom: 2px; }
+    .act-text { font-size: 0.78rem; color: #9ca3af; line-height: 1.4; }
+    .act-date { font-size: 0.6rem; color: rgba(107, 114, 128, 0.6); margin-top: 1px; }
+    
+    /* ---- 技能标签 ---- */
+    .tag {
+        display: inline-block;
+        padding: 3px 8px; border-radius: 6px;
+        font-size: 0.7rem; font-weight: 500;
+        transition: transform 0.2s;
+    }
+    .tag:hover { transform: scale(1.05); }
+    
+    /* ---- 入场 ---- */
+    .fade-up {
+        opacity: 0; transform: translateY(16px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    
+    /* 粒子 */
+    .particle {
+        position: fixed; border-radius: 50%;
+        pointer-events: none; z-index: 2;
+        animation: pf linear infinite;
+    }
+    @keyframes pf {
+        0% { transform: translateY(100vh); opacity: 0; }
+        10% { opacity: 1; } 90% { opacity: 1; }
+        100% { transform: translateY(-10vh); opacity: 0; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- 背景层 -->
 <canvas id="starfield"></canvas>
 <div id="particles" class="fixed inset-0 pointer-events-none z-[2]"></div>
 <div class="aurora-blob aurora-1"></div>
 <div class="aurora-blob aurora-2"></div>
 <div id="spotlight"></div>
 
-<!-- ====== 顶部 ====== -->
+<!-- 顶部 -->
 <div class="hero-area relative z-10">
     <div class="tagline-container mb-4 max-w-md mx-auto">
         <div class="tagline-track">
-            <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">软件工程学生 · 开源爱好者</p>
-            <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">Java 开发者 · 全栈探索者</p>
-            <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">个人数字空间 · 聚合一切</p>
+            <p class="text-gray-400 text-sm tracking-[0.2em] h-[1.8em] flex items-center justify-center">软件工程学生 · 开源爱好者</p>
+            <p class="text-gray-400 text-sm tracking-[0.2em] h-[1.8em] flex items-center justify-center">Java 开发者 · 全栈探索者</p>
+            <p class="text-gray-400 text-sm tracking-[0.2em] h-[1.8em] flex items-center justify-center">个人数字空间 · 聚合一切</p>
         </div>
     </div>
     <div class="flex items-center justify-center gap-5">
@@ -344,17 +265,26 @@
     </div>
 </div>
 
-<!-- ====== Bento 网格 ====== -->
-<div class="bento-grid relative z-10">
+<!-- ====== Bento Grid ====== -->
+<div class="bento relative z-10">
     
-    <!-- 最新笔记 (大卡片) -->
-    <div class="bento-card card-notes fade-up">
+    <!-- 时间 + 状态 (2列) -->
+    <div class="card fade-up" style="grid-column: span 2;">
+        <span class="card-label">Now</span>
+        <div class="flex-1 flex flex-col justify-center">
+            <div class="time-big" id="clock">--:--</div>
+            <div class="time-sub" id="clock-date"></div>
+        </div>
+    </div>
+    
+    <!-- 最新笔记 (4列) -->
+    <div class="card fade-up" style="grid-column: span 4;">
         <div class="flex items-center justify-between">
             <span class="card-label">Latest Notes</span>
-            <a href="{% url 'blog:post_list' %}" class="view-all">查看全部 →</a>
+            <a href="{% url 'blog:post_list' %}" class="view-all">全部 →</a>
         </div>
         <div class="flex-1">
-            {% for post in recent_posts|slice:":5" %}
+            {% for post in recent_posts|slice:":4" %}
             <a href="{% url 'blog:post_detail' post.slug %}" class="note-item">
                 <span class="note-dot"></span>
                 <span class="note-title flex-1">{{ post.title }}</span>
@@ -366,36 +296,14 @@
         </div>
     </div>
     
-    <!-- 时间 -->
-    <div class="bento-card card-time fade-up">
-        <span class="card-label">Now</span>
-        <div class="flex-1 flex flex-col justify-center">
-            <div class="time-display" id="clock">--:--</div>
-            <div class="time-date" id="clock-date">----/--/--</div>
-        </div>
-    </div>
-    
-    <!-- 快捷操作 -->
-    <div class="bento-card card-actions fade-up">
-        <span class="card-label">Quick</span>
-        <div class="flex-1 flex flex-col justify-center gap-2">
-            <a href="{% url 'links:link_list' %}" class="action-btn">
-                <span>🔗</span> 全部链接
-            </a>
-            <a href="{% url 'blog:post_list' %}" class="action-btn">
-                <span>📝</span> 全部笔记
-            </a>
-        </div>
-    </div>
-    
-    <!-- 服务入口 (宽卡片) -->
-    <div class="bento-card card-services fade-up">
+    <!-- 服务入口 (3列) -->
+    <div class="card fade-up" style="grid-column: span 3;">
         <div class="flex items-center justify-between">
             <span class="card-label">Services</span>
             <a href="{% url 'links:link_list' %}" class="view-all">全部 →</a>
         </div>
-        <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-1">
-            {% for link in all_links|slice:":8" %}
+        <div class="flex-1 grid grid-cols-2 gap-0.5">
+            {% for link in all_links|slice:":6" %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-item">
                 <span class="service-icon">{{ link.icon|default:"🔗" }}</span>
                 <span class="service-name">{{ link.name }}</span>
@@ -404,30 +312,56 @@
         </div>
     </div>
     
-    <!-- 最近动态 -->
-    <div class="bento-card card-activity fade-up">
+    <!-- 最近动态 (3列) -->
+    <div class="card fade-up" style="grid-column: span 3;">
         <span class="card-label">Activity</span>
         <div class="flex-1 overflow-hidden">
-            <div class="activity-item">
-                <p class="activity-text">搭建了个人数字空间 Nexus</p>
-                <p class="activity-date">2026.05</p>
+            <div class="act-item">
+                <p class="act-text">搭建个人数字空间 Nexus</p>
+                <p class="act-date">2026.05</p>
             </div>
-            <div class="activity-item">
-                <p class="activity-text">开始学习微服务架构</p>
-                <p class="activity-date">2026.05</p>
+            <div class="act-item">
+                <p class="act-text">开始学习微服务架构</p>
+                <p class="act-date">2026.05</p>
             </div>
-            <div class="activity-item">
-                <p class="activity-text">自建 DERP 中继服务器</p>
-                <p class="activity-date">2026.04</p>
+            <div class="act-item">
+                <p class="act-text">自建 DERP 中继服务器</p>
+                <p class="act-date">2026.04</p>
             </div>
-            <div class="activity-item">
-                <p class="activity-text">部署 Immich 私有照片管理</p>
-                <p class="activity-date">2026.03</p>
+            <div class="act-item">
+                <p class="act-text">部署 Immich 私有照片管理</p>
+                <p class="act-date">2026.03</p>
             </div>
-            <div class="activity-item">
-                <p class="activity-text">服务器规范化目录结构</p>
-                <p class="activity-date">2026.01</p>
-            </div>
+        </div>
+    </div>
+    
+    <!-- 技术栈 (3列) -->
+    <div class="card fade-up" style="grid-column: span 3;">
+        <span class="card-label">Tech Stack</span>
+        <div class="flex flex-wrap gap-1.5 content-center flex-1">
+            <span class="tag bg-orange-500/10 text-orange-400">Java</span>
+            <span class="tag bg-blue-500/10 text-blue-400">Python</span>
+            <span class="tag bg-cyan-500/10 text-cyan-400">Django</span>
+            <span class="tag bg-red-500/10 text-red-400">Spring Boot</span>
+            <span class="tag bg-blue-500/10 text-blue-400">Docker</span>
+            <span class="tag bg-yellow-500/10 text-yellow-400">MySQL</span>
+            <span class="tag bg-green-500/10 text-green-400">Redis</span>
+            <span class="tag bg-purple-500/10 text-purple-400">Nginx</span>
+            <span class="tag bg-gray-500/10 text-gray-400">Linux</span>
+            <span class="tag bg-indigo-500/10 text-indigo-400">Git</span>
+        </div>
+    </div>
+    
+    <!-- 快捷入口 (3列) -->
+    <div class="card fade-up" style="grid-column: span 3;">
+        <span class="card-label">Quick Links</span>
+        <div class="flex-1 flex flex-col justify-center gap-2">
+            <a href="{% url 'links:link_list' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all text-sm text-gray-400 hover:text-gray-200">
+                <span>🔗</span> 全部链接
+            </a>
+            <a href="{% url 'blog:post_list' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all text-sm text-gray-400 hover:text-gray-200">
+                <span>📝</span> 全部笔记
+            </a>
         </div>
     </div>
     
@@ -437,108 +371,62 @@
 
 {% block extra_js %}
 <script>
-// ========== 星空 + 星座连线 ==========
+// 星空+星座
 (function() {
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
+    const c = document.getElementById('starfield'), ctx = c.getContext('2d');
     let W, H;
-    
-    function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-        stars.forEach(s => { s.x = Math.random() * W; s.y = Math.random() * H; });
-    }
-    
-    const stars = Array.from({length: 60}, () => ({
-        x: Math.random() * 2000, y: Math.random() * 2000,
-        r: Math.random() * 1.2 + 0.3,
-        opacity: Math.random() * 0.5 + 0.2,
-        twinkle: Math.random() * Math.PI * 2,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.12
+    function resize() { W = c.width = innerWidth; H = c.height = innerHeight; stars.forEach(s => { s.x = Math.random()*W; s.y = Math.random()*H; }); }
+    const stars = Array.from({length: 55}, () => ({
+        x: Math.random()*2000, y: Math.random()*2000,
+        r: Math.random()*1.1+0.3, o: Math.random()*0.4+0.2,
+        tw: Math.random()*Math.PI*2,
+        vx: (Math.random()-0.5)*0.1, vy: (Math.random()-0.5)*0.1
     }));
-    
-    resize();
-    window.addEventListener('resize', resize);
-    
+    resize(); addEventListener('resize', resize);
     function draw() {
-        ctx.clearRect(0, 0, W, H);
-        const maxDist2 = 150 * 150;
-        
-        for (let i = 0; i < stars.length; i++) {
-            for (let j = i + 1; j < stars.length; j++) {
-                const dx = stars[i].x - stars[j].x;
-                const dy = stars[i].y - stars[j].y;
-                const d2 = dx * dx + dy * dy;
-                if (d2 < maxDist2) {
-                    ctx.beginPath();
-                    ctx.moveTo(stars[i].x, stars[i].y);
-                    ctx.lineTo(stars[j].x, stars[j].y);
-                    ctx.strokeStyle = `rgba(130, 140, 255, ${(1 - Math.sqrt(d2) / 150) * 0.1})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
+        ctx.clearRect(0,0,W,H);
+        const md2 = 140*140;
+        for (let i=0;i<stars.length;i++) for (let j=i+1;j<stars.length;j++) {
+            const dx=stars[i].x-stars[j].x, dy=stars[i].y-stars[j].y, d2=dx*dx+dy*dy;
+            if (d2<md2) { ctx.beginPath(); ctx.moveTo(stars[i].x,stars[i].y); ctx.lineTo(stars[j].x,stars[j].y); ctx.strokeStyle=`rgba(130,140,255,${(1-Math.sqrt(d2)/140)*0.08})`; ctx.lineWidth=0.5; ctx.stroke(); }
         }
-        
         stars.forEach(s => {
-            s.x += s.vx; s.y += s.vy;
-            if (s.x < 0) s.x = W; if (s.x > W) s.x = 0;
-            if (s.y < 0) s.y = H; if (s.y > H) s.y = 0;
-            s.twinkle += 0.01;
-            const o = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(200, 210, 255, ${o})`;
-            ctx.fill();
+            s.x+=s.vx; s.y+=s.vy;
+            if(s.x<0)s.x=W; if(s.x>W)s.x=0; if(s.y<0)s.y=H; if(s.y>H)s.y=0;
+            s.tw+=0.01;
+            ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+            ctx.fillStyle=`rgba(200,210,255,${s.o*(0.5+0.5*Math.sin(s.tw))})`; ctx.fill();
         });
         requestAnimationFrame(draw);
     }
     draw();
 })();
 
-// ========== 粒子 ==========
+// 粒子
 (function() {
     const c = document.getElementById('particles');
-    for (let i = 0; i < 8; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const sz = Math.random() * 2 + 1;
-        p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:rgba(150,180,255,${Math.random()*0.15+0.08});animation-duration:${Math.random()*15+15}s;animation-delay:-${Math.random()*15}s;`;
-        c.appendChild(p);
-    }
+    for (let i=0;i<6;i++) { const p=document.createElement('div'); p.className='particle'; const sz=Math.random()*2+1; p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:rgba(150,180,255,${Math.random()*0.12+0.06});animation-duration:${Math.random()*18+14}s;animation-delay:-${Math.random()*14}s;`; c.appendChild(p); }
 })();
 
-// ========== Spotlight ==========
+// Spotlight
 (function() {
-    const spot = document.getElementById('spotlight');
-    let mx = 0, my = 0, sx = 0, sy = 0;
-    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-    (function loop() {
-        sx += (mx - sx) * 0.1; sy += (my - sy) * 0.1;
-        spot.style.transform = `translate(${sx - 200}px, ${sy - 200}px)`;
-        requestAnimationFrame(loop);
-    })();
+    const s = document.getElementById('spotlight');
+    let mx=0,my=0,sx=0,sy=0;
+    addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function r() { sx+=(mx-sx)*0.1; sy+=(my-sy)*0.1; s.style.transform=`translate(${sx-200}px,${sy-200}px)`; requestAnimationFrame(r); })();
 })();
 
-// ========== 时钟 ==========
+// 时钟
 (function() {
-    const el = document.getElementById('clock');
-    const dateEl = document.getElementById('clock-date');
-    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-    function tick() {
-        const now = new Date();
-        el.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-        dateEl.textContent = now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0') + ' 周' + weekdays[now.getDay()];
-    }
-    tick(); setInterval(tick, 10000);
+    const el=document.getElementById('clock'), d=document.getElementById('clock-date');
+    const w=['日','一','二','三','四','五','六'];
+    function t() { const n=new Date(); el.textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); d.textContent=(n.getMonth()+1)+'/'+n.getDate()+' 周'+w[n.getDay()]; }
+    t(); setInterval(t,10000);
 })();
 
-// ========== 入场动画 ==========
+// 入场
 (function() {
-    const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
+    const obs = new IntersectionObserver(e => e.forEach(i => { if(i.isIntersecting) i.target.classList.add('visible'); }), {threshold:0.1});
     document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 })();
 </script>
