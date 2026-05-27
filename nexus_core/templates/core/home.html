@@ -23,19 +23,19 @@
         z-index: 0;
     }
     .aurora-1 {
-        width: 600px; height: 600px;
+        width: 400px; height: 400px;
         top: -10%; left: -5%;
         background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
         animation: aurora-drift-1 25s ease-in-out infinite;
     }
     .aurora-2 {
-        width: 500px; height: 500px;
+        width: 350px; height: 350px;
         bottom: 10%; right: -5%;
         background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
         animation: aurora-drift-2 30s ease-in-out infinite;
     }
     .aurora-3 {
-        width: 400px; height: 400px;
+        width: 300px; height: 300px;
         top: 40%; left: 50%;
         background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
         animation: aurora-drift-3 20s ease-in-out infinite;
@@ -68,13 +68,13 @@
     
     /* Spotlight追光 */
     #spotlight {
-        position: fixed;
-        width: 500px; height: 500px;
+        position: fixed; left: 0; top: 0;
+        width: 400px; height: 400px;
         border-radius: 50%;
         background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
         pointer-events: none;
         z-index: 1;
-        transform: translate(-50%, -50%);
+        will-change: transform;
         transition: opacity 0.3s;
         opacity: 0;
     }
@@ -367,59 +367,7 @@
     </div>
 </section>
 
-<div class="section-divider"></div>
-
-<!-- ====== 关于我 ====== -->
-<section id="about" class="relative py-24 px-6 md:px-10">
-    <div class="max-w-5xl mx-auto">
-        <div class="section-title fade-up">
-            <p class="label text-blue-400/70">About</p>
-            <h2>关于我</h2>
-            <div class="line"></div>
-        </div>
-        
-        <div class="grid md:grid-cols-2 gap-12 items-start">
-            <!-- 左：自我介绍 -->
-            <div class="fade-up">
-                <p class="text-gray-300 leading-relaxed text-base mb-4">
-                    你好，我是 <span class="text-white font-medium">Felix</span>，一名软件工程专业的学生，目前在准备读研。喜欢折腾技术，从服务器配置到全栈开发，什么都想试一试。
-                </p>
-                <p class="text-gray-400 leading-relaxed text-sm mb-6">
-                    主要用 Java 做后端开发，也玩 Python、Docker、Linux 运维。相信 AI 辅助开发是未来，所以这个站点也是在 AI 的帮助下完成的。平时喜欢记录学习笔记，分享折腾经验。
-                </p>
-                <div class="flex items-center gap-4 text-sm text-gray-500">
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        正在学习微服务架构
-                    </span>
-                </div>
-            </div>
-            
-            <!-- 右：技能标签 -->
-            <div class="fade-up">
-                <p class="text-xs text-gray-500 uppercase tracking-widest mb-4">Tech Stack</p>
-                <div class="flex flex-wrap gap-2">
-                    <span class="skill-tag px-3 py-1.5 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg text-sm">Java</span>
-                    <span class="skill-tag px-3 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-sm">Python</span>
-                    <span class="skill-tag px-3 py-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg text-sm">Django</span>
-                    <span class="skill-tag px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-sm">Spring Boot</span>
-                    <span class="skill-tag px-3 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-sm">Docker</span>
-                    <span class="skill-tag px-3 py-1.5 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-lg text-sm">MySQL</span>
-                    <span class="skill-tag px-3 py-1.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg text-sm">Redis</span>
-                    <span class="skill-tag px-3 py-1.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg text-sm">Nginx</span>
-                    <span class="skill-tag px-3 py-1.5 bg-gray-500/10 text-gray-400 border border-gray-500/20 rounded-lg text-sm">Linux</span>
-                    <span class="skill-tag px-3 py-1.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-lg text-sm">Git</span>
-                    <span class="skill-tag px-3 py-1.5 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-lg text-sm">HTMX</span>
-                    <span class="skill-tag px-3 py-1.5 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-lg text-sm">Tailwind</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ====== 服务聚合 ====== -->
+<!-- ====== 服务聚合 ====== @@
 <section id="services" class="relative py-24 px-6 md:px-10">
     <div class="max-w-5xl mx-auto">
         <div class="section-title fade-up">
@@ -550,7 +498,7 @@
         });
     }
     
-    const stars = Array.from({length: 120}, () => ({
+    const stars = Array.from({length: 60}, () => ({
         x: Math.random() * 2000,
         y: Math.random() * 2000,
         r: Math.random() * 1.2 + 0.3,
@@ -568,12 +516,14 @@
         
         // 画连线（星座效果）
         const maxDist = 150;
+        const maxDist2 = maxDist * maxDist;
         for (let i = 0; i < stars.length; i++) {
             for (let j = i + 1; j < stars.length; j++) {
                 const dx = stars[i].x - stars[j].x;
                 const dy = stars[i].y - stars[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < maxDist) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 < maxDist2) {
+                    const dist = Math.sqrt(dist2);
                     const alpha = (1 - dist / maxDist) * 0.12;
                     ctx.beginPath();
                     ctx.moveTo(stars[i].x, stars[i].y);
@@ -582,7 +532,7 @@
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
-            }
+                }
         }
         
         // 画星星
@@ -630,10 +580,17 @@
 // ========== Spotlight追光 ==========
 (function() {
     const spot = document.getElementById('spotlight');
+    let mx = 0, my = 0, sx = 0, sy = 0;
     document.addEventListener('mousemove', (e) => {
-        spot.style.left = e.clientX + 'px';
-        spot.style.top = e.clientY + 'px';
+        mx = e.clientX; my = e.clientY;
     });
+    function moveSpot() {
+        sx += (mx - sx) * 0.12;
+        sy += (my - sy) * 0.12;
+        spot.style.transform = `translate(${sx - 200}px, ${sy - 200}px)`;
+        requestAnimationFrame(moveSpot);
+    }
+    moveSpot();
 })();
 
 // ========== 鼠标视差 ==========
