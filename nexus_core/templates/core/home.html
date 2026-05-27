@@ -5,69 +5,220 @@
 
 {% block extra_css %}
 <style>
-    /* 星空画布 */
+    /* ========== 星空画布 ========== */
     #starfield {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    /* ========== 极光色块 ========== */
+    .aurora-blob {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(100px);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .aurora-1 {
+        width: 600px; height: 600px;
+        top: -10%; left: -5%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+        animation: aurora-drift-1 25s ease-in-out infinite;
+    }
+    .aurora-2 {
+        width: 500px; height: 500px;
+        bottom: 10%; right: -5%;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+        animation: aurora-drift-2 30s ease-in-out infinite;
+    }
+    .aurora-3 {
+        width: 400px; height: 400px;
+        top: 40%; left: 50%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+        animation: aurora-drift-3 20s ease-in-out infinite;
+    }
+    @keyframes aurora-drift-1 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(80px, 50px) scale(1.1); }
+        66% { transform: translate(-30px, 80px) scale(0.9); }
+    }
+    @keyframes aurora-drift-2 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(-60px, -40px) scale(1.15); }
+        66% { transform: translate(40px, -60px) scale(0.85); }
+    }
+    @keyframes aurora-drift-3 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-80px, 40px) scale(1.2); }
+    }
+
+    /* ========== Hero ========== */
+    .hero-section {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    /* Spotlight追光 */
+    #spotlight {
+        position: fixed;
+        width: 500px; height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
         pointer-events: none;
         z-index: 1;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s;
+        opacity: 0;
     }
+    body:hover #spotlight { opacity: 1; }
     
-    /* 星云背景 */
-    .nebula-bg {
-        background: 
-            radial-gradient(ellipse at 20% 30%, rgba(40,20,80,0.35) 0%, transparent 50%),
-            radial-gradient(ellipse at 75% 60%, rgba(20,40,80,0.25) 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 80%, rgba(60,20,60,0.15) 0%, transparent 50%),
-            #06060e;
+    /* Nexus大标题 */
+    .hero-title {
+        font-size: clamp(4rem, 12vw, 12rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        background: linear-gradient(135deg, #818cf8 0%, #c084fc 40%, #f472b6 70%, #818cf8 100%);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradient-flow 6s ease infinite;
+        position: relative;
     }
-    
-    /* 浮动光球 */
-    @keyframes float-1 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        25% { transform: translate(80px, -40px) scale(1.1); }
-        50% { transform: translate(40px, 40px) scale(0.9); }
-        75% { transform: translate(-40px, 80px) scale(1.05); }
+    .hero-title::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 4s ease-in-out infinite;
     }
-    @keyframes float-2 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        25% { transform: translate(-60px, 50px) scale(1.1); }
-        50% { transform: translate(-20px, -60px) scale(0.85); }
-        75% { transform: translate(50px, -30px) scale(1.05); }
-    }
-    @keyframes float-3 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(50px, -30px) scale(1.05); }
-        66% { transform: translate(-30px, 50px) scale(0.95); }
-    }
-    
-    .orb-1 { animation: float-1 20s ease-in-out infinite; }
-    .orb-2 { animation: float-2 25s ease-in-out infinite; }
-    .orb-3 { animation: float-3 18s ease-in-out infinite; }
-    
-    /* 文字渐变 */
-    @keyframes gradient-shift {
+    @keyframes gradient-flow {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-    .animated-gradient {
-        background-size: 200% 200%;
-        animation: gradient-shift 4s ease infinite;
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    /* 文字发光 */
+    .hero-glow {
+        text-shadow: 
+            0 0 80px rgba(99, 102, 241, 0.3),
+            0 0 160px rgba(139, 92, 246, 0.15);
+    }
+    
+    /* 轮播标语 */
+    .tagline-container {
+        height: 1.5em;
+        overflow: hidden;
+        position: relative;
+    }
+    .tagline-track {
+        animation: tagline-slide 9s ease-in-out infinite;
+    }
+    @keyframes tagline-slide {
+        0%, 28%   { transform: translateY(0); }
+        33%, 61%  { transform: translateY(-1.5em); }
+        66%, 94%  { transform: translateY(-3em); }
+        100%      { transform: translateY(0); }
+    }
+    
+    /* 社交链接 */
+    .social-link {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .social-link:hover {
+        transform: translateY(-3px);
+        color: white;
+        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+    
+    /* ========== 关于我 ========== */
+    .skill-tag {
+        transition: all 0.25s ease;
+        cursor: default;
+    }
+    .skill-tag:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    }
+    
+    /* ========== 时间线 ========== */
+    .timeline-item {
+        position: relative;
+        padding-left: 2rem;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.5rem;
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: #6366f1;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    }
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: 3px;
+        top: 1.5rem;
+        width: 2px;
+        bottom: -1rem;
+        background: linear-gradient(to bottom, rgba(99, 102, 241, 0.3), transparent);
+    }
+    .timeline-item:last-child::after {
+        display: none;
+    }
+    
+    /* ========== 通用 ========== */
+    .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .section-title .label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        margin-bottom: 0.5rem;
+    }
+    .section-title h2 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: white;
+    }
+    .section-title .line {
+        width: 4rem;
+        height: 1px;
+        margin: 1rem auto 0;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
     }
     
     /* 滚动箭头 */
     @keyframes scroll-hint {
         0% { transform: translateY(0); opacity: 1; }
-        50% { transform: translateY(10px); opacity: 0.4; }
+        50% { transform: translateY(10px); opacity: 0.3; }
         100% { transform: translateY(0); opacity: 1; }
     }
     .scroll-arrow { animation: scroll-hint 2s ease-in-out infinite; }
     
-    /* 链接卡片 */
+    /* 卡片hover */
     .link-card {
         position: relative;
         overflow: hidden;
@@ -89,10 +240,9 @@
     .link-card:hover::before { opacity: 1; }
     .link-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.15);
     }
     
-    /* 文章卡片 */
     .post-card {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -110,20 +260,25 @@
     .post-card:hover::before { opacity: 1; }
     .post-card:hover {
         transform: translateX(4px);
-        border-color: rgba(99, 102, 241, 0.3);
+        border-color: rgba(99, 102, 241, 0.25);
     }
     
-    /* 分割线 */
     .section-divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent 5%, rgba(99, 102, 241, 0.25) 50%, transparent 95%);
+        background: linear-gradient(90deg, transparent 5%, rgba(99, 102, 241, 0.2) 50%, transparent 95%);
         margin: 0 auto;
         max-width: 60%;
     }
     
-    /* 标题发光 */
-    .glow-text {
-        text-shadow: 0 0 80px rgba(99, 102, 241, 0.25), 0 0 160px rgba(139, 92, 246, 0.15);
+    /* 入场动画 */
+    .fade-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+        opacity: 1;
+        transform: translateY(0);
     }
     
     /* 浮动粒子 */
@@ -149,33 +304,62 @@
     .fog-bottom {
         background: linear-gradient(to top, #06060e 0%, rgba(6,6,14,0.8) 30%, transparent 100%);
     }
+    
+    /* 星云背景 */
+    .nebula-bg {
+        background: 
+            radial-gradient(ellipse at 20% 30%, rgba(40,20,80,0.3) 0%, transparent 50%),
+            radial-gradient(ellipse at 75% 60%, rgba(20,40,80,0.2) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 80%, rgba(60,20,60,0.1) 0%, transparent 50%),
+            #06060e;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- 星空画布 -->
+<!-- 背景层 -->
 <canvas id="starfield"></canvas>
-<!-- 浮动粒子 -->
 <div id="particles" class="fixed inset-0 pointer-events-none z-[2]"></div>
+<div class="aurora-blob aurora-1"></div>
+<div class="aurora-blob aurora-2"></div>
+<div class="aurora-blob aurora-3"></div>
+<div id="spotlight"></div>
 
-<!-- Hero Section -->
-<section class="relative h-screen flex items-center justify-center overflow-hidden nebula-bg">
-    <!-- 浮动光球 -->
-    <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/6 rounded-full blur-[120px] orb-1 depth-layer" data-depth="0.02"></div>
-    <div class="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-purple-600/6 rounded-full blur-[120px] orb-2 depth-layer" data-depth="0.03"></div>
-    <div class="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-indigo-600/4 rounded-full blur-[100px] orb-3 depth-layer" data-depth="0.015"></div>
-    
-    <!-- 内容 -->
-    <div class="relative z-10 text-center px-6 depth-layer" data-depth="0.01">
-        <h1 class="text-6xl md:text-8xl lg:text-[10rem] font-bold mb-4 tracking-tight glow-text">
-        <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animated-gradient">
+<!-- ====== Hero ====== -->
+<section class="hero-section nebula-bg">
+    <div class="relative z-10 text-center px-6" id="hero-content">
+        <!-- Nexus标题 -->
+        <h1 class="hero-title hero-glow mb-6 depth-layer" data-depth="0.01">
             Nexus
-        </span>
         </h1>
-        <p class="text-base md:text-xl lg:text-2xl text-gray-500 mb-12 tracking-widest">
-            个人数字空间 · 聚合一切
-        </p>
-        <a href="#services" class="inline-block scroll-arrow text-gray-600 hover:text-gray-400 transition-colors">
+        
+        <!-- 轮播标语 -->
+        <div class="tagline-container mb-3 max-w-md mx-auto">
+            <div class="tagline-track">
+                <p class="text-gray-400 text-base md:text-lg tracking-widest h-[1.5em] flex items-center justify-center">软件工程学生 · 开源爱好者</p>
+                <p class="text-gray-400 text-base md:text-lg tracking-widest h-[1.5em] flex items-center justify-center">Java 开发者 · 全栈探索者</p>
+                <p class="text-gray-400 text-base md:text-lg tracking-widest h-[1.5em] flex items-center justify-center">个人数字空间 · 聚合一切</p>
+            </div>
+        </div>
+        
+        <!-- 社交链接 -->
+        <div class="flex items-center justify-center gap-5 mb-16">
+            <a href="https://github.com/FeliixFeng" target="_blank" class="social-link text-gray-500" title="GitHub">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+            <a href="mailto:felixfeng@foxmail.com" class="social-link text-gray-500" title="邮箱">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </a>
+            <a href="https://www.bilibili.com" target="_blank" class="social-link text-gray-500" title="Bilibili">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg>
+            </a>
+            <a href="{% url 'links:link_list' %}" class="social-link text-gray-500" title="更多链接">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </a>
+        </div>
+        
+        <!-- 滚动箭头 -->
+        <a href="#about" class="inline-block scroll-arrow text-gray-600 hover:text-gray-400 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
             </svg>
@@ -183,19 +367,70 @@
     </div>
 </section>
 
-<div class="section-divider my-0"></div>
+<div class="section-divider"></div>
 
-<!-- 服务聚合 -->
-<section id="services" class="relative min-h-screen flex flex-col justify-center py-16 px-6">
-    <div class="mx-auto w-full px-4 md:px-10">
-        <div class="text-center mb-10">
-            <h2 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Services</h2>
-            <h3 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white">服务聚合</h3>
+<!-- ====== 关于我 ====== -->
+<section id="about" class="relative py-24 px-6 md:px-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="section-title fade-up">
+            <p class="label text-blue-400/70">About</p>
+            <h2>关于我</h2>
+            <div class="line"></div>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+        
+        <div class="grid md:grid-cols-2 gap-12 items-start">
+            <!-- 左：自我介绍 -->
+            <div class="fade-up">
+                <p class="text-gray-300 leading-relaxed text-base mb-4">
+                    你好，我是 <span class="text-white font-medium">Felix</span>，一名软件工程专业的学生，目前在准备读研。喜欢折腾技术，从服务器配置到全栈开发，什么都想试一试。
+                </p>
+                <p class="text-gray-400 leading-relaxed text-sm mb-6">
+                    主要用 Java 做后端开发，也玩 Python、Docker、Linux 运维。相信 AI 辅助开发是未来，所以这个站点也是在 AI 的帮助下完成的。平时喜欢记录学习笔记，分享折腾经验。
+                </p>
+                <div class="flex items-center gap-4 text-sm text-gray-500">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        正在学习微服务架构
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 右：技能标签 -->
+            <div class="fade-up">
+                <p class="text-xs text-gray-500 uppercase tracking-widest mb-4">Tech Stack</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="skill-tag px-3 py-1.5 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded-lg text-sm">Java</span>
+                    <span class="skill-tag px-3 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-sm">Python</span>
+                    <span class="skill-tag px-3 py-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg text-sm">Django</span>
+                    <span class="skill-tag px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-sm">Spring Boot</span>
+                    <span class="skill-tag px-3 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-sm">Docker</span>
+                    <span class="skill-tag px-3 py-1.5 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-lg text-sm">MySQL</span>
+                    <span class="skill-tag px-3 py-1.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg text-sm">Redis</span>
+                    <span class="skill-tag px-3 py-1.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg text-sm">Nginx</span>
+                    <span class="skill-tag px-3 py-1.5 bg-gray-500/10 text-gray-400 border border-gray-500/20 rounded-lg text-sm">Linux</span>
+                    <span class="skill-tag px-3 py-1.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-lg text-sm">Git</span>
+                    <span class="skill-tag px-3 py-1.5 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-lg text-sm">HTMX</span>
+                    <span class="skill-tag px-3 py-1.5 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-lg text-sm">Tailwind</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ====== 服务聚合 ====== -->
+<section id="services" class="relative py-24 px-6 md:px-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="section-title fade-up">
+            <p class="label text-blue-400/70">Services</p>
+            <h2>服务聚合</h2>
+            <div class="line"></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 fade-up">
             {% for link in all_links %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card group block bg-gray-900/50 backdrop-blur-sm border border-gray-800/60 rounded-xl p-4 md:p-5">
+               class="link-card group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4 md:p-5">
                 <div class="relative z-10">
                     <div class="text-2xl md:text-3xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
                         {{ link.icon|default:"🔗" }}
@@ -213,33 +448,67 @@
     </div>
 </section>
 
-<div class="section-divider my-0"></div>
+<div class="section-divider"></div>
 
-<!-- 最新笔记 -->
-<section class="relative py-20 px-6">
-    <div class="mx-auto px-4 md:px-10">
-        <div class="text-center mb-12">
-            <h2 class="text-xs font-medium text-purple-400/70 uppercase tracking-[0.3em] mb-2">Notes</h2>
-            <h3 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white">最新笔记</h3>
+<!-- ====== 最近动态 ====== -->
+<section class="relative py-24 px-6 md:px-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="section-title fade-up">
+            <p class="label text-purple-400/70">Activity</p>
+            <h2>最近动态</h2>
+            <div class="line"></div>
         </div>
-        <div class="space-y-3">
+        
+        <div class="max-w-2xl mx-auto space-y-6 fade-up">
+            <div class="timeline-item">
+                <span class="text-xs text-gray-600">2026.05</span>
+                <p class="text-gray-300 mt-1">搭建了个人数字空间 <span class="text-blue-400">Nexus</span>，用 Django + Tailwind 从零开始</p>
+            </div>
+            <div class="timeline-item">
+                <span class="text-xs text-gray-600">2026.05</span>
+                <p class="text-gray-300 mt-1">开始学习 <span class="text-purple-400">微服务架构</span>，跟天机学堂项目</p>
+            </div>
+            <div class="timeline-item">
+                <span class="text-xs text-gray-600">2026.04</span>
+                <p class="text-gray-300 mt-1">搭了自建 <span class="text-green-400">DERP 中继服务器</span>，优化 Tailscale 组网</p>
+            </div>
+            <div class="timeline-item">
+                <span class="text-xs text-gray-600">2026.03</span>
+                <p class="text-gray-300 mt-1">部署了 <span class="text-cyan-400">Immich</span> 私有照片管理，替代 Google Photos</p>
+            </div>
+            <div class="timeline-item">
+                <span class="text-xs text-gray-600">2026.01</span>
+                <p class="text-gray-300 mt-1">给服务器装了 <span class="text-yellow-400">Ubuntu 26.04</span>，规范化目录结构</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ====== 最新笔记 ====== -->
+<section class="relative py-24 px-6 md:px-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="section-title fade-up">
+            <p class="label text-purple-400/70">Notes</p>
+            <h2>最新笔记</h2>
+            <div class="line"></div>
+        </div>
+        <div class="space-y-3 max-w-3xl mx-auto fade-up">
             {% for post in recent_posts %}
             <a href="{% url 'blog:post_detail' post.slug %}"
-               class="post-card group block bg-gray-900/30 border border-gray-800/50 rounded-xl p-5 md:p-6">
-                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-                    <div class="flex-1">
-                        {% if post.is_pinned %}
-                        <span class="inline-block text-xs text-blue-400/80 bg-blue-500/10 px-2 py-0.5 rounded mb-2">置顶</span>
-                        {% endif %}
-                        <h4 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors mb-1">{{ post.title }}</h4>
-                        <p class="text-gray-400 text-sm line-clamp-1">{{ post.summary|default:post.content|truncatewords:30 }}</p>
-                        <div class="flex flex-wrap gap-1.5 mt-2">
-                            {% for tag in post.tags.all|slice:":3" %}
-                            <span class="text-xs px-2 py-0.5 bg-gray-800/60 text-gray-500 rounded-full">{{ tag.name }}</span>
-                            {% endfor %}
+               class="post-card group block bg-gray-900/30 border border-gray-800/40 rounded-xl p-5 md:p-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            {% if post.is_pinned %}
+                            <span class="text-[10px] text-blue-400/80 bg-blue-500/10 px-1.5 py-0.5 rounded font-medium">置顶</span>
+                            {% endif %}
+                            <h4 class="text-base font-semibold text-white group-hover:text-blue-400 transition-colors truncate">{{ post.title }}</h4>
                         </div>
+                        <p class="text-gray-500 text-sm line-clamp-1">{{ post.summary|default:post.content|truncatewords:30 }}</p>
                     </div>
-                    <div class="text-xs text-gray-600 whitespace-nowrap">{{ post.published_at|date:"Y-m-d" }}</div>
+                    <span class="text-xs text-gray-600 whitespace-nowrap">{{ post.published_at|date:"m-d" }}</span>
                 </div>
             </a>
             {% empty %}
@@ -247,7 +516,7 @@
             {% endfor %}
         </div>
         {% if recent_posts %}
-        <div class="text-center mt-10">
+        <div class="text-center mt-10 fade-up">
             <a href="{% url 'blog:post_list' %}" 
                class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-800/40 hover:bg-gray-800/60 border border-gray-700/40 rounded-full text-sm text-gray-400 hover:text-white transition-all">
                 <span>查看全部笔记</span>
@@ -265,7 +534,7 @@
 
 {% block extra_js %}
 <script>
-// ========== 星空 ==========
+// ========== 星空 + 星座连线 ==========
 (function() {
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
@@ -274,28 +543,66 @@
     function resize() {
         W = canvas.width = window.innerWidth;
         H = canvas.height = window.innerHeight;
+        // 重新生成星星位置
+        stars.forEach(s => {
+            s.x = Math.random() * W;
+            s.y = Math.random() * H;
+        });
     }
+    
+    const stars = Array.from({length: 120}, () => ({
+        x: Math.random() * 2000,
+        y: Math.random() * 2000,
+        r: Math.random() * 1.2 + 0.3,
+        opacity: Math.random() * 0.5 + 0.2,
+        twinkle: Math.random() * Math.PI * 2,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15
+    }));
+    
     resize();
     window.addEventListener('resize', resize);
     
-    const stars = Array.from({length: 150}, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.2 + 0.2,
-        opacity: Math.random() * 0.5 + 0.15,
-        twinkle: Math.random() * Math.PI * 2
-    }));
-    
     function draw() {
         ctx.clearRect(0, 0, W, H);
+        
+        // 画连线（星座效果）
+        const maxDist = 150;
+        for (let i = 0; i < stars.length; i++) {
+            for (let j = i + 1; j < stars.length; j++) {
+                const dx = stars[i].x - stars[j].x;
+                const dy = stars[i].y - stars[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < maxDist) {
+                    const alpha = (1 - dist / maxDist) * 0.12;
+                    ctx.beginPath();
+                    ctx.moveTo(stars[i].x, stars[i].y);
+                    ctx.lineTo(stars[j].x, stars[j].y);
+                    ctx.strokeStyle = `rgba(130, 140, 255, ${alpha})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // 画星星
         stars.forEach(s => {
-            s.twinkle += 0.008;
+            // 缓慢漂移
+            s.x += s.vx;
+            s.y += s.vy;
+            if (s.x < 0) s.x = W;
+            if (s.x > W) s.x = 0;
+            if (s.y < 0) s.y = H;
+            if (s.y > H) s.y = 0;
+            
+            s.twinkle += 0.01;
             const opacity = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(200, 210, 255, ${opacity})`;
             ctx.fill();
         });
+        
         requestAnimationFrame(draw);
     }
     draw();
@@ -304,21 +611,29 @@
 // ========== 浮动粒子 ==========
 (function() {
     const container = document.getElementById('particles');
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 10; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         const size = Math.random() * 2 + 1;
         p.style.cssText = `
-            width: ${size}px;
-            height: ${size}px;
+            width: ${size}px; height: ${size}px;
             left: ${Math.random() * 100}%;
-            background: rgba(150, 180, 255, ${Math.random() * 0.25 + 0.1});
-            box-shadow: 0 0 ${size * 3}px rgba(150, 180, 255, 0.15);
+            background: rgba(150, 180, 255, ${Math.random() * 0.2 + 0.1});
+            box-shadow: 0 0 ${size * 3}px rgba(150, 180, 255, 0.12);
             animation-duration: ${Math.random() * 15 + 15}s;
             animation-delay: -${Math.random() * 15}s;
         `;
         container.appendChild(p);
     }
+})();
+
+// ========== Spotlight追光 ==========
+(function() {
+    const spot = document.getElementById('spotlight');
+    document.addEventListener('mousemove', (e) => {
+        spot.style.left = e.clientX + 'px';
+        spot.style.top = e.clientY + 'px';
+    });
 })();
 
 // ========== 鼠标视差 ==========
@@ -332,6 +647,19 @@
             el.style.transform = `translate(${x * depth * 100}px, ${y * depth * 100}px)`;
         });
     });
+})();
+
+// ========== 入场动画（滚动触发） ==========
+(function() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+    
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 })();
 </script>
 {% endblock %}
