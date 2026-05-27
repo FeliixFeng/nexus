@@ -3,22 +3,29 @@
 {% block title %}链接聚合 - Nexus{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold text-white mb-8">链接聚合</h1>
+<div class="max-w-5xl mx-auto px-6 py-16">
+    <!-- 标题 -->
+    <div class="text-center mb-16">
+        <h1 class="text-sm font-medium text-blue-400 uppercase tracking-widest mb-3">Links</h1>
+        <h2 class="text-3xl md:text-4xl font-bold text-white">链接聚合</h2>
+        <div class="w-20 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-6"></div>
+    </div>
     
     <!-- 服务器服务 -->
     {% if services %}
-    <section class="mb-12">
-        <h2 class="text-xl font-semibold text-gray-300 mb-4">🖥️ 服务器服务</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section class="mb-16">
+        <h3 class="text-xl font-semibold text-gray-300 mb-6 flex items-center gap-2">
+            <span class="text-2xl">🖥️</span> 服务器服务
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {% for link in services %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="group bg-gray-900/50 border border-gray-800 rounded-xl p-5 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
-                <div class="flex items-center space-x-3">
-                    <span class="text-2xl">{{ link.icon|default:"🔗" }}</span>
+               class="link-card group block bg-gray-900/60 backdrop-blur-sm border border-gray-800/80 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <span class="text-3xl group-hover:scale-110 transition-transform">{{ link.icon|default:"🔗" }}</span>
                     <div>
-                        <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
-                        <p class="text-sm text-gray-400">{{ link.description }}</p>
+                        <h4 class="font-semibold text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h4>
+                        <p class="text-sm text-gray-500 mt-1">{{ link.description }}</p>
                     </div>
                 </div>
             </a>
@@ -29,17 +36,19 @@
     
     <!-- 个人项目 -->
     {% if projects %}
-    <section class="mb-12">
-        <h2 class="text-xl font-semibold text-gray-300 mb-4">🚀 个人项目</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section class="mb-16">
+        <h3 class="text-xl font-semibold text-gray-300 mb-6 flex items-center gap-2">
+            <span class="text-2xl">🚀</span> 个人项目
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {% for link in projects %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="group bg-gray-900/50 border border-gray-800 rounded-xl p-5 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
-                <div class="flex items-center space-x-3">
-                    <span class="text-2xl">{{ link.icon|default:"📦" }}</span>
+               class="link-card group block bg-gray-900/60 backdrop-blur-sm border border-gray-800/80 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <span class="text-3xl group-hover:scale-110 transition-transform">{{ link.icon|default:"📦" }}</span>
                     <div>
-                        <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
-                        <p class="text-sm text-gray-400">{{ link.description }}</p>
+                        <h4 class="font-semibold text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h4>
+                        <p class="text-sm text-gray-500 mt-1">{{ link.description }}</p>
                     </div>
                 </div>
             </a>
@@ -50,17 +59,19 @@
     
     <!-- 外部链接 -->
     {% if external %}
-    <section class="mb-12">
-        <h2 class="text-xl font-semibold text-gray-300 mb-4">🌐 外部链接</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section class="mb-16">
+        <h3 class="text-xl font-semibold text-gray-300 mb-6 flex items-center gap-2">
+            <span class="text-2xl">🌐</span> 外部链接
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {% for link in external %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="group bg-gray-900/50 border border-gray-800 rounded-xl p-5 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
-                <div class="flex items-center space-x-3">
-                    <span class="text-2xl">{{ link.icon|default:"🔗" }}</span>
+               class="link-card group block bg-gray-900/60 backdrop-blur-sm border border-gray-800/80 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <span class="text-3xl group-hover:scale-110 transition-transform">{{ link.icon|default:"🔗" }}</span>
                     <div>
-                        <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
-                        <p class="text-sm text-gray-400">{{ link.description }}</p>
+                        <h4 class="font-semibold text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h4>
+                        <p class="text-sm text-gray-500 mt-1">{{ link.description }}</p>
                     </div>
                 </div>
             </a>
@@ -70,7 +81,7 @@
     {% endif %}
     
     {% if not services and not projects and not external %}
-    <div class="text-center text-gray-500 py-16">
+    <div class="text-center text-gray-600 py-16">
         暂无链接
     </div>
     {% endif %}

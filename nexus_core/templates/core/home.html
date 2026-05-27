@@ -3,95 +3,251 @@
 
 {% block title %}Nexus{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* 网格背景 */
+    .grid-bg {
+        background-image: 
+            linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+    
+    /* 浮动光斑 */
+    @keyframes float-1 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(100px, -50px) scale(1.1); }
+        50% { transform: translate(50px, 50px) scale(0.9); }
+        75% { transform: translate(-50px, 100px) scale(1.05); }
+    }
+    @keyframes float-2 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(-80px, 60px) scale(1.15); }
+        50% { transform: translate(-30px, -80px) scale(0.85); }
+        75% { transform: translate(60px, -40px) scale(1.1); }
+    }
+    
+    .orb-1 { animation: float-1 20s ease-in-out infinite; }
+    .orb-2 { animation: float-2 25s ease-in-out infinite; }
+    
+    /* 文字渐变动画 */
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .animated-gradient {
+        background-size: 200% 200%;
+        animation: gradient-shift 4s ease infinite;
+    }
+    
+    /* 卡片悬浮效果 */
+    .link-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .link-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+    
+    .link-card:hover::before {
+        opacity: 1;
+    }
+    
+    .link-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15);
+    }
+    
+    /* 文章卡片 */
+    .post-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .post-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.4);
+    }
+    
+    /* 滚动指示器 */
+    .scroll-indicator {
+        animation: bounce 2s ease-in-out infinite;
+    }
+    
+    /* 装饰线条 */
+    .deco-line {
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+        height: 1px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg">
     <!-- 渐变背景 -->
-    <div class="absolute inset-0 bg-gradient-to-br from-gray-950 via-blue-950/30 to-purple-950/20"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-gray-950 via-gray-950/95 to-gray-950"></div>
     
-    <!-- 动态光晕 -->
-    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    <!-- 浮动光球 -->
+    <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/8 rounded-full blur-[100px] orb-1"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/8 rounded-full blur-[100px] orb-2"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-pink-600/5 rounded-full blur-[80px] orb-1"></div>
     
     <!-- 内容 -->
-    <div class="relative z-10 text-center px-4">
-        <h1 class="text-5xl md:text-7xl font-bold mb-6">
-            <span class="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+    <div class="relative z-10 text-center px-6">
+        <!-- 装饰标签 -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-full text-sm text-gray-400 mb-8 backdrop-blur-sm">
+            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span>在线</span>
+        </div>
+        
+        <!-- 主标题 -->
+        <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold mb-6 tracking-tight">
+            <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animated-gradient">
                 Nexus
             </span>
         </h1>
-        <p class="text-xl md:text-2xl text-gray-400 mb-8">个人数字空间 · 聚合一切</p>
         
-        <!-- 向下滚动提示 -->
-        <div class="animate-bounce mt-16">
-            <svg class="w-6 h-6 mx-auto text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+        <!-- 副标题 -->
+        <p class="text-lg md:text-xl text-gray-400 mb-4 max-w-md mx-auto">
+            个人数字空间
+        </p>
+        <p class="text-sm text-gray-500 mb-12">
+            聚合服务 · 记录思考 · 探索世界
+        </p>
+        
+        <!-- 向下滚动 -->
+        <div class="scroll-indicator">
+            <div class="w-6 h-10 border-2 border-gray-600 rounded-full mx-auto flex justify-center">
+                <div class="w-1.5 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- 服务聚合 Section -->
-<section class="py-20 px-4">
-    <div class="max-w-6xl mx-auto">
-        <h2 class="text-2xl font-semibold text-center mb-12 text-gray-300">服务聚合</h2>
+<section class="relative py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题 -->
+        <div class="text-center mb-16">
+            <h2 class="text-sm font-medium text-blue-400 uppercase tracking-widest mb-3">Services</h2>
+            <h3 class="text-3xl md:text-4xl font-bold text-white">服务聚合</h3>
+            <div class="deco-line w-20 mx-auto mt-6"></div>
+        </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 链接卡片 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
             {% for link in all_links %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="group relative bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
-                <div class="flex items-start space-x-4">
-                    <div class="text-3xl">{{ link.icon|default:"🔗" }}</div>
-                    <div>
-                        <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">{{ link.name }}</h3>
-                        <p class="text-sm text-gray-400 mt-1">{{ link.description }}</p>
-                    </div>
+               class="link-card group block bg-gray-900/60 backdrop-blur-sm border border-gray-800/80 rounded-2xl p-6">
+                <!-- 图标 -->
+                <div class="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                    {{ link.icon|default:"🔗" }}
                 </div>
-                <!-- 悬浮发光效果 -->
-                <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 transition-all duration-300"></div>
+                <!-- 信息 -->
+                <h4 class="font-semibold text-white mb-1.5 group-hover:text-blue-400 transition-colors">
+                    {{ link.name }}
+                </h4>
+                <p class="text-sm text-gray-500 leading-relaxed">
+                    {{ link.description }}
+                </p>
+                <!-- 箭头 -->
+                <div class="mt-4 flex items-center text-gray-600 group-hover:text-blue-400 transition-colors">
+                    <span class="text-xs">访问</span>
+                    <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </div>
             </a>
             {% empty %}
-            <div class="col-span-full text-center text-gray-500 py-12">
-                暂无链接，PIN解锁后可添加
+            <div class="col-span-full text-center text-gray-600 py-16">
+                暂无链接
             </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
+<!-- 分隔线 -->
+<div class="max-w-5xl mx-auto px-6">
+    <div class="deco-line"></div>
+</div>
+
 <!-- 最新笔记 Section -->
-<section class="py-20 px-4 bg-gray-900/30">
-    <div class="max-w-6xl mx-auto">
-        <h2 class="text-2xl font-semibold text-center mb-12 text-gray-300">最新笔记</h2>
+<section class="relative py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题 -->
+        <div class="text-center mb-16">
+            <h2 class="text-sm font-medium text-purple-400 uppercase tracking-widest mb-3">Notes</h2>
+            <h3 class="text-3xl md:text-4xl font-bold text-white">最新笔记</h3>
+            <div class="deco-line w-20 mx-auto mt-6"></div>
+        </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 文章列表 -->
+        <div class="space-y-4">
             {% for post in recent_posts %}
             <a href="{% url 'blog:post_detail' post.slug %}"
-               class="group bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 hover:border-gray-600 hover:-translate-y-1 transition-all duration-300">
-                <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors mb-2">
-                    {{ post.title }}
-                </h3>
-                <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ post.summary|default:post.content|truncatewords:30 }}</p>
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-wrap gap-2">
-                        {% for tag in post.tags.all|slice:":3" %}
-                        <span class="text-xs px-2 py-1 bg-gray-800 text-gray-400 rounded-full">{{ tag.name }}</span>
-                        {% endfor %}
+               class="post-card group block bg-gray-900/40 border border-gray-800/60 rounded-xl p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div class="flex-1">
+                        <!-- 置顶标记 -->
+                        {% if post.is_pinned %}
+                        <span class="inline-block text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded mb-3">
+                            置顶
+                        </span>
+                        {% endif %}
+                        
+                        <h4 class="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors mb-2">
+                            {{ post.title }}
+                        </h4>
+                        <p class="text-gray-400 text-sm leading-relaxed line-clamp-2">
+                            {{ post.summary|default:post.content|truncatewords:50 }}
+                        </p>
+                        
+                        <!-- 标签 -->
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            {% for tag in post.tags.all|slice:":4" %}
+                            <span class="text-xs px-2.5 py-1 bg-gray-800/80 text-gray-400 rounded-full">
+                                {{ tag.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <span class="text-xs text-gray-500">{{ post.published_at|date:"Y-m-d" }}</span>
+                    
+                    <!-- 日期 -->
+                    <div class="text-sm text-gray-500 whitespace-nowrap md:text-right">
+                        {{ post.published_at|date:"Y年m月d日" }}
+                    </div>
                 </div>
             </a>
             {% empty %}
-            <div class="col-span-full text-center text-gray-500 py-12">
-                暂无笔记，PIN解锁后可添加
+            <div class="text-center text-gray-600 py-16">
+                暂无笔记
             </div>
             {% endfor %}
         </div>
         
         {% if recent_posts %}
-        <div class="text-center mt-8">
-            <a href="{% url 'blog:post_list' %}" class="text-blue-400 hover:text-blue-300 transition-colors">
-                查看全部笔记 →
+        <div class="text-center mt-12">
+            <a href="{% url 'blog:post_list' %}" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 rounded-full text-gray-300 hover:text-white transition-all">
+                <span>查看全部笔记</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
             </a>
         </div>
         {% endif %}

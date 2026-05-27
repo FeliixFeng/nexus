@@ -42,6 +42,42 @@ html {
     transform: translateY(0);
 }
 
+/* 链接卡片效果 */
+.link-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.link-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.link-card:hover::before {
+    opacity: 1;
+}
+
+.link-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15);
+}
+
+/* 装饰线条 */
+.deco-line {
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+    height: 1px;
+}
+
 /* Markdown内容样式 */
 .markdown-body {
     color: #e5e7eb;
