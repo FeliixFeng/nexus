@@ -13,8 +13,10 @@ def verify_pin(request):
         data = json.loads(request.body)
         pin = data.get('pin', '')
         
+        # 支持4位或6位PIN
         if pin == settings.NEXUS_PIN:
             request.session['pin_verified'] = True
+            request.session.set_expiry(86400 * 7)  # 7天有效
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'error': '密码错误'})

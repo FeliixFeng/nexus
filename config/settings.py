@@ -90,5 +90,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# PIN码配置
-NEXUS_PIN = os.environ.get('NEXUS_PIN', '1234')
+# PIN码配置（6位数字）
+NEXUS_PIN = os.environ.get('NEXUS_PIN', '123456')
