@@ -13,6 +13,18 @@
         background-size: 60px 60px;
     }
     
+    /* 噪点纹理叠加 */
+    .noise-overlay::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 256px 256px;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
     /* 浮动光球 */
     @keyframes float-1 {
         0%, 100% { transform: translate(0, 0) scale(1); }
@@ -26,9 +38,15 @@
         50% { transform: translate(-30px, -80px) scale(0.85); }
         75% { transform: translate(60px, -40px) scale(1.1); }
     }
+    @keyframes float-3 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(60px, -40px) scale(1.05); }
+        66% { transform: translate(-40px, 60px) scale(0.95); }
+    }
     
     .orb-1 { animation: float-1 20s ease-in-out infinite; }
     .orb-2 { animation: float-2 25s ease-in-out infinite; }
+    .orb-3 { animation: float-3 18s ease-in-out infinite; }
     
     /* 文字渐变动画 */
     @keyframes gradient-shift {
@@ -83,43 +101,132 @@
         box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15);
     }
     
-    /* 装饰线条 */
-    .deco-line {
-        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+    /* 卡片内部光晕 */
+    .link-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+        opacity: 0;
+        transition: opacity 0.4s;
+        pointer-events: none;
+    }
+    
+    .link-card:hover::after {
+        opacity: 1;
+    }
+    
+    /* 文章卡片 */
+    .post-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+    
+    .post-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(to bottom, #6366f1, #a78bfa);
+        border-radius: 3px 0 0 3px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .post-card:hover::before {
+        opacity: 1;
+    }
+    
+    .post-card:hover {
+        transform: translateX(4px);
+        border-color: rgba(99, 102, 241, 0.4);
+    }
+    
+    /* 装饰分割线 */
+    .section-divider {
+        position: relative;
         height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+        margin: 0 auto;
+        max-width: 80%;
+    }
+    
+    .section-divider::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: #6366f1;
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    }
+    
+    /* 光线效果 */
+    .light-beam {
+        position: absolute;
+        width: 1px;
+        height: 100px;
+        background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.2), transparent);
+        animation: light-fall 8s linear infinite;
+    }
+    
+    @keyframes light-fall {
+        0% { transform: translateY(-100%); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(calc(100vh + 100%)); opacity: 0; }
     }
     
     /* Hero区域渐变遮罩 */
     .hero-fade {
         background: linear-gradient(to bottom, transparent 70%, #030712 100%);
     }
+    
+    /* 标题发光效果 */
+    .glow-text {
+        text-shadow: 0 0 60px rgba(99, 102, 241, 0.3), 0 0 120px rgba(139, 92, 246, 0.2);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Hero Section - 占满一屏 -->
-<section class="relative h-screen flex items-center justify-center overflow-hidden grid-bg">
+<section class="relative h-screen flex items-center justify-center overflow-hidden grid-bg noise-overlay">
     <!-- 渐变背景 -->
     <div class="absolute inset-0 bg-gradient-to-b from-gray-950 via-gray-950/95 to-gray-950"></div>
     
     <!-- 浮动光球 -->
     <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/8 rounded-full blur-[100px] orb-1"></div>
     <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/8 rounded-full blur-[100px] orb-2"></div>
+    <div class="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-pink-600/5 rounded-full blur-[80px] orb-3"></div>
+    
+    <!-- 光线效果 -->
+    <div class="light-beam" style="left: 20%; animation-delay: 0s;"></div>
+    <div class="light-beam" style="left: 50%; animation-delay: 3s;"></div>
+    <div class="light-beam" style="left: 80%; animation-delay: 6s;"></div>
     
     <!-- 底部渐变遮罩 -->
-    <div class="absolute bottom-0 left-0 right-0 h-32 hero-fade"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-32 hero-fade z-10"></div>
     
     <!-- 内容 -->
-    <div class="relative z-10 text-center px-6">
+    <div class="relative z-20 text-center px-6">
         <!-- 主标题 -->
-        <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold mb-4 tracking-tight">
+        <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold mb-4 tracking-tight glow-text">
             <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animated-gradient">
                 Nexus
             </span>
         </h1>
         
         <!-- 副标题 -->
-        <p class="text-base md:text-lg text-gray-500 mb-12">
+        <p class="text-base md:text-lg text-gray-500 mb-12 tracking-wider">
             个人数字空间 · 聚合一切
         </p>
         
@@ -132,32 +239,37 @@
     </div>
 </section>
 
+<!-- 分割线 -->
+<div class="section-divider"></div>
+
 <!-- 服务聚合 Section - 占满一屏 -->
 <section id="services" class="relative min-h-screen flex flex-col justify-center py-16 px-6">
     <div class="max-w-5xl mx-auto w-full">
         <!-- 标题 -->
         <div class="text-center mb-10">
-            <h2 class="text-sm font-medium text-blue-400 uppercase tracking-widest mb-2">Services</h2>
+            <h2 class="text-sm font-medium text-blue-400 uppercase tracking-[0.2em] mb-2">Services</h2>
             <h3 class="text-2xl md:text-3xl font-bold text-white">服务聚合</h3>
-            <div class="deco-line w-16 mx-auto mt-4"></div>
+            <div class="w-12 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mt-4"></div>
         </div>
         
-        <!-- 链接卡片 - 更紧凑 -->
+        <!-- 链接卡片 -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             {% for link in all_links %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
                class="link-card group block bg-gray-900/60 backdrop-blur-sm border border-gray-800/80 rounded-xl p-4 md:p-5">
-                <!-- 图标 -->
-                <div class="text-2xl md:text-3xl mb-2 md:mb-3 transform group-hover:scale-110 transition-transform duration-300">
-                    {{ link.icon|default:"🔗" }}
+                <div class="relative z-10">
+                    <!-- 图标 -->
+                    <div class="text-2xl md:text-3xl mb-2 md:mb-3 transform group-hover:scale-110 transition-transform duration-300">
+                        {{ link.icon|default:"🔗" }}
+                    </div>
+                    <!-- 信息 -->
+                    <h4 class="font-semibold text-white text-sm md:text-base mb-1 group-hover:text-blue-400 transition-colors">
+                        {{ link.name }}
+                    </h4>
+                    <p class="text-xs md:text-sm text-gray-500 leading-relaxed line-clamp-2">
+                        {{ link.description }}
+                    </p>
                 </div>
-                <!-- 信息 -->
-                <h4 class="font-semibold text-white text-sm md:text-base mb-1 group-hover:text-blue-400 transition-colors">
-                    {{ link.name }}
-                </h4>
-                <p class="text-xs md:text-sm text-gray-500 leading-relaxed line-clamp-2">
-                    {{ link.description }}
-                </p>
             </a>
             {% empty %}
             <div class="col-span-full text-center text-gray-600 py-12">
@@ -168,19 +280,17 @@
     </div>
 </section>
 
-<!-- 分隔线 -->
-<div class="max-w-5xl mx-auto px-6">
-    <div class="deco-line"></div>
-</div>
+<!-- 分割线 -->
+<div class="section-divider"></div>
 
 <!-- 最新笔记 Section -->
 <section class="relative py-20 px-6">
     <div class="max-w-5xl mx-auto">
         <!-- 标题 -->
         <div class="text-center mb-12">
-            <h2 class="text-sm font-medium text-purple-400 uppercase tracking-widest mb-2">Notes</h2>
+            <h2 class="text-sm font-medium text-purple-400 uppercase tracking-[0.2em] mb-2">Notes</h2>
             <h3 class="text-2xl md:text-3xl font-bold text-white">最新笔记</h3>
-            <div class="deco-line w-16 mx-auto mt-4"></div>
+            <div class="w-12 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent mx-auto mt-4"></div>
         </div>
         
         <!-- 文章列表 -->
@@ -190,7 +300,6 @@
                class="post-card group block bg-gray-900/40 border border-gray-800/60 rounded-xl p-5 md:p-6">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                     <div class="flex-1">
-                        <!-- 置顶标记 -->
                         {% if post.is_pinned %}
                         <span class="inline-block text-xs text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded mb-2">
                             置顶
@@ -204,7 +313,6 @@
                             {{ post.summary|default:post.content|truncatewords:30 }}
                         </p>
                         
-                        <!-- 标签 -->
                         <div class="flex flex-wrap gap-1.5 mt-2">
                             {% for tag in post.tags.all|slice:":3" %}
                             <span class="text-xs px-2 py-0.5 bg-gray-800/80 text-gray-400 rounded-full">
@@ -214,7 +322,6 @@
                         </div>
                     </div>
                     
-                    <!-- 日期 -->
                     <div class="text-xs text-gray-500 whitespace-nowrap md:text-right">
                         {{ post.published_at|date:"Y-m-d" }}
                     </div>
