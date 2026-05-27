@@ -5,102 +5,65 @@
 
 {% block extra_css %}
 <style>
-    /* ========== 星空画布 ========== */
+    /* ========== 背景 ========== */
+    body { background: #06060e; }
+    
     #starfield {
-        position: fixed;
-        top: 0; left: 0;
+        position: fixed; top: 0; left: 0;
         width: 100%; height: 100%;
-        pointer-events: none;
-        z-index: 1;
+        pointer-events: none; z-index: 1;
     }
     
-    /* ========== 极光色块 ========== */
     .aurora-blob {
-        position: fixed;
-        border-radius: 50%;
-        filter: blur(100px);
-        pointer-events: none;
-        z-index: 0;
+        position: fixed; border-radius: 50%;
+        pointer-events: none; z-index: 0;
+        filter: blur(80px);
     }
     .aurora-1 {
         width: 400px; height: 400px;
         top: -10%; left: -5%;
-        background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
-        animation: aurora-drift-1 25s ease-in-out infinite;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        animation: aurora-1 25s ease-in-out infinite;
     }
     .aurora-2 {
         width: 350px; height: 350px;
         bottom: 10%; right: -5%;
-        background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-        animation: aurora-drift-2 30s ease-in-out infinite;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 0%, transparent 70%);
+        animation: aurora-2 30s ease-in-out infinite;
     }
-    .aurora-3 {
-        width: 300px; height: 300px;
-        top: 40%; left: 50%;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-        animation: aurora-drift-3 20s ease-in-out infinite;
+    @keyframes aurora-1 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(60px, 40px); }
     }
-    @keyframes aurora-drift-1 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(80px, 50px) scale(1.1); }
-        66% { transform: translate(-30px, 80px) scale(0.9); }
-    }
-    @keyframes aurora-drift-2 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(-60px, -40px) scale(1.15); }
-        66% { transform: translate(40px, -60px) scale(0.85); }
-    }
-    @keyframes aurora-drift-3 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-80px, 40px) scale(1.2); }
+    @keyframes aurora-2 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-50px, -30px); }
     }
 
-    /* ========== Hero ========== */
-    .hero-section {
-        position: relative;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        background: transparent;
-    }
-    
-    /* Spotlight追光 */
+    /* Spotlight */
     #spotlight {
         position: fixed; left: 0; top: 0;
         width: 400px; height: 400px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: 1;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+        pointer-events: none; z-index: 1;
         will-change: transform;
         transition: opacity 0.3s;
         opacity: 0;
     }
     body:hover #spotlight { opacity: 1; }
-    
-    /* Nexus大标题 */
-    .hero-title {
-        font-family: 'Space Grotesk', system-ui, sans-serif;
-        font-size: clamp(5rem, 15vw, 15rem);
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        line-height: 1;
-        color: rgba(255, 255, 255, 0.92);
-        position: relative;
-    }
-    .hero-glow {
-        text-shadow:
-            0 0 60px rgba(99, 102, 241, 0.25),
-            0 0 120px rgba(139, 92, 246, 0.12),
-            0 0 200px rgba(99, 102, 241, 0.06);
-    }
-    
 
+    /* ========== 顶部区域 ========== */
+    .hero-area {
+        min-height: 35vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 4rem;
+    }
     
-    /* 轮播标语 */
+    /* 轮播 */
     .tagline-container {
         height: 1.8em;
         overflow: hidden;
@@ -116,7 +79,7 @@
         100%      { transform: translateY(0); }
     }
     
-    /* 社交链接 */
+    /* 社交 */
     .social-link {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -125,134 +88,209 @@
         color: white;
         filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
     }
-    
-    /* ========== 关于我 ========== */
-    .skill-tag {
-        transition: all 0.25s ease;
-        cursor: default;
-    }
-    .skill-tag:hover {
-        transform: scale(1.08);
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
-    }
-    
-    /* ========== 时间线 ========== */
-    .timeline-item {
-        position: relative;
-        padding-left: 2rem;
-    }
-    .timeline-item::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0.5rem;
-        width: 8px; height: 8px;
-        border-radius: 50%;
-        background: #6366f1;
-        box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
-    }
-    .timeline-item::after {
-        content: '';
-        position: absolute;
-        left: 3px;
-        top: 1.5rem;
-        width: 2px;
-        bottom: -1rem;
-        background: linear-gradient(to bottom, rgba(99, 102, 241, 0.3), transparent);
-    }
-    .timeline-item:last-child::after {
-        display: none;
+
+    /* ========== Bento 网格 ========== */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: minmax(180px, auto);
+        gap: 12px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 16px 80px;
     }
     
-    /* ========== 通用 ========== */
-    .section-title {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-    .section-title .label {
-        font-size: 0.7rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.3em;
-        margin-bottom: 0.5rem;
-    }
-    .section-title h2 {
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
-        font-weight: 700;
-        color: white;
-    }
-    .section-title .line {
-        width: 4rem;
-        height: 1px;
-        margin: 1rem auto 0;
-        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
+    @media (max-width: 768px) {
+        .bento-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: minmax(150px, auto);
+            gap: 10px;
+            padding: 0 12px 60px;
+        }
     }
     
-    /* 滚动箭头 */
-    @keyframes scroll-hint {
-        0% { transform: translateY(0); opacity: 1; }
-        50% { transform: translateY(10px); opacity: 0.3; }
-        100% { transform: translateY(0); opacity: 1; }
-    }
-    .scroll-arrow { animation: scroll-hint 2s ease-in-out infinite; }
-    
-    /* 卡片hover */
-    .link-card {
+    /* 卡片基础 */
+    .bento-card {
+        background: rgba(17, 24, 39, 0.5);
+        border: 1px solid rgba(55, 65, 81, 0.4);
+        border-radius: 16px;
+        padding: 20px;
+        backdrop-blur-sm;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
     }
-    .link-card::before {
+    .bento-card:hover {
+        border-color: rgba(99, 102, 241, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    .bento-card::before {
         content: '';
         position: absolute;
         inset: 0;
         border-radius: inherit;
         padding: 1px;
-        background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.4), transparent);
+        background: linear-gradient(135deg, transparent 40%, rgba(99, 102, 241, 0.3), transparent 60%);
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
         opacity: 0;
-        transition: opacity 0.4s;
+        transition: opacity 0.35s;
+        pointer-events: none;
     }
-    .link-card:hover::before { opacity: 1; }
-    .link-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.15);
+    .bento-card:hover::before { opacity: 1; }
+    
+    .card-label {
+        font-size: 0.65rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(156, 163, 175, 0.6);
+        margin-bottom: 12px;
     }
     
-    .post-card {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
+    /* 最新笔记 - 大卡片 */
+    .card-notes { grid-column: span 2; grid-row: span 2; }
+    
+    /* 服务入口 */
+    .card-services { grid-column: span 2; }
+    
+    /* 时间 */
+    .card-time { }
+    
+    /* 动态 */
+    .card-activity { grid-column: span 1; grid-row: span 2; }
+    
+    /* 快捷操作 */
+    .card-actions { }
+    
+    /* 笔记列表 */
+    .note-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(55, 65, 81, 0.25);
+        transition: all 0.2s;
     }
-    .post-card::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 2px;
-        background: linear-gradient(to bottom, #6366f1, #a78bfa);
-        border-radius: 2px 0 0 2px;
-        opacity: 0;
-        transition: opacity 0.3s;
+    .note-item:last-child { border-bottom: none; }
+    .note-item:hover { padding-left: 4px; }
+    .note-item:hover .note-title { color: #818cf8; }
+    .note-title {
+        color: #e5e7eb;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: color 0.2s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-    .post-card:hover::before { opacity: 1; }
-    .post-card:hover {
-        transform: translateX(4px);
+    .note-date {
+        font-size: 0.7rem;
+        color: rgba(107, 114, 128, 0.8);
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .note-dot {
+        width: 4px; height: 4px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.5);
+        flex-shrink: 0;
+    }
+    
+    /* 服务图标 */
+    .service-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .service-item:hover {
+        background: rgba(99, 102, 241, 0.08);
+    }
+    .service-item:hover .service-name { color: #e5e7eb; }
+    .service-icon { font-size: 1.2rem; }
+    .service-name {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        transition: color 0.2s;
+    }
+    
+    /* 时间 */
+    .time-display {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+    .time-date {
+        font-size: 0.75rem;
+        color: rgba(156, 163, 175, 0.6);
+        margin-top: 6px;
+    }
+    
+    /* 动态 */
+    .activity-item {
+        padding: 8px 0;
+        border-left: 2px solid rgba(99, 102, 241, 0.2);
+        padding-left: 12px;
+        margin-left: 4px;
+    }
+    .activity-item:not(:last-child) { margin-bottom: 4px; }
+    .activity-text {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        line-height: 1.5;
+    }
+    .activity-date {
+        font-size: 0.65rem;
+        color: rgba(107, 114, 128, 0.7);
+        margin-top: 2px;
+    }
+    
+    /* 快捷操作 */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: rgba(99, 102, 241, 0.06);
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        color: #9ca3af;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .action-btn:hover {
+        background: rgba(99, 102, 241, 0.12);
         border-color: rgba(99, 102, 241, 0.25);
+        color: #e5e7eb;
     }
     
-    .section-divider {
-        height: 1px;
-        background: linear-gradient(90deg, transparent 5%, rgba(99, 102, 241, 0.2) 50%, transparent 95%);
-        margin: 0 auto;
-        max-width: 60%;
+    /* 看全部 */
+    .view-all {
+        font-size: 0.75rem;
+        color: rgba(129, 140, 248, 0.6);
+        transition: color 0.2s;
+        text-decoration: none;
     }
+    .view-all:hover { color: #818cf8; }
     
     /* 入场动画 */
     .fade-up {
         opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.7s ease, transform 0.7s ease;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
     }
     .fade-up.visible {
         opacity: 1;
@@ -264,6 +302,7 @@
         position: fixed;
         border-radius: 50%;
         pointer-events: none;
+        z-index: 2;
         animation: particle-float linear infinite;
     }
     @keyframes particle-float {
@@ -272,18 +311,6 @@
         90% { opacity: 1; }
         100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
     }
-    
-    /* 视差层 */
-    .depth-layer {
-        transition: transform 0.15s ease-out;
-    }
-    
-    /* 底部雾气 */
-    .fog-bottom {
-        background: linear-gradient(to top, #06060e 0%, rgba(6,6,14,0.8) 30%, transparent 100%);
-    }
-    
-    body { background: #06060e; }
 </style>
 {% endblock %}
 
@@ -293,157 +320,119 @@
 <div id="particles" class="fixed inset-0 pointer-events-none z-[2]"></div>
 <div class="aurora-blob aurora-1"></div>
 <div class="aurora-blob aurora-2"></div>
-<div class="aurora-blob aurora-3"></div>
 <div id="spotlight"></div>
 
-<!-- ====== Hero ====== -->
-<section class="hero-section">
-    <div class="relative z-10 text-center px-6" id="hero-content">
-        <!-- 轮播标语 -->
-        <div class="tagline-container mb-3 max-w-md mx-auto">
-            <div class="tagline-track">
-                <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">软件工程学生 · 开源爱好者</p>
-                <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">Java 开发者 · 全栈探索者</p>
-                <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">个人数字空间 · 聚合一切</p>
-            </div>
+<!-- ====== 顶部 ====== -->
+<div class="hero-area relative z-10">
+    <div class="tagline-container mb-4 max-w-md mx-auto">
+        <div class="tagline-track">
+            <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">软件工程学生 · 开源爱好者</p>
+            <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">Java 开发者 · 全栈探索者</p>
+            <p class="text-gray-400 text-sm md:text-base tracking-[0.2em] h-[1.8em] flex items-center justify-center">个人数字空间 · 聚合一切</p>
         </div>
-        
-        <!-- 社交链接 -->
-        <div class="flex items-center justify-center gap-5 mb-16">
-            <a href="https://github.com/FeliixFeng" target="_blank" class="social-link text-gray-500" title="GitHub">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            </a>
-            <a href="mailto:felixfeng@foxmail.com" class="social-link text-gray-500" title="邮箱">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            </a>
-            <a href="https://www.bilibili.com" target="_blank" class="social-link text-gray-500" title="Bilibili">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg>
-            </a>
-            <a href="{% url 'links:link_list' %}" class="social-link text-gray-500" title="更多链接">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            </a>
-        </div>
-        
-        <!-- 滚动箭头 -->
-        <a href="#about" class="inline-block scroll-arrow text-gray-600 hover:text-gray-400 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+    </div>
+    <div class="flex items-center justify-center gap-5">
+        <a href="https://github.com/FeliixFeng" target="_blank" class="social-link text-gray-500" title="GitHub">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+        <a href="mailto:felixfeng@foxmail.com" class="social-link text-gray-500" title="邮箱">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </a>
+        <a href="https://www.bilibili.com" target="_blank" class="social-link text-gray-500" title="Bilibili">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/></svg>
         </a>
     </div>
-</section>
+</div>
 
-<!-- ====== 服务聚合 ====== @@
-<section id="services" class="relative py-24 px-6 md:px-10">
-    <div class="max-w-5xl mx-auto">
-        <div class="section-title fade-up">
-            <p class="label text-blue-400/70">Services</p>
-            <h2>服务聚合</h2>
-            <div class="line"></div>
+<!-- ====== Bento 网格 ====== -->
+<div class="bento-grid relative z-10">
+    
+    <!-- 最新笔记 (大卡片) -->
+    <div class="bento-card card-notes fade-up">
+        <div class="flex items-center justify-between">
+            <span class="card-label">Latest Notes</span>
+            <a href="{% url 'blog:post_list' %}" class="view-all">查看全部 →</a>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 fade-up">
-            {% for link in all_links %}
-            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4 md:p-5">
-                <div class="relative z-10">
-                    <div class="text-2xl md:text-3xl mb-2 md:mb-3 group-hover:scale-110 transition-transform duration-300">
-                        {{ link.icon|default:"🔗" }}
-                    </div>
-                    <h4 class="font-semibold text-white text-sm md:text-base mb-1 group-hover:text-blue-400 transition-colors">
-                        {{ link.name }}
-                    </h4>
-                    <p class="text-xs text-gray-500 leading-relaxed line-clamp-2">{{ link.description }}</p>
-                </div>
+        <div class="flex-1">
+            {% for post in recent_posts|slice:":5" %}
+            <a href="{% url 'blog:post_detail' post.slug %}" class="note-item">
+                <span class="note-dot"></span>
+                <span class="note-title flex-1">{{ post.title }}</span>
+                <span class="note-date">{{ post.published_at|date:"m/d" }}</span>
             </a>
             {% empty %}
-            <div class="col-span-full text-center text-gray-600 py-12">暂无链接</div>
+            <p class="text-gray-600 text-sm">暂无笔记</p>
             {% endfor %}
         </div>
     </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ====== 最近动态 ====== -->
-<section class="relative py-24 px-6 md:px-10">
-    <div class="max-w-5xl mx-auto">
-        <div class="section-title fade-up">
-            <p class="label text-purple-400/70">Activity</p>
-            <h2>最近动态</h2>
-            <div class="line"></div>
-        </div>
-        
-        <div class="max-w-2xl mx-auto space-y-6 fade-up">
-            <div class="timeline-item">
-                <span class="text-xs text-gray-600">2026.05</span>
-                <p class="text-gray-300 mt-1">搭建了个人数字空间 <span class="text-blue-400">Nexus</span>，用 Django + Tailwind 从零开始</p>
-            </div>
-            <div class="timeline-item">
-                <span class="text-xs text-gray-600">2026.05</span>
-                <p class="text-gray-300 mt-1">开始学习 <span class="text-purple-400">微服务架构</span>，跟天机学堂项目</p>
-            </div>
-            <div class="timeline-item">
-                <span class="text-xs text-gray-600">2026.04</span>
-                <p class="text-gray-300 mt-1">搭了自建 <span class="text-green-400">DERP 中继服务器</span>，优化 Tailscale 组网</p>
-            </div>
-            <div class="timeline-item">
-                <span class="text-xs text-gray-600">2026.03</span>
-                <p class="text-gray-300 mt-1">部署了 <span class="text-cyan-400">Immich</span> 私有照片管理，替代 Google Photos</p>
-            </div>
-            <div class="timeline-item">
-                <span class="text-xs text-gray-600">2026.01</span>
-                <p class="text-gray-300 mt-1">给服务器装了 <span class="text-yellow-400">Ubuntu 26.04</span>，规范化目录结构</p>
-            </div>
+    
+    <!-- 时间 -->
+    <div class="bento-card card-time fade-up">
+        <span class="card-label">Now</span>
+        <div class="flex-1 flex flex-col justify-center">
+            <div class="time-display" id="clock">--:--</div>
+            <div class="time-date" id="clock-date">----/--/--</div>
         </div>
     </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ====== 最新笔记 ====== -->
-<section class="relative py-24 px-6 md:px-10">
-    <div class="max-w-5xl mx-auto">
-        <div class="section-title fade-up">
-            <p class="label text-purple-400/70">Notes</p>
-            <h2>最新笔记</h2>
-            <div class="line"></div>
-        </div>
-        <div class="space-y-3 max-w-3xl mx-auto fade-up">
-            {% for post in recent_posts %}
-            <a href="{% url 'blog:post_detail' post.slug %}"
-               class="post-card group block bg-gray-900/30 border border-gray-800/40 rounded-xl p-5 md:p-6">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            {% if post.is_pinned %}
-                            <span class="text-[10px] text-blue-400/80 bg-blue-500/10 px-1.5 py-0.5 rounded font-medium">置顶</span>
-                            {% endif %}
-                            <h4 class="text-base font-semibold text-white group-hover:text-blue-400 transition-colors truncate">{{ post.title }}</h4>
-                        </div>
-                        <p class="text-gray-500 text-sm line-clamp-1">{{ post.summary|default:post.content|truncatewords:30 }}</p>
-                    </div>
-                    <span class="text-xs text-gray-600 whitespace-nowrap">{{ post.published_at|date:"m-d" }}</span>
-                </div>
+    
+    <!-- 快捷操作 -->
+    <div class="bento-card card-actions fade-up">
+        <span class="card-label">Quick</span>
+        <div class="flex-1 flex flex-col justify-center gap-2">
+            <a href="{% url 'links:link_list' %}" class="action-btn">
+                <span>🔗</span> 全部链接
             </a>
-            {% empty %}
-            <div class="text-center text-gray-600 py-12">暂无笔记</div>
+            <a href="{% url 'blog:post_list' %}" class="action-btn">
+                <span>📝</span> 全部笔记
+            </a>
+        </div>
+    </div>
+    
+    <!-- 服务入口 (宽卡片) -->
+    <div class="bento-card card-services fade-up">
+        <div class="flex items-center justify-between">
+            <span class="card-label">Services</span>
+            <a href="{% url 'links:link_list' %}" class="view-all">全部 →</a>
+        </div>
+        <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-1">
+            {% for link in all_links|slice:":8" %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-item">
+                <span class="service-icon">{{ link.icon|default:"🔗" }}</span>
+                <span class="service-name">{{ link.name }}</span>
+            </a>
             {% endfor %}
         </div>
-        {% if recent_posts %}
-        <div class="text-center mt-10 fade-up">
-            <a href="{% url 'blog:post_list' %}" 
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-800/40 hover:bg-gray-800/60 border border-gray-700/40 rounded-full text-sm text-gray-400 hover:text-white transition-all">
-                <span>查看全部笔记</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                </svg>
-            </a>
-        </div>
-        {% endif %}
     </div>
-</section>
+    
+    <!-- 最近动态 -->
+    <div class="bento-card card-activity fade-up">
+        <span class="card-label">Activity</span>
+        <div class="flex-1 overflow-hidden">
+            <div class="activity-item">
+                <p class="activity-text">搭建了个人数字空间 Nexus</p>
+                <p class="activity-date">2026.05</p>
+            </div>
+            <div class="activity-item">
+                <p class="activity-text">开始学习微服务架构</p>
+                <p class="activity-date">2026.05</p>
+            </div>
+            <div class="activity-item">
+                <p class="activity-text">自建 DERP 中继服务器</p>
+                <p class="activity-date">2026.04</p>
+            </div>
+            <div class="activity-item">
+                <p class="activity-text">部署 Immich 私有照片管理</p>
+                <p class="activity-date">2026.03</p>
+            </div>
+            <div class="activity-item">
+                <p class="activity-text">服务器规范化目录结构</p>
+                <p class="activity-date">2026.01</p>
+            </div>
+        </div>
+    </div>
+    
+</div>
 
-<div class="fixed bottom-0 left-0 right-0 h-32 fog-bottom pointer-events-none z-[20]"></div>
 {% endblock %}
 
 {% block extra_js %}
@@ -457,21 +446,16 @@
     function resize() {
         W = canvas.width = window.innerWidth;
         H = canvas.height = window.innerHeight;
-        // 重新生成星星位置
-        stars.forEach(s => {
-            s.x = Math.random() * W;
-            s.y = Math.random() * H;
-        });
+        stars.forEach(s => { s.x = Math.random() * W; s.y = Math.random() * H; });
     }
     
     const stars = Array.from({length: 60}, () => ({
-        x: Math.random() * 2000,
-        y: Math.random() * 2000,
+        x: Math.random() * 2000, y: Math.random() * 2000,
         r: Math.random() * 1.2 + 0.3,
         opacity: Math.random() * 0.5 + 0.2,
         twinkle: Math.random() * Math.PI * 2,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12
     }));
     
     resize();
@@ -479,110 +463,83 @@
     
     function draw() {
         ctx.clearRect(0, 0, W, H);
+        const maxDist2 = 150 * 150;
         
-        // 画连线（星座效果）
-        const maxDist = 150;
-        const maxDist2 = maxDist * maxDist;
         for (let i = 0; i < stars.length; i++) {
             for (let j = i + 1; j < stars.length; j++) {
                 const dx = stars[i].x - stars[j].x;
                 const dy = stars[i].y - stars[j].y;
-                const dist2 = dx * dx + dy * dy;
-                if (dist2 < maxDist2) {
-                    const dist = Math.sqrt(dist2);
-                    const alpha = (1 - dist / maxDist) * 0.12;
+                const d2 = dx * dx + dy * dy;
+                if (d2 < maxDist2) {
                     ctx.beginPath();
                     ctx.moveTo(stars[i].x, stars[i].y);
                     ctx.lineTo(stars[j].x, stars[j].y);
-                    ctx.strokeStyle = `rgba(130, 140, 255, ${alpha})`;
+                    ctx.strokeStyle = `rgba(130, 140, 255, ${(1 - Math.sqrt(d2) / 150) * 0.1})`;
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
-                }
+            }
         }
         
-        // 画星星
         stars.forEach(s => {
-            // 缓慢漂移
-            s.x += s.vx;
-            s.y += s.vy;
-            if (s.x < 0) s.x = W;
-            if (s.x > W) s.x = 0;
-            if (s.y < 0) s.y = H;
-            if (s.y > H) s.y = 0;
-            
+            s.x += s.vx; s.y += s.vy;
+            if (s.x < 0) s.x = W; if (s.x > W) s.x = 0;
+            if (s.y < 0) s.y = H; if (s.y > H) s.y = 0;
             s.twinkle += 0.01;
-            const opacity = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
+            const o = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(200, 210, 255, ${opacity})`;
+            ctx.fillStyle = `rgba(200, 210, 255, ${o})`;
             ctx.fill();
         });
-        
         requestAnimationFrame(draw);
     }
     draw();
 })();
 
-// ========== 浮动粒子 ==========
+// ========== 粒子 ==========
 (function() {
-    const container = document.getElementById('particles');
-    for (let i = 0; i < 10; i++) {
+    const c = document.getElementById('particles');
+    for (let i = 0; i < 8; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
-        const size = Math.random() * 2 + 1;
-        p.style.cssText = `
-            width: ${size}px; height: ${size}px;
-            left: ${Math.random() * 100}%;
-            background: rgba(150, 180, 255, ${Math.random() * 0.2 + 0.1});
-            box-shadow: 0 0 ${size * 3}px rgba(150, 180, 255, 0.12);
-            animation-duration: ${Math.random() * 15 + 15}s;
-            animation-delay: -${Math.random() * 15}s;
-        `;
-        container.appendChild(p);
+        const sz = Math.random() * 2 + 1;
+        p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:rgba(150,180,255,${Math.random()*0.15+0.08});animation-duration:${Math.random()*15+15}s;animation-delay:-${Math.random()*15}s;`;
+        c.appendChild(p);
     }
 })();
 
-// ========== Spotlight追光 ==========
+// ========== Spotlight ==========
 (function() {
     const spot = document.getElementById('spotlight');
     let mx = 0, my = 0, sx = 0, sy = 0;
-    document.addEventListener('mousemove', (e) => {
-        mx = e.clientX; my = e.clientY;
-    });
-    function moveSpot() {
-        sx += (mx - sx) * 0.12;
-        sy += (my - sy) * 0.12;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function loop() {
+        sx += (mx - sx) * 0.1; sy += (my - sy) * 0.1;
         spot.style.transform = `translate(${sx - 200}px, ${sy - 200}px)`;
-        requestAnimationFrame(moveSpot);
+        requestAnimationFrame(loop);
+    })();
+})();
+
+// ========== 时钟 ==========
+(function() {
+    const el = document.getElementById('clock');
+    const dateEl = document.getElementById('clock-date');
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    function tick() {
+        const now = new Date();
+        el.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+        dateEl.textContent = now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0') + ' 周' + weekdays[now.getDay()];
     }
-    moveSpot();
+    tick(); setInterval(tick, 10000);
 })();
 
-// ========== 鼠标视差 ==========
+// ========== 入场动画 ==========
 (function() {
-    const layers = document.querySelectorAll('.depth-layer');
-    document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 2;
-        const y = (e.clientY / window.innerHeight - 0.5) * 2;
-        layers.forEach(el => {
-            const depth = parseFloat(el.dataset.depth) || 0.01;
-            el.style.transform = `translate(${x * depth * 100}px, ${y * depth * 100}px)`;
-        });
-    });
-})();
-
-// ========== 入场动画（滚动触发） ==========
-(function() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, { threshold: 0.15 });
-    
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 })();
 </script>
 {% endblock %}
