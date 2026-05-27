@@ -5,7 +5,9 @@
 
 {% block extra_css %}
 <style>
-    body { background: #06060e; }
+    body { background: #06060e; min-height: 100vh; display: flex; flex-direction: column; }
+    main.pt-14 { flex: 1; }
+    main.pt-14 > .bento { margin-top: auto; margin-bottom: auto; }
     
     #starfield {
         position: fixed; top: 0; left: 0;
@@ -52,12 +54,12 @@
     body:hover #spotlight { opacity: 1; }
 
     .top-area {
-        padding-top: 2.5rem;
-        padding-bottom: 0.8rem;
+        padding-top: 4.5rem;
+        padding-bottom: 1.2rem;
         text-align: center;
     }
     .top-quote {
-        font-size: 0.8rem;
+        font-size: 0.95rem;
         color: rgba(156, 163, 175, 0.4);
         letter-spacing: 0.08em;
     }
@@ -67,11 +69,10 @@
         display: grid;
         grid-template-columns: 1fr 2.5fr;
         grid-template-rows: 1fr 1fr;
-        gap: 10px;
-        max-width: 1100px;
+        gap: 20px;
+        max-width: 82vw;
         margin: 0 auto;
-        padding: 12px 24px 12px;
-        max-height: calc(100vh - 56px - 80px);
+        padding: 10px 16px 10px;
         height: auto;
         box-sizing: border-box;
     }
@@ -211,6 +212,12 @@
     }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
     
+    /* 首页导航栏底部细线 */
+    #navbar { border-bottom-color: rgba(99, 102, 241, 0.25) !important; }
+    #pin-toggle, #back-to-top { display: none !important; }
+    /* 缩小卡片到footer的间距 */
+    footer { margin-top: 0.8rem !important; padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+
     .particle {
         position: fixed; border-radius: 50%;
         pointer-events: none; z-index: 2;
@@ -357,12 +364,14 @@
 // 语录
 (function() {
     const quotes = [
-        '代码是写给人看的，顺便让机器执行。',
-        'Talk is cheap. Show me the code. — Linus Torvalds',
-        '任何足够先进的技术，都与魔法无异。 — Arthur C. Clarke',
-        '先让它能用，再让它好用，最后让它快。',
-        '过早优化是万恶之源。 — Donald Knuth',
-        '简单是可靠的前提。 — Edsger Dijkstra',
+        '今天也要好好写代码呀',
+        'Bug 是改不完的，但咖啡可以续杯',
+        '能跑就行.jpg',
+        '先上线再说，优化是下个季度的事',
+        '这个需求很简单，怎么实现我不管',
+        '代码和人有一个能跑就行',
+        'git push --force，世界清净了',
+        '我不是在写 bug，我是在制造就业机会',
     ];
     document.getElementById('quote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
 })();
