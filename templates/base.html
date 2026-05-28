@@ -133,6 +133,75 @@
             border: 1px solid rgba(75, 85, 99, 0.4);
             border-radius: 4px;
         }
+        
+        /* Markdown 内容样式 */
+        .prose {
+            color: #e5e7eb;
+            line-height: 1.8;
+        }
+        .prose h1, .prose h2, .prose h3, .prose h4 {
+            color: white;
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        .prose h1 { font-size: 2em; }
+        .prose h2 { font-size: 1.5em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3em; }
+        .prose h3 { font-size: 1.25em; }
+        .prose p { margin-bottom: 1.2em; }
+        .prose a { color: #818cf8; text-decoration: underline; }
+        .prose a:hover { color: #a5b4fc; }
+        .prose code {
+            background: rgba(255,255,255,0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .prose pre {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1em;
+            overflow-x: auto;
+            margin: 1.5em 0;
+        }
+        .prose pre code {
+            background: transparent;
+            padding: 0;
+            font-size: 0.85em;
+        }
+        .prose blockquote {
+            border-left: 4px solid #818cf8;
+            padding-left: 1em;
+            margin: 1.5em 0;
+            color: #9ca3af;
+            font-style: italic;
+        }
+        .prose ul, .prose ol {
+            margin: 1em 0;
+            padding-left: 2em;
+        }
+        .prose li { margin-bottom: 0.5em; }
+        .prose img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1.5em 0;
+        }
+        .prose table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        .prose th, .prose td {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.75em;
+            text-align: left;
+        }
+        .prose th {
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>

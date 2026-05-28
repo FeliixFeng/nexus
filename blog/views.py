@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
+import markdown
 from .models import Post, Tag
 from nexus_core.pin_utils import is_pin_verified
 
@@ -33,6 +35,10 @@ def post_list(request):
 def post_detail(request, slug):
     """文章详情"""
     post = get_object_or_404(Post, slug=slug, status='published')
+    
+    # 渲染 Markdown 内容
+    md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc'])
+    post.content_html = mark_safe(md.convert(post.content))
     
     # 上一篇/下一篇
     prev_post = None
