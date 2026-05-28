@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Nexus{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-6 md:px-12 py-12 max-w-lg text-center">
+    <div class="text-5xl mb-6">🗑️</div>
+    <h1 class="text-xl font-bold text-white mb-3">确认删除</h1>
+    <p class="text-gray-400 mb-8">
+        确定要删除「<span class="text-white">{{ post.title }}</span>」吗？此操作不可恢复。
+    </p>
+    <form method="post" class="flex gap-3 justify-center">
+        {% csrf_token %}
+        <button type="submit" 
+                class="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-medium transition-all">
+            确认删除
+        </button>
+        <a href="{% url 'blog:post_detail' post.slug %}"
+           class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-sm font-medium transition-all">
+            取消
+        </a>
+    </form>
+</div>
+{% endblock %}

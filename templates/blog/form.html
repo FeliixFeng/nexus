@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if post %}编辑笔记{% else %}新建笔记{% endif %} · Nexus{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pt-24 pb-12 px-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-white mb-8">{% if post %}编辑笔记{% else %}新建笔记{% endif %}</h1>
+        
+        {% if error %}
+        <div class="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg mb-6">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">标题</label>
+                <input type="text" name="title" value="{{ title|default:'' }}" 
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                       placeholder="输入笔记标题" required>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">摘要</label>
+                <input type="text" name="summary" value="{{ summary|default:'' }}"
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                       placeholder="简短描述（可选）">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">内容 <span class="text-gray-500">(支持 Markdown)</span></label>
+                <textarea name="content" rows="20"
+                          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors font-mono text-sm"
+                          placeholder="在这里写内容..." required>{{ content|default:'' }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">标签 <span class="text-gray-500">(用英文逗号分隔)</span></label>
+                <input type="text" name="tags" value="{{ tag_names|default:'' }}"
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                       placeholder="例如: Django, Python, 教程">
+                {% if all_tags %}
+                <div class="mt-2 flex flex-wrap gap-2">
+                    {% for tag in all_tags %}
+                    <button type="button" onclick="addTag('{{ tag.name }}')" 
+                            class="px-3 py-1 bg-white/5 rounded-full text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+                        + {{ tag.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">状态</label>
+                    <select name="status" class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500">
+                        <option value="published" {% if status == 'published' or not status %}selected{% endif %}>发布</option>
+                        <option value="draft" {% if status == 'draft' %}selected{% endif %}>草稿</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center gap-2 mt-6">
+                    <input type="checkbox" name="is_pinned" id="is_pinned" 
+                           class="w-4 h-4 rounded bg-white/5 border-white/10 text-purple-500 focus:ring-purple-500"
+                           {% if is_pinned %}checked{% endif %}>
+                    <label for="is_pinned" class="text-sm text-gray-300">置顶</label>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4 pt-4">
+                <button type="submit" 
+                        class="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
+                    {% if post %}保存修改{% else %}发布笔记{% endif %}
+                </button>
+                <a href="{% if post %}{% url 'blog:post_detail' post.slug %}{% else %}{% url 'blog:post_list' %}{% endif %}" 
+                   class="px-6 py-3 bg-white/5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all">
+                    取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function addTag(name) {
+    const input = document.querySelector('input[name="tags"]');
+    const current = input.value.trim();
+    if (current) {
+        const tags = current.split(',').map(t => t.trim());
+        if (!tags.includes(name)) {
+            input.value = current + ', ' + name;
+        }
+    } else {
+        input.value = name;
+    }
+}
+</script>
+{% endblock %}
