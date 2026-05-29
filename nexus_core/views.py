@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 from blog.models import Post
 from links.models import Link
 from nexus_core.models import Activity, NowItem
@@ -24,8 +25,9 @@ def home(request):
 
 
 def now_page(request):
-    """动态页 — 纯展示"""
+    """动态页 — 纯展示，完成按钮需要 API Key"""
     return render(request, 'core/now.html', {
         'now_items': NowItem.objects.all(),
         'activities': Activity.objects.filter(is_visible=True),
+        'NEXUS_API_KEY': settings.NEXUS_API_KEY,
     })

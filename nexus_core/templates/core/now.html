@@ -17,10 +17,31 @@
     .now-item:hover {
         border-color: rgba(99, 102, 241, 0.3);
         background: rgba(99, 102, 241, 0.04);
-        transform: translateX(4px);
     }
     .now-icon { font-size: 1.2rem; flex-shrink: 0; }
-    .now-text { color: #d1d5db; font-size: 0.92rem; line-height: 1.5; }
+    .now-text { color: #d1d5db; font-size: 0.92rem; line-height: 1.5; flex: 1; }
+
+    /* 完成勾 */
+    .check-btn {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid rgba(52, 211, 153, 0.25);
+        background: transparent;
+        color: rgba(52, 211, 153, 0.4);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .check-btn:hover {
+        background: rgba(52, 211, 153, 0.12);
+        border-color: rgba(52, 211, 153, 0.5);
+        color: #34d399;
+        box-shadow: 0 0 12px rgba(52, 211, 153, 0.15);
+    }
 
     .timeline { position: relative; padding-left: 28px; }
     .timeline::before {
@@ -30,10 +51,7 @@
         width: 2px;
         background: linear-gradient(to bottom, rgba(99,102,241,0.35), rgba(139,92,246,0.15), transparent);
     }
-    .tl-item {
-        position: relative;
-        padding: 10px 0 24px;
-    }
+    .tl-item { position: relative; padding: 10px 0 24px; }
     .tl-item::before {
         content: '';
         position: absolute;
@@ -51,6 +69,13 @@
     .tl-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 4px; font-family: monospace; }
     .tl-text { font-size: 0.92rem; color: #d1d5db; line-height: 1.5; }
     .tl-icon { margin-right: 6px; }
+
+    /* 完成动画 */
+    .now-item.completing {
+        opacity: 0;
+        transform: translateX(30px);
+        transition: all 0.4s ease;
+    }
 </style>
 {% endblock %}
 
@@ -68,11 +93,12 @@
     <div class="mb-3">
         <span class="text-xs text-gray-500 uppercase tracking-wider">当前在做</span>
     </div>
-    <div class="space-y-2 mb-8">
+    <div class="space-y-2 mb-8" id="now-list">
         {% for item in now_items %}
-        <div class="now-item">
+        <div class="now-item" id="now-{{ item.id }}">
             <span class="now-icon">{{ item.icon }}</span>
             <span class="now-text">{{ item.text }}</span>
+            <button class="check-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>
         </div>
         {% endfor %}
     </div>
@@ -101,4 +127,21 @@
     <p class="text-center text-gray-600 text-sm py-16">暂无动态</p>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function completeNow(id) {
+    if (!confirm('标记完成？会移到里程碑')) return;
+    const el = document.getElementById('now-' + id);
+    el.classList.add('completing');
+    fetch('/api/now/' + id + '/complete/', {
+        method: 'POST',
+        headers: {'X-Nexus-Key': '{{ NEXUS_API_KEY }}'}
+    }).then(r => r.json()).then(d => {
+        if (d.success) location.reload();
+        else { el.classList.remove('completing'); alert(d.error); }
+    });
+}
+</script>
 {% endblock %}
