@@ -4,30 +4,83 @@
 
 {% block extra_css %}
 <style>
+    /* 整页不滚动，内容自适应 */
+    .now-page {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 56px - 3.5rem);
+        padding: 3rem 1.5rem 2rem;
+    }
+
+    /* 标题区 */
+    .now-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    /* 双栏容器 */
+    .dual-box {
+        display: flex;
+        gap: 24px;
+        flex: 1;
+        min-height: 0;
+    }
+
+    /* 单个盒子 */
+    .box {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: rgba(17, 24, 39, 0.3);
+        border: 1px solid rgba(75, 85, 99, 0.15);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .box-label {
+        text-align: center;
+        padding: 14px 16px 10px;
+        font-size: 0.72rem;
+        color: rgba(156, 163, 175, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        flex-shrink: 0;
+    }
+    .box-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 14px 14px;
+    }
+    /* 自定义滚动条 */
+    .box-scroll::-webkit-scrollbar { width: 4px; }
+    .box-scroll::-webkit-scrollbar-track { background: transparent; }
+    .box-scroll::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.4); border-radius: 2px; }
+
+    /* Now 条目 */
     .now-item {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 14px 16px;
-        border-radius: 12px;
-        background: rgba(17, 24, 39, 0.4);
-        border: 1px solid rgba(75, 85, 99, 0.2);
-        transition: all 0.3s;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: rgba(17, 24, 39, 0.5);
+        border: 1px solid rgba(75, 85, 99, 0.15);
+        margin-bottom: 8px;
+        transition: all 0.25s;
     }
     .now-item:hover {
-        border-color: rgba(99, 102, 241, 0.3);
+        border-color: rgba(99, 102, 241, 0.25);
         background: rgba(99, 102, 241, 0.04);
     }
-    .now-icon { font-size: 1.15rem; flex-shrink: 0; }
-    .now-text { color: #d1d5db; font-size: 0.92rem; line-height: 1.5; flex: 1; }
+    .now-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .now-text { color: #d1d5db; font-size: 0.88rem; flex: 1; }
 
     .check-btn {
-        width: 30px; height: 30px;
-        border-radius: 8px;
-        border: 1.5px solid rgba(52, 211, 153, 0.25);
+        width: 28px; height: 28px;
+        border-radius: 7px;
+        border: 1.5px solid rgba(52, 211, 153, 0.2);
         background: transparent;
-        color: rgba(52, 211, 153, 0.4);
-        font-size: 0.85rem;
+        color: rgba(52, 211, 153, 0.35);
+        font-size: 0.8rem;
         cursor: pointer;
         transition: all 0.25s;
         display: flex;
@@ -39,103 +92,88 @@
         background: rgba(52, 211, 153, 0.12);
         border-color: rgba(52, 211, 153, 0.5);
         color: #34d399;
-        box-shadow: 0 0 12px rgba(52, 211, 153, 0.15);
     }
-
     .now-item.completing {
         opacity: 0;
-        transform: translateX(30px);
-        transition: all 0.4s ease;
+        transform: translateX(20px);
+        transition: all 0.3s ease;
     }
 
-    /* 时间线 */
-    .timeline { position: relative; padding-left: 28px; }
-    .timeline::before {
-        content: '';
-        position: absolute;
-        left: 8px; top: 0; bottom: 0;
-        width: 2px;
-        background: linear-gradient(to bottom, rgba(99,102,241,0.35), rgba(139,92,246,0.15), transparent);
-    }
-    .tl-item { position: relative; padding: 8px 0 20px; }
-    .tl-item::before {
-        content: '';
-        position: absolute;
-        left: -23px; top: 14px;
-        width: 8px; height: 8px;
-        border-radius: 50%;
-        background: rgba(99, 102, 241, 0.5);
-        box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
-        transition: all 0.3s;
-    }
-    .tl-item:hover::before {
-        background: rgba(99, 102, 241, 0.9);
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
-    }
-    .tl-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 3px; font-family: monospace; }
-    .tl-text { font-size: 0.88rem; color: #d1d5db; line-height: 1.5; }
+    /* 时间线条目 */
+    .tl-item { padding: 8px 0 16px; }
+    .tl-date { font-size: 0.68rem; color: rgba(107, 114, 128, 0.5); margin-bottom: 2px; font-family: monospace; }
+    .tl-text { font-size: 0.85rem; color: #d1d5db; line-height: 1.5; }
     .tl-icon { margin-right: 5px; }
 
-    /* 桌面端左右布局 */
-    @media (min-width: 768px) {
-        .page-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 48px;
-            align-items: start;
+    /* 移动端：上下布局 */
+    @media (max-width: 767px) {
+        .now-page {
+            min-height: auto;
+            padding: 2rem 1.5rem 1.5rem;
         }
-        .page-grid .now-section { position: sticky; top: 80px; }
+        .dual-box {
+            flex-direction: column;
+            gap: 16px;
+        }
+        .box-scroll {
+            max-height: 40vh;
+        }
+    }
+
+    /* 桌面端 */
+    @media (min-width: 768px) {
+        .now-page {
+            padding: 3rem 2.5rem 2rem;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .box-scroll {
+            max-height: calc(100vh - 56px - 3.5rem - 140px);
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-5xl">
+<div class="now-page">
     <!-- 标题 -->
-    <div class="text-center mb-12">
+    <div class="now-header">
         <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Dynamics</h1>
         <h2 class="text-2xl md:text-3xl font-bold text-white">动态</h2>
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
     </div>
 
-    <div class="page-grid">
+    <!-- 双栏 -->
+    <div class="dual-box">
         <!-- 左：当前在做 -->
-        <div class="now-section">
-            {% if now_items %}
-            <div class="mb-3">
-                <span class="text-xs text-gray-500 uppercase tracking-wider">当前在做</span>
-            </div>
-            <div class="space-y-2" id="now-list">
+        <div class="box">
+            <div class="box-label">当前在做</div>
+            <div class="box-scroll" id="now-list">
                 {% for item in now_items %}
                 <div class="now-item" id="now-{{ item.id }}">
                     <span class="now-icon">{{ item.icon }}</span>
                     <span class="now-text">{{ item.text }}</span>
                     <button class="check-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>
                 </div>
+                {% empty %}
+                <p class="text-gray-600 text-xs text-center py-6">暂无</p>
                 {% endfor %}
             </div>
-            {% else %}
-            <p class="text-gray-600 text-sm">暂无进行中的项目</p>
-            {% endif %}
         </div>
 
-        <!-- 右：时间线 -->
-        <div class="timeline-section">
-            {% if activities %}
-            <div class="mb-3">
-                <span class="text-xs text-gray-500 uppercase tracking-wider">里程碑</span>
-            </div>
-            <div class="timeline">
+        <!-- 右：里程碑 -->
+        <div class="box">
+            <div class="box-label">里程碑</div>
+            <div class="box-scroll">
                 {% for act in activities %}
                 <div class="tl-item">
                     <p class="tl-date">{{ act.date_label }}</p>
                     <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
                 </div>
+                {% empty %}
+                <p class="text-gray-600 text-xs text-center py-6">暂无</p>
                 {% endfor %}
             </div>
-            {% else %}
-            <p class="text-gray-600 text-sm">暂无里程碑</p>
-            {% endif %}
         </div>
     </div>
 </div>
