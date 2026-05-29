@@ -1,0 +1,213 @@
+/* ========== 全局 ========== */
+html {
+    scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+    display: none;
+}
+
+/* ========== 导航栏 ========== */
+.nav-wrapper {
+    transition: transform 0.3s ease,
+                background-color 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+    will-change: transform;
+}
+.nav-wrapper.nav-hidden {
+    transform: translateY(-100%);
+    box-shadow: none;
+}
+.nav-wrapper.nav-solid {
+    background-color: rgba(6, 6, 14, 0.85);
+    border-color: rgba(99, 102, 241, 0.12);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+.nav-wrapper.nav-transparent {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* 导航底部微光 */
+.nav-glow {
+    position: absolute;
+    bottom: -1px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+.nav-solid .nav-glow {
+    opacity: 1;
+}
+
+/* 当前页指示器 */
+.nav-link {
+    position: relative;
+    transition: color 0.2s;
+}
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 1px;
+    transition: width 0.2s ease, left 0.2s ease;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+    left: 0;
+}
+.nav-link.active {
+    color: #e5e7eb;
+}
+
+/* ========== 回到顶部 ========== */
+#back-to-top {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* ========== 快捷键提示 ========== */
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #9ca3af;
+    background: rgba(31, 41, 55, 0.6);
+    border: 1px solid rgba(75, 85, 99, 0.4);
+    border-radius: 4px;
+}
+
+/* ========== Markdown 内容 ========== */
+.prose {
+    color: #e5e7eb;
+    line-height: 1.8;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: white;
+    font-weight: 600;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+.prose h1 { font-size: 2em; }
+.prose h2 { font-size: 1.5em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3em; }
+.prose h3 { font-size: 1.25em; }
+.prose p { margin-bottom: 1.2em; }
+.prose a { color: #818cf8; text-decoration: underline; }
+.prose a:hover { color: #a5b4fc; }
+.prose code {
+    background: rgba(255,255,255,0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'JetBrains Mono', monospace;
+}
+.prose pre {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 1em;
+    overflow-x: auto;
+    margin: 1.5em 0;
+}
+.prose pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.85em;
+}
+.prose blockquote {
+    border-left: 4px solid #818cf8;
+    padding-left: 1em;
+    margin: 1.5em 0;
+    color: #9ca3af;
+    font-style: italic;
+}
+.prose ul, .prose ol {
+    margin: 1em 0;
+    padding-left: 2em;
+}
+.prose li { margin-bottom: 0.5em; }
+.prose img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1.5em 0;
+}
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+}
+.prose th, .prose td {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.75em;
+    text-align: left;
+}
+.prose th {
+    background: rgba(255,255,255,0.05);
+    font-weight: 600;
+}
+
+/* ========== PIN 输入框 ========== */
+.pin-box {
+    width: 46px;
+    height: 56px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    background: rgba(31, 41, 55, 0.8);
+    border: 2px solid rgba(75, 85, 99, 0.5);
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.2s ease;
+    caret-color: transparent;
+}
+.pin-box:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: rgba(31, 41, 55, 1);
+}
+.pin-box.filled {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+}
+.pin-box.error {
+    border-color: #ef4444;
+    animation: shake 0.5s ease-in-out;
+}
+
+@media (max-width: 380px) {
+    .pin-box {
+        width: 40px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
