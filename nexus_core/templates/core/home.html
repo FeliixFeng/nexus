@@ -86,7 +86,7 @@
     <div class="card fade-up" style="grid-column: 2; grid-row: 2;">
         <div class="flex items-center justify-between">
             <span class="card-label">Activity</span>
-            <a href="{% url 'nexus_core:activity_list' %}" class="view-all">全部 →</a>
+            <a href="{% url 'nexus_core:now_page' %}" class="view-all">全部 →</a>
         </div>
         <div class="flex-1 overflow-hidden flex gap-4">
             {% for act in activities %}
