@@ -8,7 +8,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 16px 18px;
+        padding: 14px 16px;
         border-radius: 12px;
         background: rgba(17, 24, 39, 0.4);
         border: 1px solid rgba(75, 85, 99, 0.2);
@@ -18,17 +18,16 @@
         border-color: rgba(99, 102, 241, 0.3);
         background: rgba(99, 102, 241, 0.04);
     }
-    .now-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .now-icon { font-size: 1.15rem; flex-shrink: 0; }
     .now-text { color: #d1d5db; font-size: 0.92rem; line-height: 1.5; flex: 1; }
 
-    /* 完成勾 */
     .check-btn {
-        width: 32px; height: 32px;
+        width: 30px; height: 30px;
         border-radius: 8px;
         border: 1.5px solid rgba(52, 211, 153, 0.25);
         background: transparent;
         color: rgba(52, 211, 153, 0.4);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         cursor: pointer;
         transition: all 0.25s;
         display: flex;
@@ -43,6 +42,13 @@
         box-shadow: 0 0 12px rgba(52, 211, 153, 0.15);
     }
 
+    .now-item.completing {
+        opacity: 0;
+        transform: translateX(30px);
+        transition: all 0.4s ease;
+    }
+
+    /* 时间线 */
     .timeline { position: relative; padding-left: 28px; }
     .timeline::before {
         content: '';
@@ -51,11 +57,11 @@
         width: 2px;
         background: linear-gradient(to bottom, rgba(99,102,241,0.35), rgba(139,92,246,0.15), transparent);
     }
-    .tl-item { position: relative; padding: 10px 0 24px; }
+    .tl-item { position: relative; padding: 8px 0 20px; }
     .tl-item::before {
         content: '';
         position: absolute;
-        left: -23px; top: 16px;
+        left: -23px; top: 14px;
         width: 8px; height: 8px;
         border-radius: 50%;
         background: rgba(99, 102, 241, 0.5);
@@ -66,21 +72,25 @@
         background: rgba(99, 102, 241, 0.9);
         box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
     }
-    .tl-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 4px; font-family: monospace; }
-    .tl-text { font-size: 0.92rem; color: #d1d5db; line-height: 1.5; }
-    .tl-icon { margin-right: 6px; }
+    .tl-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 3px; font-family: monospace; }
+    .tl-text { font-size: 0.88rem; color: #d1d5db; line-height: 1.5; }
+    .tl-icon { margin-right: 5px; }
 
-    /* 完成动画 */
-    .now-item.completing {
-        opacity: 0;
-        transform: translateX(30px);
-        transition: all 0.4s ease;
+    /* 桌面端左右布局 */
+    @media (min-width: 768px) {
+        .page-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 48px;
+            align-items: start;
+        }
+        .page-grid .now-section { position: sticky; top: 80px; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-2xl">
+<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-5xl">
     <!-- 标题 -->
     <div class="text-center mb-12">
         <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Dynamics</h1>
@@ -88,44 +98,46 @@
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
     </div>
 
-    <!-- 当前在做 -->
-    {% if now_items %}
-    <div class="mb-3">
-        <span class="text-xs text-gray-500 uppercase tracking-wider">当前在做</span>
-    </div>
-    <div class="space-y-2 mb-8" id="now-list">
-        {% for item in now_items %}
-        <div class="now-item" id="now-{{ item.id }}">
-            <span class="now-icon">{{ item.icon }}</span>
-            <span class="now-text">{{ item.text }}</span>
-            <button class="check-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>
+    <div class="page-grid">
+        <!-- 左：当前在做 -->
+        <div class="now-section">
+            {% if now_items %}
+            <div class="mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wider">当前在做</span>
+            </div>
+            <div class="space-y-2" id="now-list">
+                {% for item in now_items %}
+                <div class="now-item" id="now-{{ item.id }}">
+                    <span class="now-icon">{{ item.icon }}</span>
+                    <span class="now-text">{{ item.text }}</span>
+                    <button class="check-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-600 text-sm">暂无进行中的项目</p>
+            {% endif %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
-    <!-- 分隔 -->
-    {% if activities %}
-    <div class="flex items-center gap-4 my-8">
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
-        <span class="text-xs text-gray-600 uppercase tracking-wider">Timeline</span>
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
-    </div>
-
-    <!-- 时间线 -->
-    <div class="timeline">
-        {% for act in activities %}
-        <div class="tl-item">
-            <p class="tl-date">{{ act.date_label }}</p>
-            <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
+        <!-- 右：时间线 -->
+        <div class="timeline-section">
+            {% if activities %}
+            <div class="mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wider">里程碑</span>
+            </div>
+            <div class="timeline">
+                {% for act in activities %}
+                <div class="tl-item">
+                    <p class="tl-date">{{ act.date_label }}</p>
+                    <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-600 text-sm">暂无里程碑</p>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-    {% endif %}
-
-    {% if not now_items and not activities %}
-    <p class="text-center text-gray-600 text-sm py-16">暂无动态</p>
-    {% endif %}
 </div>
 {% endblock %}
 
