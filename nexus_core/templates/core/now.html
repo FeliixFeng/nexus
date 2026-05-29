@@ -4,37 +4,36 @@
 
 {% block extra_css %}
 <style>
-    /* Now 条目 */
     .now-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 14px 16px;
+        gap: 12px;
+        padding: 16px 18px;
         border-radius: 12px;
         background: rgba(17, 24, 39, 0.4);
         border: 1px solid rgba(75, 85, 99, 0.2);
-        transition: all 0.25s;
+        transition: all 0.3s;
     }
-    .now-item:hover { border-color: rgba(99, 102, 241, 0.3); }
-    .now-icon { font-size: 1.1rem; flex-shrink: 0; }
-    .now-text { color: #d1d5db; font-size: 0.9rem; flex: 1; min-width: 0; }
-    .now-btns {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-shrink: 0;
+    .now-item:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        background: rgba(99, 102, 241, 0.04);
+        transform: translateX(4px);
     }
+    .now-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .now-text { color: #d1d5db; font-size: 0.92rem; line-height: 1.5; }
 
-    /* 时间线 */
     .timeline { position: relative; padding-left: 28px; }
     .timeline::before {
         content: '';
         position: absolute;
         left: 8px; top: 0; bottom: 0;
         width: 2px;
-        background: linear-gradient(to bottom, rgba(99,102,241,0.3), rgba(139,92,246,0.15), transparent);
+        background: linear-gradient(to bottom, rgba(99,102,241,0.35), rgba(139,92,246,0.15), transparent);
     }
-    .tl-item { position: relative; padding: 10px 0 22px; }
+    .tl-item {
+        position: relative;
+        padding: 10px 0 24px;
+    }
     .tl-item::before {
         content: '';
         position: absolute;
@@ -43,152 +42,44 @@
         border-radius: 50%;
         background: rgba(99, 102, 241, 0.5);
         box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+        transition: all 0.3s;
+    }
+    .tl-item:hover::before {
+        background: rgba(99, 102, 241, 0.9);
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
     }
     .tl-date { font-size: 0.7rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 4px; font-family: monospace; }
-    .tl-content { display: flex; align-items: flex-start; gap: 8px; }
-    .tl-text { font-size: 0.92rem; color: #d1d5db; flex: 1; min-width: 0; }
-    .tl-icon { flex-shrink: 0; }
-    .tl-btns {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
-
-    /* 按钮统一 */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 5px 12px;
-        font-size: 0.75rem;
-        border-radius: 8px;
-        cursor: pointer;
-        border: 1px solid rgba(75, 85, 99, 0.3);
-        background: rgba(31, 41, 55, 0.5);
-        color: #9ca3af;
-        transition: all 0.2s;
-        white-space: nowrap;
-        line-height: 1.4;
-    }
-    .btn:hover { background: rgba(55, 65, 81, 0.7); color: #e5e7eb; }
-    .btn-primary { border-color: rgba(99, 102, 241, 0.3); color: #818cf8; }
-    .btn-primary:hover { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
-    .btn-success { border-color: rgba(52, 211, 153, 0.3); color: #34d399; }
-    .btn-success:hover { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; }
-    .btn-danger { border-color: rgba(220, 38, 38, 0.2); }
-    .btn-danger:hover { background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
-
-    /* 编辑模式 */
-    .edit-only { display: none; }
-    body.edit-mode .edit-only { display: inline-flex; }
-
-    .edit-add { display: none; }
-    body.edit-mode .edit-add { display: block; }
-
-    /* 编辑开关 */
-    .edit-toggle {
-        font-size: 0.78rem;
-        color: rgba(107, 114, 128, 0.6);
-        cursor: pointer;
-        padding: 4px 12px;
-        border-radius: 6px;
-        transition: all 0.2s;
-        background: none;
-        border: 1px solid transparent;
-    }
-    .edit-toggle:hover { color: #818cf8; background: rgba(99, 102, 241, 0.06); border-color: rgba(99, 102, 241, 0.2); }
-    body.edit-mode .edit-toggle { color: #818cf8; border-color: rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.08); }
-
-    /* 表单 */
-    .form-input {
-        background: rgba(17, 24, 39, 0.8);
-        border: 1px solid rgba(75, 85, 99, 0.4);
-        border-radius: 8px;
-        padding: 8px 12px;
-        color: white;
-        font-size: 0.85rem;
-        outline: none;
-        transition: border-color 0.2s;
-    }
-    .form-input:focus { border-color: #6366f1; }
-    .form-input::placeholder { color: rgba(107, 114, 128, 0.5); }
-
-    .add-bar {
-        border: 1px dashed rgba(75, 85, 99, 0.3);
-        border-radius: 10px;
-        padding: 14px 16px;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: rgba(107, 114, 128, 0.6);
-        text-align: center;
-        font-size: 0.85rem;
-    }
-    .add-bar:hover { border-color: rgba(99, 102, 241, 0.4); color: #818cf8; background: rgba(99, 102, 241, 0.04); }
-
-    /* 移动端按钮换行 */
-    @media (max-width: 767px) {
-        .now-item { flex-wrap: wrap; }
-        .now-btns { width: 100%; justify-content: flex-end; padding-left: 28px; }
-        .tl-btns { width: 100%; justify-content: flex-end; margin-top: 6px; }
-    }
+    .tl-text { font-size: 0.92rem; color: #d1d5db; line-height: 1.5; }
+    .tl-icon { margin-right: 6px; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-2xl">
     <!-- 标题 -->
-    <div class="text-center mb-10">
+    <div class="text-center mb-12">
         <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Dynamics</h1>
         <h2 class="text-2xl md:text-3xl font-bold text-white">动态</h2>
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
     </div>
 
-    <!-- 编辑开关 -->
-    {% if is_editor %}
-    <div class="flex justify-end mb-5">
-        <button class="edit-toggle" onclick="toggleEditMode()">✏️ 编辑</button>
-    </div>
-    {% endif %}
-
     <!-- 当前在做 -->
-    <div class="flex items-center mb-3">
+    {% if now_items %}
+    <div class="mb-3">
         <span class="text-xs text-gray-500 uppercase tracking-wider">当前在做</span>
     </div>
-    <div id="now-list" class="space-y-2 mb-4">
+    <div class="space-y-2 mb-8">
         {% for item in now_items %}
-        <div class="now-item" id="now-{{ item.id }}">
+        <div class="now-item">
             <span class="now-icon">{{ item.icon }}</span>
             <span class="now-text">{{ item.text }}</span>
-            {% if is_editor %}
-            <div class="now-btns">
-                <button class="btn btn-success" onclick="completeNow({{ item.id }})">✓ 完成</button>
-                <span class="edit-only">
-                    <button class="btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">编辑</button>
-                    <button class="btn btn-danger" onclick="deleteNow({{ item.id }})">删除</button>
-                </span>
-            </div>
-            {% endif %}
         </div>
         {% endfor %}
-    </div>
-
-    {% if is_editor %}
-    <div class="edit-add mb-8">
-        <div id="now-add-trigger" class="add-bar" onclick="showNowAdd()">+ 添加当前在做</div>
-        <div id="now-add-form" class="hidden mt-3">
-            <div class="flex gap-2 items-center flex-wrap">
-                <input type="text" id="now-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
-                <input type="text" id="now-text-input" class="form-input flex-1" style="min-width:0" placeholder="正在做什么...">
-                <button class="btn btn-primary" onclick="createNow()">添加</button>
-                <button class="btn" onclick="hideNowAdd()">取消</button>
-            </div>
-        </div>
     </div>
     {% endif %}
 
     <!-- 分隔 -->
+    {% if activities %}
     <div class="flex items-center gap-4 my-8">
         <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
         <span class="text-xs text-gray-600 uppercase tracking-wider">Timeline</span>
@@ -196,186 +87,18 @@
     </div>
 
     <!-- 时间线 -->
-    <div id="tl-list" class="timeline">
+    <div class="timeline">
         {% for act in activities %}
-        <div class="tl-item" id="tl-{{ act.id }}">
+        <div class="tl-item">
             <p class="tl-date">{{ act.date_label }}</p>
-            <div class="tl-content">
-                <span class="tl-icon">{{ act.icon }}</span>
-                <span class="tl-text">{{ act.text }}</span>
-                {% if is_editor %}
-                <div class="tl-btns edit-only">
-                    <button class="btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">编辑</button>
-                    <button class="btn btn-danger" onclick="deleteTl({{ act.id }})">删除</button>
-                </div>
-                {% endif %}
-            </div>
+            <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
         </div>
-        {% empty %}
-        <p class="text-gray-600 text-sm text-center py-8">暂无里程碑</p>
         {% endfor %}
     </div>
+    {% endif %}
 
-    {% if is_editor %}
-    <div class="edit-add mt-6">
-        <div id="tl-add-trigger" class="add-bar" onclick="showTlAdd()">+ 添加里程碑</div>
-        <div id="tl-add-form" class="hidden mt-3">
-            <div class="flex gap-2 items-center flex-wrap">
-                <input type="text" id="tl-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
-                <input type="text" id="tl-text-input" class="form-input flex-1" style="min-width:0" placeholder="做到了什么...">
-                <input type="text" id="tl-date-input" class="form-input" style="width:100px" placeholder="2026.05">
-                <button class="btn btn-primary" onclick="createTl()">添加</button>
-                <button class="btn" onclick="hideTlAdd()">取消</button>
-            </div>
-        </div>
-    </div>
+    {% if not now_items and not activities %}
+    <p class="text-center text-gray-600 text-sm py-16">暂无动态</p>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function getCSRF() {
-    return document.cookie.split('; ').find(r => r.startsWith('csrftoken='))?.split('=')[1] || '';
-}
-
-// ─── 编辑模式 ──────────────────────────────
-
-function toggleEditMode() {
-    document.body.classList.toggle('edit-mode');
-    const btn = document.querySelector('.edit-toggle');
-    btn.textContent = document.body.classList.contains('edit-mode') ? '✅ 完成编辑' : '✏️ 编辑';
-}
-
-// ─── Now CRUD ──────────────────────────────
-
-function showNowAdd() {
-    document.getElementById('now-add-trigger').classList.add('hidden');
-    document.getElementById('now-add-form').classList.remove('hidden');
-    document.getElementById('now-text-input').focus();
-}
-function hideNowAdd() {
-    document.getElementById('now-add-trigger').classList.remove('hidden');
-    document.getElementById('now-add-form').classList.add('hidden');
-    document.getElementById('now-text-input').value = '';
-}
-
-function createNow() {
-    const icon = document.getElementById('now-icon-input').value.trim() || '📌';
-    const text = document.getElementById('now-text-input').value.trim();
-    if (!text) return;
-    fetch('/api/now/create/', {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}`
-    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
-}
-
-function editNow(id, icon, text) {
-    const el = document.getElementById('now-' + id);
-    el.innerHTML = `
-        <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="ne-icon-${id}">
-        <input type="text" class="form-input flex-1" value="${text}" id="ne-text-${id}" style="min-width:0">
-        <div class="now-btns">
-            <button class="btn btn-primary" onclick="saveNow(${id})">保存</button>
-            <button class="btn" onclick="location.reload()">取消</button>
-        </div>`;
-    document.getElementById('ne-text-' + id).focus();
-}
-
-function saveNow(id) {
-    const icon = document.getElementById('ne-icon-' + id).value.trim();
-    const text = document.getElementById('ne-text-' + id).value.trim();
-    if (!text) return;
-    fetch(`/api/now/${id}/update/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}`
-    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
-}
-
-function deleteNow(id) {
-    if (!confirm('确定删除？')) return;
-    fetch(`/api/now/${id}/delete/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF()}
-    }).then(r => r.json()).then(d => {
-        if (d.success) document.getElementById('now-' + id).remove();
-        else alert(d.error);
-    });
-}
-
-function completeNow(id) {
-    if (!confirm('完成？会移到里程碑')) return;
-    fetch(`/api/now/${id}/complete/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF()}
-    }).then(r => r.json()).then(d => {
-        if (d.success) location.reload();
-        else alert(d.error);
-    });
-}
-
-// ─── Timeline CRUD ─────────────────────────
-
-function showTlAdd() {
-    document.getElementById('tl-add-trigger').classList.add('hidden');
-    document.getElementById('tl-add-form').classList.remove('hidden');
-    document.getElementById('tl-text-input').focus();
-}
-function hideTlAdd() {
-    document.getElementById('tl-add-trigger').classList.remove('hidden');
-    document.getElementById('tl-add-form').classList.add('hidden');
-    document.getElementById('tl-text-input').value = '';
-    document.getElementById('tl-date-input').value = '';
-}
-
-function createTl() {
-    const icon = document.getElementById('tl-icon-input').value.trim() || '📌';
-    const text = document.getElementById('tl-text-input').value.trim();
-    const date_label = document.getElementById('tl-date-input').value.trim();
-    if (!text || !date_label) return;
-    fetch('/api/activity/create/', {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}&date_label=${encodeURIComponent(date_label)}`
-    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
-}
-
-function editTl(id, icon, text, date) {
-    const el = document.getElementById('tl-' + id);
-    el.innerHTML = `
-        <div class="flex gap-2 items-center flex-wrap w-full">
-            <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="te-icon-${id}">
-            <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}" style="min-width:0">
-            <input type="text" class="form-input" style="width:100px" value="${date}" id="te-date-${id}">
-            <button class="btn btn-primary" onclick="saveTl(${id})">保存</button>
-            <button class="btn" onclick="location.reload()">取消</button>
-        </div>`;
-    document.getElementById('te-text-' + id).focus();
-}
-
-function saveTl(id) {
-    const icon = document.getElementById('te-icon-' + id).value.trim();
-    const text = document.getElementById('te-text-' + id).value.trim();
-    const date_label = document.getElementById('te-date-' + id).value.trim();
-    if (!text || !date_label) return;
-    fetch(`/api/activity/${id}/update/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}&date_label=${encodeURIComponent(date_label)}`
-    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
-}
-
-function deleteTl(id) {
-    if (!confirm('确定删除？')) return;
-    fetch(`/api/activity/${id}/delete/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': getCSRF()}
-    }).then(r => r.json()).then(d => {
-        if (d.success) document.getElementById('tl-' + id).remove();
-        else alert(d.error);
-    });
-}
-</script>
 {% endblock %}

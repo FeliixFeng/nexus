@@ -98,6 +98,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Nexus PIN (6位数字)
 NEXUS_PIN = os.environ.get('NEXUS_PIN', '123456')
 
+# Nexus API Key (用于程序化管理内容)
+NEXUS_API_KEY = os.environ.get('NEXUS_API_KEY', '')
+
 # 监控 Agent 配置
 MONITOR_SERVERS = [
     {"name": "solar", "url": "http://localhost:9100/metrics", "role": "远程开发服务器"},

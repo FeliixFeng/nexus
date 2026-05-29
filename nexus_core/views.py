@@ -24,12 +24,8 @@ def home(request):
 
 
 def now_page(request):
-    """Now 页面 — 当前在做 + 时间线"""
-    now_items = NowItem.objects.all()
-    activities = Activity.objects.filter(is_visible=True)
-    context = {
-        'now_items': now_items,
-        'activities': activities,
-        'is_editor': is_pin_verified(request),
-    }
-    return render(request, 'core/now.html', context)
+    """动态页 — 纯展示"""
+    return render(request, 'core/now.html', {
+        'now_items': NowItem.objects.all(),
+        'activities': Activity.objects.filter(is_visible=True),
+    })
