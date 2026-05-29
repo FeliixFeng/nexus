@@ -213,7 +213,7 @@
                     <div class="flex justify-between items-center mb-1.5">
                         <span class="metric-label">🔋 电池</span>
                         <span class="metric-value">
-                            {{ s.battery.percent }}%
+                            {{ s.battery.percent|floatformat:1 }}%
                             {% if s.battery.plugged %}
                             <span class="text-xs text-green-400 ml-1">充电中</span>
                             {% elif s.battery.remaining %}
@@ -222,7 +222,7 @@
                         </span>
                     </div>
                     <div class="metric-bar">
-                        <div class="metric-bar-fill {% if s.battery.percent < 20 %}danger{% elif s.battery.percent < 40 %}warning{% else %}normal{% endif %}" style="width: {{ s.battery.percent }}%"></div>
+                        <div class="metric-bar-fill {% if s.battery.percent < 20 %}danger{% elif s.battery.percent < 40 %}warning{% else %}normal{% endif %}" style="width: {{ s.battery.percent|floatformat:1 }}%"></div>
                     </div>
                 </div>
                 {% endif %}
