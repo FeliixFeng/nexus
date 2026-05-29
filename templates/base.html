@@ -37,7 +37,7 @@
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col {% if is_editor %}pin-unlocked{% endif %}">
     {% include 'components/navbar.html' %}
 
     <!-- 主内容 -->
@@ -45,12 +45,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-800/50 py-8 mt-20">
-        <div class="mx-auto px-6 md:px-10 text-center text-gray-600 text-xs space-y-2">
-            <div>Powered by <span class="text-gray-500">FelixFeng</span></div>
-        </div>
-    </footer>
+
 
     <!-- 回到顶部 -->
     <button id="back-to-top" 

@@ -147,6 +147,12 @@ pinBoxes.forEach((box, index) => {
 });
 
 function togglePin() {
+    // 已解锁状态 → 直接锁定
+    if (document.body.classList.contains('pin-unlocked')) {
+        fetch('/api/lock-pin/', { method: 'POST' }).then(() => location.reload());
+        return;
+    }
+    // 未解锁 → 弹密码框
     const modal = document.getElementById('pin-modal');
     if (modal.classList.contains('hidden')) {
         modal.classList.remove('hidden');
@@ -203,7 +209,8 @@ function verifyPin() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            document.getElementById('pin-toggle').textContent = '🔓';
+            const btn = document.getElementById('pin-toggle');
+            btn.textContent = '🔓';
             const pinMobile = document.getElementById('pin-toggle-mobile');
             if (pinMobile) pinMobile.textContent = '🔓';
             document.body.classList.add('pin-unlocked');

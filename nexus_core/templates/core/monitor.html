@@ -11,17 +11,10 @@
         padding: 24px;
         transition: all 0.3s ease;
     }
-    .server-card:hover {
-        border-color: rgba(99, 102, 241, 0.3);
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.06);
-    }
     .server-card.offline {
         border-color: rgba(220, 38, 38, 0.25);
     }
-    .server-card.offline:hover {
-        border-color: rgba(220, 38, 38, 0.4);
-        box-shadow: 0 0 20px rgba(220, 38, 38, 0.08);
-    }
+
 
     .status-dot {
         width: 8px; height: 8px;
@@ -94,6 +87,51 @@
     .info-row .label { color: rgba(156, 163, 175, 0.6); }
     .info-row .value { color: #d1d5db; }
 
+    /* fadeInUp animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .server-card {
+        opacity: 0;
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    .server-card:nth-child(1)  { animation-delay: 0.05s; }
+    .server-card:nth-child(2)  { animation-delay: 0.12s; }
+    .server-card:nth-child(3)  { animation-delay: 0.19s; }
+    .server-card:nth-child(4)  { animation-delay: 0.26s; }
+    .server-card:nth-child(5)  { animation-delay: 0.33s; }
+    .server-card:nth-child(6)  { animation-delay: 0.40s; }
+    .server-card:nth-child(7)  { animation-delay: 0.47s; }
+    .server-card:nth-child(8)  { animation-delay: 0.54s; }
+    .server-card:nth-child(9)  { animation-delay: 0.61s; }
+    .server-card:nth-child(10) { animation-delay: 0.68s; }
+
+    /* hover glow */
+    .server-card:hover {
+        border-color: rgba(99, 102, 241, 0.45);
+        box-shadow: 0 0 28px rgba(99, 102, 241, 0.10), 0 0 60px rgba(99, 102, 241, 0.04);
+        transform: translateY(-2px);
+    }
+    .server-card.offline:hover {
+        border-color: rgba(220, 38, 38, 0.45);
+        box-shadow: 0 0 28px rgba(220, 38, 38, 0.10), 0 0 60px rgba(220, 38, 38, 0.04);
+    }
+
+    /* count badge */
+    .count-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 1.5rem; height: 1.5rem; padding: 0 6px;
+        border-radius: 9999px; font-size: 0.7rem; font-weight: 600;
+        background: rgba(99, 102, 241, 0.15); color: #a5b4fc;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    /* empty state */
+    .empty-state {
+        opacity: 0; animation: fadeInUp 0.5s ease forwards; animation-delay: 0.1s;
+    }
+
     @keyframes pulse-green {
         0%, 100% { opacity: 1; }
         50% { opacity: 0.5; }
@@ -115,11 +153,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-4xl">
+<div class="mx-auto px-6 md:px-10 pt-8 pb-6 max-w-6xl">
     <!-- 标题 -->
     <div class="text-center mb-10">
         <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Monitor</h1>
-        <h2 class="text-2xl md:text-3xl font-bold text-white">服务器监控</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-white">服务器监控 <span id="count-badge" class="count-badge align-middle ml-1" style="display:none;"></span></h2>
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
         <p id="summary" class="text-sm text-gray-500 mt-4">
             <span class="skeleton inline-block w-24 h-4"></span>
@@ -127,7 +165,7 @@
     </div>
 
     <!-- 服务器卡片容器 -->
-    <div id="server-cards" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+    <div id="server-cards" class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-8">
         {% for name in server_names %}
         <div class="server-card" id="card-{{ name }}">
             <div class="flex items-center justify-between mb-4">
@@ -148,6 +186,13 @@
             <div class="space-y-4 hidden" id="data-{{ name }}"></div>
         </div>
         {% endfor %}
+    </div>
+
+    <!-- 空状态 -->
+    <div id="empty-state" class="empty-state text-center py-20 hidden">
+        <p class="text-5xl mb-4">🖥️</p>
+        <p class="text-gray-500 text-sm">暂无服务器</p>
+        <p class="text-gray-700 text-xs mt-1">在 settings.py 中配置 MONITOR_SERVERS 开始监控</p>
     </div>
 
     <p class="text-center text-xs text-gray-700 mt-6" id="refresh-info"></p>
@@ -243,6 +288,23 @@ function loadData() {
                 summary += '<span class="mx-2 text-gray-700">·</span><span>' + data.containers_count + ' 个容器</span>';
             }
             document.getElementById('summary').innerHTML = summary;
+
+            // count badge
+            const badge = document.getElementById('count-badge');
+            if (data.total > 0) {
+                badge.textContent = data.total;
+                badge.style.display = '';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            // 空状态
+            const emptyState = document.getElementById('empty-state');
+            if (data.total === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
 
             // 渲染每台服务器
             data.servers.forEach(renderServer);

@@ -27,3 +27,11 @@ def verify_pin(request):
 def is_pin_verified(request):
     """检查PIN是否已验证"""
     return request.session.get('pin_verified', False)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def lock_pin(request):
+    """锁定，清除PIN状态"""
+    request.session.pop('pin_verified', None)
+    return JsonResponse({'success': True})

@@ -3,7 +3,7 @@
     const c = document.getElementById('starfield'), ctx = c.getContext('2d');
     let W, H;
     function resize() { W = c.width = innerWidth; H = c.height = innerHeight; stars.forEach(s => { s.x = Math.random()*W; s.y = Math.random()*H; }); }
-    const stars = Array.from({length: 100}, () => ({
+    const stars = Array.from({length: 50}, () => ({
         x: Math.random()*2000, y: Math.random()*2000,
         r: Math.random()*1.3+0.4, o: Math.random()*0.5+0.3,
         tw: Math.random()*Math.PI*2,
@@ -12,7 +12,7 @@
     resize(); addEventListener('resize', resize);
     function draw() {
         ctx.clearRect(0,0,W,H);
-        const md2 = 180*180;
+        const md2 = 120*120;
         for (let i=0;i<stars.length;i++) for (let j=i+1;j<stars.length;j++) {
             const dx=stars[i].x-stars[j].x, dy=stars[i].y-stars[j].y, d2=dx*dx+dy*dy;
             if (d2<md2) { ctx.beginPath(); ctx.moveTo(stars[i].x,stars[i].y); ctx.lineTo(stars[j].x,stars[j].y); ctx.strokeStyle=`rgba(130,140,255,${(1-Math.sqrt(d2)/180)*0.12})`; ctx.lineWidth=0.6; ctx.stroke(); }
@@ -32,7 +32,7 @@
 // ========== 粒子 ==========
 (function() {
     const c = document.getElementById('particles');
-    for (let i=0;i<10;i++) { const p=document.createElement('div'); p.className='particle'; const sz=Math.random()*2.5+1; p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:rgba(150,180,255,${Math.random()*0.18+0.08});animation-duration:${Math.random()*18+14}s;animation-delay:-${Math.random()*14}s;`; c.appendChild(p); }
+    for (let i=0;i<6;i++) { const p=document.createElement('div'); p.className='particle'; const sz=Math.random()*2.5+1; p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:rgba(150,180,255,${Math.random()*0.18+0.08});animation-duration:${Math.random()*18+14}s;animation-delay:-${Math.random()*14}s;`; c.appendChild(p); }
 })();
 
 // ========== 鼠标光球 ==========
@@ -56,6 +56,7 @@
         '我不是在写 bug，我是在制造就业机会',
     ];
     const el = document.getElementById('quote');
+    if (!el) return;
     let idx = Math.floor(Math.random() * quotes.length);
     el.textContent = quotes[idx];
     el.style.transition = 'opacity 0.5s ease';

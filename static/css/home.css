@@ -1,7 +1,6 @@
 /* ========== 首页全局 ========== */
 body { background: #06060e; min-height: 100vh; display: flex; flex-direction: column; }
 main.pt-14 { flex: 1; }
-main.pt-14 > .bento { margin-top: auto; margin-bottom: auto; }
 
 /* ========== 星空背景 ========== */
 #starfield {
@@ -53,60 +52,73 @@ body:hover #spotlight { opacity: 1; }
 /* ========== 顶部语录 ========== */
 .top-area {
     padding-top: 4.5rem;
-    padding-bottom: 1.2rem;
+    padding-bottom: 1rem;
     text-align: center;
+    position: relative;
+    z-index: 10;
 }
 .top-quote {
-    font-size: 0.95rem;
-    color: rgba(156, 163, 175, 0.4);
+    font-size: 0.88rem;
+    color: rgba(156, 163, 175, 0.35);
     letter-spacing: 0.08em;
 }
 
 /* ========== Bento Grid ========== */
 .bento {
     display: grid;
-    grid-template-columns: 1fr 2.5fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 1fr 2fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
     max-width: 82vw;
+    width: 100%;
     margin: 0 auto;
-    padding: 10px 16px 10px;
-    height: auto;
+    padding: 0 0 40px;
     box-sizing: border-box;
+    height: calc(100vh - 10rem);
+    min-height: 400px;
 }
 
-@media (max-width: 768px) {
-    .bento {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        gap: 12px;
-        padding: 10px 12px;
-        height: auto;
-        max-width: 100%;
-    }
-    .bento > .card { grid-column: auto !important; grid-row: auto !important; }
-    .top-area { padding-top: 1rem !important; padding-bottom: 1rem !important; }
-    .bento .act-item.flex-1 { flex: none; width: 100%; }
-    .bento > .card:last-child > div:last-child { flex-direction: column; }
-}
+/* 第一行：时间 + 音乐 + 服务器 */
+#time-card      { grid-column: 1; grid-row: 1; }
+#music-card     { grid-column: 2; grid-row: 1; }
+#monitor-card   { grid-column: 3; grid-row: 1; }
+
+/* 第二行：笔记 + 动态 */
+#notes-card     { grid-column: 1 / 3; grid-row: 2; min-height: 0; }
+#activity-card  { grid-column: 3; grid-row: 2; min-height: 0; }
+
+/* 第三行：服务 */
+#services-card  { grid-column: 1 / -1; grid-row: 3; }
 
 /* ========== 卡片 ========== */
 .card {
-    background: rgba(17, 24, 39, 0.5);
+    background: rgba(15, 23, 42, 0.4);
     border: 1px solid rgba(55, 65, 81, 0.35);
     border-radius: 14px;
-    padding: 20px;
-    backdrop-blur-sm;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 18px 22px;
+    transition: border-color 0.35s, box-shadow 0.35s, transform 0.35s;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    /* 入场动画 */
+    opacity: 0;
+    transform: translateY(12px);
+    animation: card-in 0.5s ease forwards;
 }
+@keyframes card-in {
+    to { opacity: 1; transform: translateY(0); }
+}
+#time-card     { animation-delay: 0.05s; }
+#music-card    { animation-delay: 0.1s; }
+#monitor-card  { animation-delay: 0.15s; }
+#notes-card    { animation-delay: 0.2s; }
+#activity-card { animation-delay: 0.25s; }
+#services-card { animation-delay: 0.3s; }
 .card:hover {
     border-color: rgba(99, 102, 241, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 .card::before {
     content: '';
@@ -122,17 +134,16 @@ body:hover #spotlight { opacity: 1; }
 .card:hover::before { opacity: 1; }
 
 .card-label {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: rgba(156, 163, 175, 0.5);
-    margin-bottom: 12px;
+    color: rgba(156, 163, 175, 0.4);
     flex-shrink: 0;
 }
 
 .view-all {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: rgba(129, 140, 248, 0.5);
     transition: color 0.2s;
     text-decoration: none;
@@ -144,33 +155,44 @@ body:hover #spotlight { opacity: 1; }
     font-family: 'JetBrains Mono', monospace;
     font-size: 1.8rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.88);
-    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: -0.03em;
     line-height: 1;
 }
 .time-sub {
-    font-size: 0.75rem;
-    color: rgba(156, 163, 175, 0.5);
+    font-size: 0.72rem;
+    color: rgba(156, 163, 175, 0.45);
     margin-top: 6px;
 }
+
+/* ---- 可滚动内容区 ---- */
+.card-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+.card-scroll::-webkit-scrollbar { width: 3px; }
+.card-scroll::-webkit-scrollbar-track { background: transparent; }
+.card-scroll::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.3); border-radius: 2px; }
 
 /* ---- 笔记 ---- */
 .note-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(55, 65, 81, 0.45);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+    text-decoration: none;
     transition: all 0.2s;
 }
 .note-item:last-child { border-bottom: none; }
 .note-item:hover { padding-left: 3px; }
 .note-item:hover .note-title { color: #818cf8; }
 .note-title {
-    color: #d1d5db; font-size: 0.88rem; font-weight: 500;
+    color: #d1d5db; font-size: 0.85rem; font-weight: 500;
     transition: color 0.2s;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .note-date {
-    font-size: 0.7rem; color: rgba(107, 114, 128, 0.7);
+    font-size: 0.65rem; color: rgba(107, 114, 128, 0.55);
     white-space: nowrap; flex-shrink: 0;
 }
 .note-dot {
@@ -178,8 +200,8 @@ body:hover #spotlight { opacity: 1; }
     background: rgba(99, 102, 241, 0.4); flex-shrink: 0;
 }
 .note-tag {
-    font-size: 0.6rem;
-    padding: 1px 6px;
+    font-size: 0.55rem;
+    padding: 1px 5px;
     border-radius: 4px;
     background: rgba(99, 102, 241, 0.08);
     color: rgba(129, 140, 248, 0.6);
@@ -187,41 +209,47 @@ body:hover #spotlight { opacity: 1; }
 }
 
 /* ---- 服务 ---- */
-.service-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 12px; border-radius: 8px;
-    transition: all 0.2s; text-decoration: none;
-    border-bottom: 1px solid rgba(55, 65, 81, 0.45);
+.services-row {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    align-items: center;
 }
-.service-item:last-child { border-bottom: none; }
-.service-item:hover { background: rgba(99, 102, 241, 0.08); padding-left: 15px; }
-.service-item:hover .service-name { color: #818cf8; }
-.service-icon { width: 20px; height: 20px; flex-shrink: 0; border-radius: 4px; object-fit: contain; }
-.service-icon-svg { width: 18px; height: 18px; flex-shrink: 0; fill: #9ca3af; }
-.service-icon-emoji { font-size: 1.1rem; flex-shrink: 0; }
-.service-name { font-size: 0.85rem; color: #9ca3af; transition: color 0.2s; }
+.service-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px; border-radius: 20px;
+    border: 1px solid rgba(55, 65, 81, 0.4);
+    background: rgba(30, 41, 59, 0.3);
+    text-decoration: none;
+    transition: all 0.25s;
+    font-size: 0.82rem;
+}
+.service-pill:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.08);
+    transform: translateY(-1px);
+}
+.service-pill:hover .service-name { color: #818cf8; }
+.service-icon-svg { width: 14px; height: 14px; flex-shrink: 0; fill: #9ca3af; }
+.service-icon-emoji { font-size: 0.9rem; flex-shrink: 0; }
+.service-name { color: #9ca3af; transition: color 0.2s; }
 
 /* ---- 动态 ---- */
 .act-item {
+    display: flex; align-items: center; gap: 8px;
     padding: 6px 0;
-    border-left: 2px solid rgba(99, 102, 241, 0.15);
-    padding-left: 12px; margin-left: 4px;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.25);
 }
-.act-item:not(:last-child) { margin-bottom: 4px; }
-.act-text { font-size: 0.85rem; color: #9ca3af; line-height: 1.5; }
-.act-date { font-size: 0.65rem; color: rgba(107, 114, 128, 0.6); margin-top: 2px; }
-
-/* ---- 入场动画 ---- */
-.fade-up {
-    opacity: 0; transform: translateY(16px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+.act-item:last-child { border-bottom: none; }
+.act-icon { font-size: 0.9rem; flex-shrink: 0; }
+.act-text { font-size: 0.82rem; color: #d1d5db; line-height: 1.4; }
+.act-date { font-size: 0.6rem; color: rgba(107, 114, 128, 0.45); flex-shrink: 0; font-family: monospace; }
+.act-badge {
+    font-size: 0.55rem; padding: 1px 6px; border-radius: 6px;
+    background: rgba(52, 211, 153, 0.1); color: rgba(52, 211, 153, 0.6);
+    flex-shrink: 0;
 }
-.fade-up.visible { opacity: 1; transform: translateY(0); }
 
 /* ---- 首页特殊覆盖 ---- */
-#navbar { border-bottom-color: rgba(99, 102, 241, 0.25) !important; }
-#pin-toggle, #pin-toggle-mobile, #back-to-top { display: none !important; }
-footer { margin-top: 0.8rem !important; padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+#back-to-top { display: none !important; }
 
 /* ---- 粒子 ---- */
 .particle {
@@ -233,4 +261,24 @@ footer { margin-top: 0.8rem !important; padding-top: 0.5rem !important; padding-
     0% { transform: translateY(100vh); opacity: 0; }
     10% { opacity: 1; } 90% { opacity: 1; }
     100% { transform: translateY(-10vh); opacity: 0; }
+}
+
+/* ========== 移动端 ========== */
+@media (max-width: 768px) {
+    .top-area { padding-top: 1rem; padding-bottom: 0.8rem; }
+    .bento {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 0 12px 30px;
+        max-width: 100%;
+        height: auto;
+    }
+    .bento > .card { grid-column: auto !important; grid-row: auto !important; }
+    .time-big { font-size: 1.5rem; }
+    #time-card { order: 1; }
+    #music-card { order: 2; }
+    #monitor-card { order: 3; }
+    #notes-card { order: 4; max-height: 280px; }
+    #activity-card { order: 5; max-height: 280px; }
+    #services-card { order: 6; }
 }

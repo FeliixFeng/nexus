@@ -11,6 +11,7 @@ def home(request):
     recent_posts = Post.objects.filter(status='published')[:6]
     all_links = Link.objects.filter(is_visible=True)
     activities = Activity.objects.filter(is_visible=True)[:6]
+    now_items = NowItem.objects.all()[:5]
 
     context = {
         'recent_posts': recent_posts,
@@ -19,6 +20,7 @@ def home(request):
         'projects': all_links.filter(category='project'),
         'all_links': all_links,
         'activities': activities,
+        'now_items': now_items,
         'is_editor': is_pin_verified(request),
     }
     return render(request, 'core/home.html', context)

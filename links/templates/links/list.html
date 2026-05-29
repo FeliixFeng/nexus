@@ -4,6 +4,22 @@
 
 {% block extra_css %}
 <style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        opacity: 0;
+        animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
     .link-card-2 {
         position: relative;
         overflow: hidden;
@@ -25,7 +41,8 @@
     .link-card-2:hover::before { opacity: 1; }
     .link-card-2:hover {
         transform: translateY(-4px);
-        box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15);
+        box-shadow: 0 0 24px 4px rgba(99, 102, 241, 0.2), 0 20px 40px -12px rgba(99, 102, 241, 0.15);
+        border-color: rgba(99, 102, 241, 0.4);
     }
     .link-card-2:hover .link-icon {
         transform: scale(1.15) rotate(-5deg);
@@ -33,11 +50,24 @@
     .link-icon {
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        padding: 0 0.375rem;
+        border-radius: 9999px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        line-height: 1;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="mx-auto px-6 md:px-10 pt-16 pb-10">
+<div class="mx-auto px-6 md:px-10 pt-8 pb-10">
     <!-- 标题 -->
     <div class="text-center mb-10">
         <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Links</h1>
@@ -51,11 +81,13 @@
         <h3 class="text-sm font-medium text-gray-400 uppercase tracking-widest mb-5 flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-blue-500/60"></span>
             服务器服务
+            <span class="count-badge bg-blue-500/20 text-blue-400 ml-1">{{ services|length }}</span>
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {% for link in services %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card-2 group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4">
+               class="link-card-2 fade-in-up group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4"
+               style="animation-delay: {{ forloop.counter0 }}00ms">
                 <div class="relative z-10 flex items-start gap-3">
                     <span class="link-icon text-2xl flex-shrink-0">{{ link.icon|default:"🔗" }}</span>
                     <div class="min-w-0">
@@ -75,11 +107,13 @@
         <h3 class="text-sm font-medium text-gray-400 uppercase tracking-widest mb-5 flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-purple-500/60"></span>
             个人项目
+            <span class="count-badge bg-purple-500/20 text-purple-400 ml-1">{{ projects|length }}</span>
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {% for link in projects %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card-2 group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4">
+               class="link-card-2 fade-in-up group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4"
+               style="animation-delay: {{ forloop.counter0 }}00ms">
                 <div class="relative z-10 flex items-start gap-3">
                     <span class="link-icon text-2xl flex-shrink-0">{{ link.icon|default:"📦" }}</span>
                     <div class="min-w-0">
@@ -99,11 +133,13 @@
         <h3 class="text-sm font-medium text-gray-400 uppercase tracking-widest mb-5 flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-green-500/60"></span>
             外部链接
+            <span class="count-badge bg-green-500/20 text-green-400 ml-1">{{ external|length }}</span>
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {% for link in external %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card-2 group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4">
+               class="link-card-2 fade-in-up group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4"
+               style="animation-delay: {{ forloop.counter0 }}00ms">
                 <div class="relative z-10 flex items-start gap-3">
                     <span class="link-icon text-2xl flex-shrink-0">{{ link.icon|default:"🌐" }}</span>
                     <div class="min-w-0">
@@ -118,7 +154,11 @@
     {% endif %}
     
     {% if not services and not projects and not external %}
-    <div class="text-center text-gray-600 py-16">暂无链接</div>
+    <div class="text-center py-20 fade-in-up">
+        <div class="text-5xl mb-4">🔗</div>
+        <p class="text-gray-500 text-sm">暂无链接</p>
+        <p class="text-gray-700 text-xs mt-1">还没有添加任何链接</p>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -13,6 +13,7 @@ html::-webkit-scrollbar {
                 border-color 0.3s ease,
                 box-shadow 0.3s ease;
     will-change: transform;
+    border-bottom-color: rgba(99, 102, 241, 0.25) !important;
 }
 .nav-wrapper.nav-hidden {
     transform: translateY(-100%);

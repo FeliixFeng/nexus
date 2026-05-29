@@ -4,7 +4,72 @@
 {% block title %}Nexus · FelixFeng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=6">
+<style>
+    .music-title {
+        color: #e5e7eb; font-size: 0.92rem; font-weight: 500;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .music-artist {
+        color: rgba(107, 114, 128, 0.7); font-size: 0.75rem; margin-top: 2px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .music-ctrl {
+        width: 36px; height: 36px; border-radius: 8px;
+        border: 1px solid rgba(75, 85, 99, 0.25);
+        background: rgba(30, 41, 59, 0.3);
+        color: #9ca3af; font-size: 0.9rem;
+        cursor: pointer; transition: all 0.15s ease;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        -webkit-appearance: none; appearance: none;
+        font-family: 'JetBrains Mono', monospace;
+        user-select: none; -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .music-ctrl:hover {
+        border-color: rgba(99, 102, 241, 0.4); color: #c4b5fd;
+        background: rgba(99, 102, 241, 0.1);
+    }
+    .music-ctrl:active {
+        transform: scale(0.9);
+        background: rgba(99, 102, 241, 0.18);
+        border-color: rgba(99, 102, 241, 0.5);
+    }
+    .music-ctrl.active {
+        border-color: rgba(99, 102, 241, 0.4);
+        color: #a78bfa;
+        background: rgba(99, 102, 241, 0.12);
+    }
+    .music-ctrl.play-btn {
+        width: 40px; height: 40px; font-size: 1rem;
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+    .music-nothing { color: rgba(107, 114, 128, 0.4); font-size: 0.82rem; }
+
+    /* 服务器卡片 */
+    .srv-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(55, 65, 81, 0.25);
+    }
+    .srv-item:last-child { border-bottom: none; }
+    .srv-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .srv-dot.on { background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.4); animation: pulse-dot 2s ease-in-out infinite; }
+    .srv-dot.off { background: #ef4444; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .srv-name { font-size: 0.88rem; color: #d1d5db; font-weight: 500; min-width: 44px; }
+    .srv-metric {
+        font-family: monospace; font-size: 0.72rem;
+        color: rgba(156, 163, 175, 0.6); min-width: 42px; flex-shrink: 0;
+    }
+    .srv-bar-wrap {
+        flex: 1; height: 5px; background: rgba(55, 65, 81, 0.4); border-radius: 3px; overflow: hidden;
+    }
+    .srv-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+    .srv-bar.low { background: #34d399; }
+    .srv-bar.mid { background: #fbbf24; }
+    .srv-bar.high { background: #ef4444; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -14,39 +79,82 @@
 <div class="aurora-blob aurora-2"></div>
 <div id="spotlight"></div>
 
-<!-- 移动端时间卡片（桌面端隐藏） -->
-<div class="relative z-10 md:hidden px-3 pt-3">
-    <div class="card fade-up" style="padding: 14px 16px; flex-direction: row; align-items: center; justify-content: center; position: relative;">
-        <span class="card-label" style="position: absolute; left: 16px; margin-bottom: 0;">Now</span>
-        <div class="flex items-center gap-2">
-            <div class="time-big" id="clock-mobile" style="font-size: 1.3rem;">--:--</div>
-            <div class="time-sub" id="clock-date-mobile"></div>
-        </div>
-    </div>
-</div>
-
+<!-- 语录 -->
 <div class="top-area relative z-10">
     <p class="top-quote" id="quote"></p>
 </div>
 
 <div class="bento relative z-10">
-    
-    <!-- 时间 (左上，小，桌面端显示) -->
-    <div class="card fade-up hidden md:flex">
-        <span class="card-label">Now</span>
-        <div class="flex-1 flex flex-col justify-center items-center">
+
+    <!-- 时间 -->
+    <div class="card" id="time-card">
+        <div class="flex-1 flex flex-col items-center justify-center text-center">
             <div class="time-big" id="clock">--:--</div>
             <div class="time-sub" id="clock-date"></div>
         </div>
     </div>
-    
-    <!-- 最新笔记 (右上，大) -->
-    <div class="card fade-up" style="grid-column: 2; grid-row: 1;">
-        <div class="flex items-center justify-between">
-            <span class="card-label">Latest Notes</span>
+
+    <!-- 音乐 -->
+    <div class="card" id="music-card">
+        <div class="flex-1 flex flex-col justify-between items-center text-center">
+            <div class="flex items-start gap-2 justify-center">
+                <span style="font-size:0.8rem; opacity:0.25; line-height:1.4; margin-top:1px;">🎵</span>
+                <div class="music-title" id="music-title" style="display:none;"></div>
+                <div class="music-nothing" id="music-loading">连接中...</div>
+                <div class="music-nothing" id="music-stopped" style="display:none;">未播放</div>
+            </div>
+            <div class="music-artist text-center" id="music-artist" style="display:none;"></div>
+            <div class="flex items-center justify-center gap-2 mt-3">
+                <button class="music-ctrl" onclick="musicCtrl('restart')" title="重新播放">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                </button>
+                <button class="music-ctrl" onclick="musicCtrl('prev')" title="上一首">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z"/></svg>
+                </button>
+                <button class="music-ctrl play-btn" id="music-play-btn" onclick="musicCtrl('toggle')" title="播放/暂停">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="play-icon"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button class="music-ctrl" onclick="musicCtrl('next')" title="下一首">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <button class="music-ctrl" id="music-mode-btn" onclick="cycleMode()" title="播放模式">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" id="mode-icon"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 服务器 -->
+    <div class="card" id="monitor-card">
+        <div class="flex items-center justify-between mb-1">
+            <span class="card-label">Servers</span>
+            <a href="{% url 'nexus_core:monitor' %}" class="view-all">详情 →</a>
+        </div>
+        <div class="flex-1 flex flex-col justify-center">
+            <div class="srv-item" id="srv-solar">
+                <span class="srv-dot" id="srv-solar-dot"></span>
+                <span class="srv-name">solar</span>
+                <div class="srv-bar-wrap"><div class="srv-bar" id="srv-solar-bar" style="width:0%"></div></div>
+                <span class="srv-metric" id="srv-solar-mem">--</span>
+                <span class="srv-metric" id="srv-solar-cpu">--</span>
+            </div>
+            <div class="srv-item" id="srv-ivory">
+                <span class="srv-dot" id="srv-ivory-dot"></span>
+                <span class="srv-name">ivory</span>
+                <div class="srv-bar-wrap"><div class="srv-bar" id="srv-ivory-bar" style="width:0%"></div></div>
+                <span class="srv-metric" id="srv-ivory-mem">--</span>
+                <span class="srv-metric" id="srv-ivory-cpu">--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 笔记 -->
+    <div class="card" id="notes-card">
+        <div class="flex items-center justify-between mb-1">
+            <span class="card-label">Notes</span>
             <a href="{% url 'blog:post_list' %}" class="view-all">全部 →</a>
         </div>
-        <div class="flex-1 overflow-auto">
+        <div class="card-scroll">
             {% for post in recent_posts|slice:":6" %}
             <a href="{% url 'blog:post_detail' post.slug %}" class="note-item">
                 <span class="note-dot"></span>
@@ -61,16 +169,40 @@
             {% endfor %}
         </div>
     </div>
-    
-    <!-- 服务入口 (左下) -->
-    <div class="card fade-up">
-        <div class="flex items-center justify-between">
-            <span class="card-label">Services</span>
-            <a href="{% url 'links:link_list' %}" class="view-all">全部 →</a>
+
+    <!-- 动态 -->
+    <div class="card" id="activity-card">
+        <div class="flex items-center justify-between mb-1">
+            <span class="card-label">Activity</span>
+            <a href="{% url 'nexus_core:now_page' %}" class="view-all">全部 →</a>
         </div>
-        <div class="flex-1 flex flex-col justify-center gap-1">
-            {% for link in all_links|slice:":5" %}
-            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-item">
+        <div class="card-scroll">
+            {% for item in now_items %}
+            <div class="act-item">
+                <span class="act-icon">{{ item.icon }}</span>
+                <p class="act-text flex-1">{{ item.text }}</p>
+                <span class="act-badge">进行中</span>
+            </div>
+            {% endfor %}
+            {% for act in activities|slice:":4" %}
+            <div class="act-item">
+                <span class="act-icon">{{ act.icon|default:"📌" }}</span>
+                <p class="act-text flex-1">{{ act.text|truncatewords:10 }}</p>
+                <span class="act-date">{{ act.date_label }}</span>
+            </div>
+            {% empty %}
+            {% if not now_items %}
+            <p class="text-gray-600 text-sm">暂无动态</p>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 服务 -->
+    <div class="card" id="services-card">
+        <div class="services-row">
+            {% for link in all_links|slice:":6" %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-pill">
                 {% if 'github' in link.url %}
                 <svg class="service-icon-svg" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
                 {% else %}
@@ -79,33 +211,137 @@
                 <span class="service-name">{{ link.name }}</span>
             </a>
             {% endfor %}
+            <div class="flex-1"></div>
+            <a href="{% url 'links:link_list' %}" class="view-all" style="font-size:0.75rem;">全部 →</a>
         </div>
     </div>
-    
-    <!-- 最近动态 (右下) -->
-    <div class="card fade-up" style="grid-column: 2; grid-row: 2;">
-        <div class="flex items-center justify-between">
-            <span class="card-label">Activity</span>
-            <a href="{% url 'nexus_core:now_page' %}" class="view-all">全部 →</a>
-        </div>
-        <div class="flex-1 overflow-hidden flex gap-4">
-            {% for act in activities %}
-            <div class="act-item flex-1">
-                <p class="act-text">{{ act.text }}</p>
-                <p class="act-date">{{ act.date_label }}</p>
-            </div>
-            {% empty %}
-            <div class="act-item flex-1">
-                <p class="act-text text-gray-600">暂无动态</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    
+
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/home.js' %}"></script>
+<script src="{% static 'js/home.js' %}?v=6"></script>
+<script>
+let musicState = { state: 'stop' };
+
+function musicCtrl(action) {
+    fetch('/api/music/control/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({action: action})
+    }).then(r => r.json()).then(d => {
+        if (d.success) setTimeout(fetchMusicStatus, 300);
+    }).catch(() => {});
+}
+
+function updateModeBtn() {
+    const btn = document.getElementById('music-mode-btn');
+    if (!btn) return;
+    if (musicState.random) {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>';
+        btn.classList.add('active');
+        btn.title = '随机播放 (点击切换)';
+    } else if (musicState.repeat) {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>';
+        btn.classList.add('active');
+        btn.title = '循环播放 (点击切换)';
+    } else {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>';
+        btn.classList.remove('active');
+        btn.title = '顺序播放 (点击切换)';
+    }
+}
+
+function cycleMode() {
+    // 顺序 → 随机 → 循环 → 顺序
+    if (!musicState.random && !musicState.repeat) {
+        musicCtrl('random');      // → 随机
+    } else if (musicState.random) {
+        musicCtrl('random');      // 先关随机
+        setTimeout(() => musicCtrl('repeat'), 150);  // 再开循环
+    } else {
+        musicCtrl('repeat');      // 关循环，回到顺序
+    }
+}
+
+function fetchMusicStatus() {
+    fetch('/api/music/status/').then(r => r.json()).then(d => {
+        const loading = document.getElementById('music-loading');
+        const titleEl = document.getElementById('music-title');
+        const artistEl = document.getElementById('music-artist');
+        const stopped = document.getElementById('music-stopped');
+        const playBtn = document.getElementById('music-play-btn');
+
+        if (!d.success) {
+            loading.style.display = 'none';
+            titleEl.style.display = 'none';
+            artistEl.style.display = 'none';
+            stopped.style.display = '';
+            stopped.textContent = '服务离线';
+            return;
+        }
+
+        musicState = d;
+        updateModeBtn();
+        loading.style.display = 'none';
+
+        if (d.state === 'play' || d.state === 'pause') {
+            titleEl.style.display = '';
+            artistEl.style.display = '';
+            stopped.style.display = 'none';
+            titleEl.textContent = d.title || '未知';
+            artistEl.textContent = d.artist || '';
+            playBtn.innerHTML = d.state === 'play'
+                ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
+                : '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+        } else {
+            titleEl.style.display = 'none';
+            artistEl.style.display = 'none';
+            stopped.style.display = '';
+        }
+    }).catch(() => {
+        document.getElementById('music-loading').style.display = 'none';
+        document.getElementById('music-title').style.display = 'none';
+        document.getElementById('music-artist').style.display = 'none';
+        const stopped = document.getElementById('music-stopped');
+        stopped.style.display = '';
+        stopped.textContent = '服务离线';
+    });
+}
+
+fetchMusicStatus();
+setInterval(fetchMusicStatus, 10000);
+
+function fetchMonitor() {
+    fetch('/api/monitor/data/').then(r => r.json()).then(d => {
+        if (!d.servers) return;
+        d.servers.forEach(s => {
+            const dot = document.getElementById('srv-' + s.name + '-dot');
+            const bar = document.getElementById('srv-' + s.name + '-bar');
+            const cpuEl = document.getElementById('srv-' + s.name + '-cpu');
+            const memEl = document.getElementById('srv-' + s.name + '-mem');
+            if (!dot) return;
+
+            if (s.online) {
+                dot.className = 'srv-dot on';
+                const cpu = Math.round(s.cpu_percent || 0);
+                const mem = Math.round(s.mem_percent || 0);
+                bar.style.width = mem + '%';
+                bar.className = 'srv-bar ' + (mem > 80 ? 'high' : mem > 50 ? 'mid' : 'low');
+                memEl.textContent = 'Mem ' + mem + '%';
+                cpuEl.textContent = 'CPU ' + cpu + '%';
+            } else {
+                dot.className = 'srv-dot off';
+                bar.style.width = '0%';
+                memEl.textContent = '--';
+                cpuEl.textContent = '离线';
+            }
+        });
+    }).catch(() => {});
+}
+
+fetchMonitor();
+setInterval(fetchMonitor, 30000);
+</script>
 {% endblock %}
