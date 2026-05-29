@@ -17,13 +17,6 @@ def _uptime_text(seconds):
     return f"{hours}小时 {minutes}分"
 
 
-def _format_net_traffic(bytes_val):
-    gb = bytes_val / (1024 ** 3)
-    if gb >= 1:
-        return f"{gb:.1f} GB"
-    mb = bytes_val / (1024 ** 2)
-    return f"{mb:.0f} MB"
-
 
 def _fetch_server(server_cfg):
     """拉取单台服务器数据，失败返回离线状态"""
@@ -63,16 +56,12 @@ def _fetch_server(server_cfg):
 
         result["uptime"] = _uptime_text(data.get("uptime_seconds", 0))
 
-        net = data.get("network", {})
-        result["net_sent"] = _format_net_traffic(net.get("bytes_sent", 0))
-        result["net_recv"] = _format_net_traffic(net.get("bytes_recv", 0))
 
         bat = data.get("battery")
         if bat:
             result["battery"] = {
                 "percent": round(bat.get("percent", 0), 1),
                 "plugged": bat.get("power_plugged"),
-                "remaining": bat.get("remaining_text", ""),
             }
 
         docker = data.get("docker")

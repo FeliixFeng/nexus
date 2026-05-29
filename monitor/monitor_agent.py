@@ -131,23 +131,34 @@ def collect_metrics():
         },
     }
 
-    # 电池信息（笔记本 / Mac）
-    battery = psutil.sensors_battery()
+    # 电池信息（psutil 优先，回退 sysfs）
+    battery = None
+    try:
+        battery = psutil.sensors_battery()
+    except Exception:
+        pass
     if battery:
-        secs = battery.secsleft
-        if secs == psutil.POWER_TIME_UNLIMITED:
-            remaining = "充电中"
-        elif secs == psutil.POWER_TIME_UNKNOWN:
-            remaining = "未知"
-        else:
-            h, m = divmod(secs // 60, 60)
-            remaining = f"{h}h{m}m" if h else f"{m}m"
         data["battery"] = {
             "percent": round(battery.percent, 1),
             "power_plugged": battery.power_plugged,
-            "secsleft": battery.secsleft,
-            "remaining_text": remaining,
         }
+    else:
+        import glob
+        for cap_path in glob.glob("/sys/class/power_supply/*/capacity"):
+            try:
+                with open(cap_path) as f:
+                    pct = int(f.read().strip())
+                base = cap_path.rsplit("/capacity", 1)[0]
+                status = "Unknown"
+                status_path = os.path.join(base, "status")
+                if os.path.exists(status_path):
+                    with open(status_path) as f:
+                        status = f.read().strip()
+                plugged = status.lower() in ("charging", "full")
+                data["battery"] = {"percent": pct, "power_plugged": plugged}
+                break
+            except Exception:
+                continue
 
     # Docker 容器（优先 socket API，回退 CLI）
     containers = _docker_via_socket()
