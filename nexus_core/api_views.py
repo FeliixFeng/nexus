@@ -57,6 +57,27 @@ def now_delete(request, pk):
         return JsonResponse({'success': False, 'error': 'not found'}, status=404)
 
 
+@require_POST
+def now_complete(request, pk):
+    """完成：NowItem → Activity 里程碑"""
+    if not _check_auth(request):
+        return JsonResponse({'success': False, 'error': 'unauthorized'}, status=403)
+    try:
+        item = NowItem.objects.get(pk=pk)
+    except NowItem.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'not found'}, status=404)
+    from datetime import date
+    today = date.today()
+    act = Activity.objects.create(
+        text=item.text,
+        icon=item.icon,
+        date_label=f'{today.year}.{today.month:02d}.{today.day:02d}',
+        sort_order=0,
+    )
+    item.delete()
+    return JsonResponse({'success': True, 'id': act.id})
+
+
 # ─── Activity CRUD ──────────────────────────────────
 
 @require_POST

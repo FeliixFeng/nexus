@@ -134,6 +134,7 @@
             <span class="now-text">{{ item.text }}</span>
             {% if is_editor %}
             <div class="now-actions">
+                <button class="edit-btn" onclick="completeNow({{ item.id }})" title="完成，转为里程碑" style="color:#34d399;border-color:rgba(52,211,153,0.3)">✓</button>
                 <button class="edit-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">改</button>
                 <button class="edit-btn danger" onclick="deleteNow({{ item.id }})">删</button>
             </div>
@@ -257,6 +258,17 @@ function deleteNow(id) {
         headers: {'X-CSRFToken': getCSRF()}
     }).then(r => r.json()).then(d => {
         if (d.success) document.getElementById('now-' + id).remove();
+        else alert(d.error);
+    });
+}
+
+function completeNow(id) {
+    if (!confirm('完成这个项目？会移到里程碑')) return;
+    fetch(`/api/now/${id}/complete/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF()}
+    }).then(r => r.json()).then(d => {
+        if (d.success) location.reload();
         else alert(d.error);
     });
 }

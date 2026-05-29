@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/now/create/', api_views.now_create, name='now_create'),
     path('api/now/<int:pk>/update/', api_views.now_update, name='now_update'),
     path('api/now/<int:pk>/delete/', api_views.now_delete, name='now_delete'),
+    path('api/now/<int:pk>/complete/', api_views.now_complete, name='now_complete'),
 
     # Activity API
     path('api/activity/create/', api_views.activity_create, name='activity_create'),
