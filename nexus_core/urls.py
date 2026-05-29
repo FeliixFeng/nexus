@@ -26,4 +26,17 @@ urlpatterns = [
     # Music API
     path('api/music/status/', music_views.music_status, name='music_status'),
     path('api/music/control/', music_views.music_control, name='music_control'),
+
+    # Link API
+    path('api/links/', api_views.link_list, name='link_list'),
+    path('api/links/create/', api_views.link_create, name='link_create'),
+    path('api/links/<int:pk>/update/', api_views.link_update, name='link_update'),
+    path('api/links/<int:pk>/delete/', api_views.link_delete, name='link_delete'),
+
+    # Note API
+    path('api/notes/', api_views.note_list, name='note_list'),
+    path('api/notes/create/', api_views.note_create, name='note_create'),
+    path('api/notes/import/', api_views.note_import, name='note_import'),
+    path('api/notes/<int:pk>/update/', api_views.note_update, name='note_update'),
+    path('api/notes/<int:pk>/delete/', api_views.note_delete, name='note_delete'),
 ]
