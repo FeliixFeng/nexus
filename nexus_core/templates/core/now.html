@@ -185,12 +185,10 @@
     <div class="mt-6">
         <div id="tl-add-trigger" class="add-bar" onclick="showTlAdd()">+ 添加里程碑</div>
         <div id="tl-add-form" class="hidden mt-3">
-            <div class="flex gap-2 items-center mb-2">
+            <div class="flex gap-2 items-center">
                 <input type="text" id="tl-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
                 <input type="text" id="tl-text-input" class="form-input flex-1" placeholder="做到了什么...">
-            </div>
-            <div class="flex gap-2 items-center">
-                <input type="text" id="tl-date-input" class="form-input" style="width:120px" placeholder="2026.05">
+                <input type="text" id="tl-date-input" class="form-input" style="width:100px" placeholder="2026.05">
                 <button class="edit-btn" onclick="createTl()">添加</button>
                 <button class="edit-btn" onclick="hideTlAdd()">取消</button>
             </div>
@@ -291,16 +289,12 @@ function createTl() {
 
 function editTl(id, icon, text, date) {
     const el = document.getElementById('tl-' + id);
-    el.innerHTML = `<div>
-        <div class="flex gap-2 items-center mb-2">
-            <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="te-icon-${id}">
-            <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}">
-        </div>
-        <div class="flex gap-2 items-center">
-            <input type="text" class="form-input" style="width:120px" value="${date}" id="te-date-${id}">
-            <button class="edit-btn" onclick="saveTl(${id})">保存</button>
-            <button class="edit-btn" onclick="location.reload()">取消</button>
-        </div>
+    el.innerHTML = `<div class="flex gap-2 items-center">
+        <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="te-icon-${id}">
+        <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}">
+        <input type="text" class="form-input" style="width:100px" value="${date}" id="te-date-${id}">
+        <button class="edit-btn" onclick="saveTl(${id})">保存</button>
+        <button class="edit-btn" onclick="location.reload()">取消</button>
     </div>`;
     document.getElementById('te-text-' + id).focus();
 }
