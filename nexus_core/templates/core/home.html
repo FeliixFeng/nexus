@@ -225,7 +225,7 @@
     
     /* 首页导航栏底部细线 */
     #navbar { border-bottom-color: rgba(99, 102, 241, 0.25) !important; }
-    #pin-toggle, #back-to-top { display: none !important; }
+    #pin-toggle, #pin-toggle-mobile, #back-to-top { display: none !important; }
     /* 缩小卡片到footer的间距 */
     footer { margin-top: 0.8rem !important; padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
 
@@ -319,20 +319,21 @@
     
     <!-- 最近动态 (右下) -->
     <div class="card fade-up" style="grid-column: 2; grid-row: 2;">
-        <span class="card-label">Activity</span>
+        <div class="flex items-center justify-between">
+            <span class="card-label">Activity</span>
+            <a href="{% url 'nexus_core:activity_list' %}" class="view-all">全部 →</a>
+        </div>
         <div class="flex-1 overflow-hidden flex gap-4">
+            {% for act in activities %}
             <div class="act-item flex-1">
-                <p class="act-text">搭建个人数字空间 Nexus</p>
-                <p class="act-date">2026.05</p>
+                <p class="act-text">{{ act.text }}</p>
+                <p class="act-date">{{ act.date_label }}</p>
             </div>
+            {% empty %}
             <div class="act-item flex-1">
-                <p class="act-text">开始学习微服务架构</p>
-                <p class="act-date">2026.05</p>
+                <p class="act-text text-gray-600">暂无动态</p>
             </div>
-            <div class="act-item flex-1">
-                <p class="act-text">自建 DERP 中继服务器</p>
-                <p class="act-date">2026.04</p>
-            </div>
+            {% endfor %}
         </div>
     </div>
     

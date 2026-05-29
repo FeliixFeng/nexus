@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}活动 · Nexus{% endblock %}
+
+{% block extra_css %}
+<style>
+    .act-card {
+        position: relative;
+        border-left: 2px solid rgba(99, 102, 241, 0.15);
+        padding: 16px 0 16px 20px;
+        margin-left: 8px;
+        transition: all 0.3s ease;
+    }
+    .act-card:hover {
+        border-left-color: rgba(99, 102, 241, 0.5);
+    }
+    .act-card:hover .act-actions { opacity: 1; }
+    .act-text { font-size: 1rem; color: #d1d5db; line-height: 1.6; }
+    .act-date { font-size: 0.75rem; color: rgba(107, 114, 128, 0.7); margin-top: 4px; }
+    .act-actions {
+        opacity: 0;
+        transition: opacity 0.2s;
+        position: absolute;
+        right: 0;
+        top: 16px;
+    }
+    .act-btn {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        transition: all 0.2s;
+        cursor: pointer;
+        background: rgba(31, 41, 55, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        color: #9ca3af;
+    }
+    .act-btn:hover { background: rgba(55, 65, 81, 0.8); color: white; }
+    .act-btn.danger:hover { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
+
+    .act-form input {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(75, 85, 99, 0.4);
+        border-radius: 8px;
+        padding: 8px 12px;
+        color: white;
+        font-size: 0.88rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .act-form input:focus { border-color: #6366f1; }
+    .act-form input::placeholder { color: rgba(107, 114, 128, 0.5); }
+
+    .add-bar {
+        border: 1px dashed rgba(75, 85, 99, 0.3);
+        border-radius: 10px;
+        padding: 14px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: rgba(107, 114, 128, 0.6);
+        text-align: center;
+    }
+    .add-bar:hover { border-color: rgba(99, 102, 241, 0.4); color: #818cf8; background: rgba(99, 102, 241, 0.04); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-2xl">
+    <!-- 标题 -->
+    <div class="text-center mb-10">
+        <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Activity</h1>
+        <h2 class="text-2xl md:text-3xl font-bold text-white">最近动态</h2>
+        <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
+    </div>
+
+    <!-- 活动列表 -->
+    <div id="act-list">
+        {% for act in activities %}
+        <div class="act-card" data-id="{{ act.id }}" id="act-{{ act.id }}">
+            <div class="act-view">
+                <p class="act-text">{{ act.text }}</p>
+                <p class="act-date">{{ act.date_label }}</p>
+            </div>
+            {% if is_editor %}
+            <div class="act-actions">
+                <button class="act-btn" onclick="startEdit({{ act.id }}, '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">编辑</button>
+                <button class="act-btn danger" onclick="deleteAct({{ act.id }})">删除</button>
+            </div>
+            {% endif %}
+            <!-- 编辑表单（默认隐藏） -->
+            {% if is_editor %}
+            <div class="act-form hidden mt-3" id="edit-{{ act.id }}">
+                <div class="flex gap-2 items-center">
+                    <input type="text" id="edit-text-{{ act.id }}" value="{{ act.text }}" class="flex-1" placeholder="动态内容">
+                    <input type="text" id="edit-date-{{ act.id }}" value="{{ act.date_label }}" style="width:100px" placeholder="如 2026.05">
+                    <button class="act-btn" onclick="saveEdit({{ act.id }})">保存</button>
+                    <button class="act-btn" onclick="cancelEdit({{ act.id }})">取消</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="text-gray-600 text-sm text-center py-8">暂无动态</p>
+        {% endfor %}
+    </div>
+
+    <!-- 新增 -->
+    {% if is_editor %}
+    <div class="mt-8">
+        <div id="add-trigger" class="add-bar" onclick="showAddForm()">+ 添加动态</div>
+        <div id="add-form" class="act-form hidden mt-4">
+            <div class="flex gap-2 items-center">
+                <input type="text" id="new-text" class="flex-1" placeholder="动态内容">
+                <input type="text" id="new-date" style="width:100px" placeholder="如 2026.05">
+                <button class="act-btn" onclick="createAct()">添加</button>
+                <button class="act-btn" onclick="hideAddForm()">取消</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCSRF() {
+    return document.cookie.split('; ').find(r => r.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+function showAddForm() {
+    document.getElementById('add-trigger').classList.add('hidden');
+    document.getElementById('add-form').classList.remove('hidden');
+    document.getElementById('new-text').focus();
+}
+function hideAddForm() {
+    document.getElementById('add-trigger').classList.remove('hidden');
+    document.getElementById('add-form').classList.add('hidden');
+    document.getElementById('new-text').value = '';
+    document.getElementById('new-date').value = '';
+}
+
+function createAct() {
+    const text = document.getElementById('new-text').value.trim();
+    const date_label = document.getElementById('new-date').value.trim();
+    if (!text || !date_label) return;
+
+    fetch('/api/activity/create/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `text=${encodeURIComponent(text)}&date_label=${encodeURIComponent(date_label)}`
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) location.reload();
+        else alert(d.error || '失败');
+    });
+}
+
+function startEdit(id, text, date) {
+    document.getElementById('act-' + id).querySelector('.act-view').classList.add('hidden');
+    document.getElementById('edit-' + id).classList.remove('hidden');
+    document.getElementById('edit-text-' + id).focus();
+}
+function cancelEdit(id) {
+    document.getElementById('act-' + id).querySelector('.act-view').classList.remove('hidden');
+    document.getElementById('edit-' + id).classList.add('hidden');
+}
+function saveEdit(id) {
+    const text = document.getElementById('edit-text-' + id).value.trim();
+    const date_label = document.getElementById('edit-date-' + id).value.trim();
+    if (!text || !date_label) return;
+
+    fetch(`/api/activity/${id}/update/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `text=${encodeURIComponent(text)}&date_label=${encodeURIComponent(date_label)}`
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) location.reload();
+        else alert(d.error || '失败');
+    });
+}
+
+function deleteAct(id) {
+    if (!confirm('确定删除这条动态？')) return;
+    fetch(`/api/activity/${id}/delete/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF()}
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            document.getElementById('act-' + id).remove();
+        } else alert(d.error || '失败');
+    });
+}
+</script>
+{% endblock %}
