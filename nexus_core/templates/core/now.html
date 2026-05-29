@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Now · Nexus{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Now 条目 */
+    .now-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: rgba(17, 24, 39, 0.4);
+        border: 1px solid rgba(75, 85, 99, 0.2);
+        transition: all 0.2s;
+    }
+    .now-item:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        background: rgba(99, 102, 241, 0.04);
+    }
+    .now-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .now-text { color: #d1d5db; font-size: 0.92rem; }
+
+    /* 时间线 */
+    .timeline {
+        position: relative;
+        padding-left: 24px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, rgba(99,102,241,0.3), rgba(139,92,246,0.15), transparent);
+    }
+    .tl-item {
+        position: relative;
+        padding: 12px 0 20px;
+    }
+    .tl-item::before {
+        content: '';
+        position: absolute;
+        left: -20px;
+        top: 18px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+    }
+    .tl-item:hover::before { background: rgba(99, 102, 241, 0.8); }
+    .tl-date { font-size: 0.72rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 4px; font-family: monospace; }
+    .tl-text { font-size: 0.92rem; color: #d1d5db; }
+    .tl-icon { margin-right: 6px; }
+    .tl-actions {
+        opacity: 0;
+        transition: opacity 0.2s;
+        position: absolute;
+        right: 0;
+        top: 12px;
+    }
+    .tl-item:hover .tl-actions { opacity: 1; }
+
+    /* 编辑按钮 */
+    .edit-btn {
+        padding: 4px 10px;
+        font-size: 0.72rem;
+        border-radius: 6px;
+        cursor: pointer;
+        background: rgba(31, 41, 55, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        color: #9ca3af;
+        transition: all 0.2s;
+    }
+    .edit-btn:hover { background: rgba(55, 65, 81, 0.8); color: white; }
+    .edit-btn.danger:hover { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
+
+    /* Now 编辑动作 */
+    .now-actions {
+        opacity: 0;
+        transition: opacity 0.2s;
+        margin-left: auto;
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+    }
+    .now-item:hover .now-actions { opacity: 1; }
+
+    /* 表单 */
+    .form-input {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(75, 85, 99, 0.4);
+        border-radius: 8px;
+        padding: 8px 12px;
+        color: white;
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: #6366f1; }
+    .form-input::placeholder { color: rgba(107, 114, 128, 0.5); }
+
+    .add-bar {
+        border: 1px dashed rgba(75, 85, 99, 0.3);
+        border-radius: 10px;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: rgba(107, 114, 128, 0.6);
+        text-align: center;
+        font-size: 0.85rem;
+    }
+    .add-bar:hover { border-color: rgba(99, 102, 241, 0.4); color: #818cf8; background: rgba(99, 102, 241, 0.04); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-2xl">
+    <!-- 标题 -->
+    <div class="text-center mb-10">
+        <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Now</h1>
+        <h2 class="text-2xl md:text-3xl font-bold text-white">当前在做</h2>
+        <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
+    </div>
+
+    <!-- 当前在做 -->
+    <div id="now-list" class="space-y-2 mb-6">
+        {% for item in now_items %}
+        <div class="now-item" data-id="{{ item.id }}" id="now-{{ item.id }}">
+            <span class="now-icon">{{ item.icon }}</span>
+            <span class="now-text">{{ item.text }}</span>
+            {% if is_editor %}
+            <div class="now-actions">
+                <button class="edit-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">改</button>
+                <button class="edit-btn danger" onclick="deleteNow({{ item.id }})">删</button>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_editor %}
+    <div class="mb-10">
+        <div id="now-add-trigger" class="add-bar" onclick="showNowAdd()">+ 添加当前在做</div>
+        <div id="now-add-form" class="hidden mt-3">
+            <div class="flex gap-2 items-center">
+                <input type="text" id="now-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
+                <input type="text" id="now-text-input" class="form-input flex-1" placeholder="正在做什么...">
+                <button class="edit-btn" onclick="createNow()">添加</button>
+                <button class="edit-btn" onclick="hideNowAdd()">取消</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 分隔 -->
+    <div class="flex items-center gap-4 mb-8">
+        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
+        <span class="text-xs text-gray-600 uppercase tracking-wider">Timeline</span>
+        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
+    </div>
+
+    <!-- 时间线 -->
+    <div id="tl-list" class="timeline">
+        {% for act in activities %}
+        <div class="tl-item" data-id="{{ act.id }}" id="tl-{{ act.id }}">
+            <p class="tl-date">{{ act.date_label }}</p>
+            <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
+            {% if is_editor %}
+            <div class="tl-actions">
+                <button class="edit-btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">编辑</button>
+                <button class="edit-btn danger" onclick="deleteTl({{ act.id }})">删除</button>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="text-gray-600 text-sm text-center py-8">暂无里程碑</p>
+        {% endfor %}
+    </div>
+
+    {% if is_editor %}
+    <div class="mt-6">
+        <div id="tl-add-trigger" class="add-bar" onclick="showTlAdd()">+ 添加里程碑</div>
+        <div id="tl-add-form" class="hidden mt-3">
+            <div class="flex gap-2 items-center mb-2">
+                <input type="text" id="tl-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
+                <input type="text" id="tl-text-input" class="form-input flex-1" placeholder="做到了什么...">
+            </div>
+            <div class="flex gap-2 items-center">
+                <input type="text" id="tl-date-input" class="form-input" style="width:120px" placeholder="2026.05">
+                <button class="edit-btn" onclick="createTl()">添加</button>
+                <button class="edit-btn" onclick="hideTlAdd()">取消</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCSRF() {
+    return document.cookie.split('; ').find(r => r.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+// ─── Now CRUD ──────────────────────────────
+
+function showNowAdd() {
+    document.getElementById('now-add-trigger').classList.add('hidden');
+    document.getElementById('now-add-form').classList.remove('hidden');
+    document.getElementById('now-text-input').focus();
+}
+function hideNowAdd() {
+    document.getElementById('now-add-trigger').classList.remove('hidden');
+    document.getElementById('now-add-form').classList.add('hidden');
+    document.getElementById('now-text-input').value = '';
+}
+
+function createNow() {
+    const icon = document.getElementById('now-icon-input').value.trim() || '📌';
+    const text = document.getElementById('now-text-input').value.trim();
+    if (!text) return;
+    fetch('/api/now/create/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}`
+    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
+}
+
+function editNow(id, icon, text) {
+    const el = document.getElementById('now-' + id);
+    el.innerHTML = `<div class="flex gap-2 items-center w-full">
+        <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="ne-icon-${id}">
+        <input type="text" class="form-input flex-1" value="${text}" id="ne-text-${id}">
+        <button class="edit-btn" onclick="saveNow(${id})">保存</button>
+        <button class="edit-btn" onclick="location.reload()">取消</button>
+    </div>`;
+    document.getElementById('ne-text-' + id).focus();
+}
+
+function saveNow(id) {
+    const icon = document.getElementById('ne-icon-' + id).value.trim();
+    const text = document.getElementById('ne-text-' + id).value.trim();
+    if (!text) return;
+    fetch(`/api/now/${id}/update/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}`
+    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
+}
+
+function deleteNow(id) {
+    if (!confirm('确定删除？')) return;
+    fetch(`/api/now/${id}/delete/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF()}
+    }).then(r => r.json()).then(d => {
+        if (d.success) document.getElementById('now-' + id).remove();
+        else alert(d.error);
+    });
+}
+
+// ─── Timeline CRUD ─────────────────────────
+
+function showTlAdd() {
+    document.getElementById('tl-add-trigger').classList.add('hidden');
+    document.getElementById('tl-add-form').classList.remove('hidden');
+    document.getElementById('tl-text-input').focus();
+}
+function hideTlAdd() {
+    document.getElementById('tl-add-trigger').classList.remove('hidden');
+    document.getElementById('tl-add-form').classList.add('hidden');
+    document.getElementById('tl-text-input').value = '';
+    document.getElementById('tl-date-input').value = '';
+}
+
+function createTl() {
+    const icon = document.getElementById('tl-icon-input').value.trim() || '📌';
+    const text = document.getElementById('tl-text-input').value.trim();
+    const date_label = document.getElementById('tl-date-input').value.trim();
+    if (!text || !date_label) return;
+    fetch('/api/activity/create/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}&date_label=${encodeURIComponent(date_label)}`
+    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
+}
+
+function editTl(id, icon, text, date) {
+    const el = document.getElementById('tl-' + id);
+    el.innerHTML = `<div>
+        <div class="flex gap-2 items-center mb-2">
+            <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="te-icon-${id}">
+            <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}">
+        </div>
+        <div class="flex gap-2 items-center">
+            <input type="text" class="form-input" style="width:120px" value="${date}" id="te-date-${id}">
+            <button class="edit-btn" onclick="saveTl(${id})">保存</button>
+            <button class="edit-btn" onclick="location.reload()">取消</button>
+        </div>
+    </div>`;
+    document.getElementById('te-text-' + id).focus();
+}
+
+function saveTl(id) {
+    const icon = document.getElementById('te-icon-' + id).value.trim();
+    const text = document.getElementById('te-text-' + id).value.trim();
+    const date_label = document.getElementById('te-date-' + id).value.trim();
+    if (!text || !date_label) return;
+    fetch(`/api/activity/${id}/update/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF(), 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `icon=${encodeURIComponent(icon)}&text=${encodeURIComponent(text)}&date_label=${encodeURIComponent(date_label)}`
+    }).then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.error); });
+}
+
+function deleteTl(id) {
+    if (!confirm('确定删除这条里程碑？')) return;
+    fetch(`/api/activity/${id}/delete/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCSRF()}
+    }).then(r => r.json()).then(d => {
+        if (d.success) document.getElementById('tl-' + id).remove();
+        else alert(d.error);
+    });
+}
+</script>
+{% endblock %}

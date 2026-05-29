@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from blog.models import Post
 from links.models import Link
-from nexus_core.models import Activity
+from nexus_core.models import Activity, NowItem
 from nexus_core.pin_utils import is_pin_verified
 
 
@@ -23,11 +23,13 @@ def home(request):
     return render(request, 'core/home.html', context)
 
 
-def activity_list(request):
-    """活动列表"""
+def now_page(request):
+    """Now 页面 — 当前在做 + 时间线"""
+    now_items = NowItem.objects.all()
     activities = Activity.objects.filter(is_visible=True)
     context = {
+        'now_items': now_items,
         'activities': activities,
         'is_editor': is_pin_verified(request),
     }
-    return render(request, 'core/activities.html', context)
+    return render(request, 'core/now.html', context)

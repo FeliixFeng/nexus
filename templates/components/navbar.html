@@ -10,7 +10,7 @@
             </span>
             <!-- 移动端当前页面标题 -->
             <span class="md:hidden text-xs text-gray-500 ml-1">
-                {% if request.resolver_match.url_name == 'home' %}{% elif 'blog' in request.resolver_match.app_name %}/ 笔记{% elif 'links' in request.resolver_match.app_name %}/ 链接{% elif request.resolver_match.url_name == 'activity_list' %}/ 活动{% elif request.resolver_match.url_name == 'monitor' %}/ 监控{% elif request.resolver_match.url_name == 'post_detail' %}/ {{ post.title|truncatechars:8 }}{% elif request.resolver_match.url_name == 'post_list' %}/ 笔记{% endif %}
+                {% if request.resolver_match.url_name == 'home' %}{% elif 'blog' in request.resolver_match.app_name %}/ 笔记{% elif 'links' in request.resolver_match.app_name %}/ 链接{% elif request.resolver_match.url_name == 'now_page' %}/ Now{% elif request.resolver_match.url_name == 'monitor' %}/ 监控{% elif request.resolver_match.url_name == 'post_detail' %}/ {{ post.title|truncatechars:8 }}{% elif request.resolver_match.url_name == 'post_list' %}/ 笔记{% endif %}
             </span>
         </a>
         <!-- 桌面端导航 -->
@@ -27,9 +27,9 @@
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'links' in request.resolver_match.app_name %}active{% endif %}">
                 链接
             </a>
-            <a href="{% url 'nexus_core:activity_list' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'activity_list' %}active{% endif %}">
-                活动
+            <a href="{% url 'nexus_core:now_page' %}" 
+               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'now_page' %}active{% endif %}">
+                Now
             </a>
             <a href="{% url 'nexus_core:monitor' %}" 
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'monitor' %}active{% endif %}">
@@ -85,9 +85,9 @@
                 <span class="w-5 text-center text-base">🔗</span>
                 <span>链接</span>
             </a>
-            <a href="{% url 'nexus_core:activity_list' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'activity_list' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
+            <a href="{% url 'nexus_core:now_page' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'now_page' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
                 <span class="w-5 text-center text-base">⚡</span>
-                <span>活动</span>
+                <span>Now</span>
             </a>
             <a href="{% url 'nexus_core:monitor' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'monitor' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
                 <span class="w-5 text-center text-base">📊</span>
