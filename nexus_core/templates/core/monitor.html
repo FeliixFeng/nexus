@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block title %}监控 · Nexus{% endblock %}
+
+{% block extra_css %}
+<style>
+    .server-card {
+        background: rgba(17, 24, 39, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.25);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+    .server-card:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.06);
+    }
+    .server-card.offline {
+        border-color: rgba(220, 38, 38, 0.25);
+    }
+    .server-card.offline:hover {
+        border-color: rgba(220, 38, 38, 0.4);
+        box-shadow: 0 0 20px rgba(220, 38, 38, 0.08);
+    }
+
+    .status-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .status-dot.online {
+        background: #34d399;
+        box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .status-dot.offline {
+        background: #f87171;
+        box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+    }
+
+    .metric-bar {
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(55, 65, 81, 0.5);
+        overflow: hidden;
+    }
+    .metric-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.6s ease;
+    }
+    .metric-bar-fill.normal { background: linear-gradient(90deg, #6366f1, #818cf8); }
+    .metric-bar-fill.warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .metric-bar-fill.danger { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    .metric-label {
+        font-size: 0.75rem;
+        color: rgba(156, 163, 175, 0.7);
+        margin-bottom: 4px;
+    }
+    .metric-value {
+        font-size: 0.88rem;
+        color: #e5e7eb;
+        font-weight: 500;
+    }
+
+    .container-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        background: rgba(31, 41, 55, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        color: #9ca3af;
+    }
+    .container-chip.running { border-color: rgba(52, 211, 153, 0.3); }
+    .container-chip .chip-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .container-chip .chip-dot.running { background: #34d399; }
+    .container-chip .chip-dot.stopped { background: #f87171; }
+
+    .summary-box {
+        background: rgba(17, 24, 39, 0.4);
+        border: 1px solid rgba(75, 85, 99, 0.2);
+        border-radius: 12px;
+        padding: 16px 20px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        font-size: 0.82rem;
+    }
+    .info-row .label { color: rgba(156, 163, 175, 0.6); }
+    .info-row .value { color: #d1d5db; }
+
+    @keyframes pulse-green {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    .pulse { animation: pulse-green 2s ease-in-out infinite; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-6 md:px-10 pt-16 pb-10 max-w-4xl">
+    <!-- 标题 -->
+    <div class="text-center mb-10">
+        <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Monitor</h1>
+        <h2 class="text-2xl md:text-3xl font-bold text-white">服务器监控</h2>
+        <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
+        <!-- 状态摘要 -->
+        <p class="text-sm text-gray-500 mt-4">
+            <span class="status-dot online pulse"></span>
+            <span class="ml-1">{{ online }}/{{ total }} 在线</span>
+            {% if all_containers %}
+            <span class="mx-2 text-gray-700">·</span>
+            <span>{{ all_containers|length }} 个容器</span>
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- 服务器卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+        {% for s in servers %}
+        <div class="server-card {% if not s.online %}offline{% endif %}">
+            <!-- 头部：名称 + 状态 -->
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="status-dot {% if s.online %}online{% else %}offline{% endif %}"></span>
+                        <span class="text-lg font-bold text-white">{{ s.name }}</span>
+                        {% if s.online %}
+                        <span class="text-xs text-gray-600 font-mono">{{ s.platform }}/{{ s.arch }}</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-gray-600 mt-0.5 ml-5">{{ s.role }}</p>
+                </div>
+                {% if s.online %}
+                <div class="text-right">
+                    <span class="text-xs text-gray-600">运行时间</span>
+                    <p class="text-sm text-gray-400 font-mono">{{ s.uptime }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if s.online %}
+            <!-- 指标区 -->
+            <div class="space-y-4">
+                <!-- CPU -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="metric-label">CPU</span>
+                        <span class="metric-value">{{ s.cpu_percent }}%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill {% if s.cpu_percent > 80 %}danger{% elif s.cpu_percent > 50 %}warning{% else %}normal{% endif %}" style="width: {{ s.cpu_percent }}%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span class="text-xs text-gray-600">{{ s.cpu_count }} 核</span>
+                        <span class="text-xs text-gray-600">负载 {{ s.load_avg.0 }} {{ s.load_avg.1 }} {{ s.load_avg.2 }}</span>
+                    </div>
+                </div>
+
+                <!-- 内存 -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="metric-label">内存</span>
+                        <span class="metric-value">{{ s.mem_used }} / {{ s.mem_total }} GB</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill {% if s.mem_percent > 80 %}danger{% elif s.mem_percent > 60 %}warning{% else %}normal{% endif %}" style="width: {{ s.mem_percent }}%"></div>
+                    </div>
+                </div>
+
+                <!-- 磁盘 -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="metric-label">磁盘</span>
+                        <span class="metric-value">{{ s.disk_used }} / {{ s.disk_total }} GB</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill {% if s.disk_percent > 85 %}danger{% elif s.disk_percent > 70 %}warning{% else %}normal{% endif %}" style="width: {{ s.disk_percent }}%"></div>
+                    </div>
+                </div>
+
+                <!-- 网络 -->
+                <div class="flex gap-4 pt-1">
+                    <div class="flex-1">
+                        <div class="info-row">
+                            <span class="label">↑ 发送</span>
+                            <span class="value">{{ s.net_sent }}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="info-row">
+                            <span class="label">↓ 接收</span>
+                            <span class="value">{{ s.net_recv }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 电池（如果有） -->
+                {% if s.battery %}
+                <div class="pt-1">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="metric-label">🔋 电池</span>
+                        <span class="metric-value">
+                            {{ s.battery.percent }}%
+                            {% if s.battery.plugged %}
+                            <span class="text-xs text-green-400 ml-1">充电中</span>
+                            {% elif s.battery.remaining %}
+                            <span class="text-xs text-gray-500 ml-1">剩余 {{ s.battery.remaining }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill {% if s.battery.percent < 20 %}danger{% elif s.battery.percent < 40 %}warning{% else %}normal{% endif %}" style="width: {{ s.battery.percent }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Docker 容器 -->
+                {% if s.containers %}
+                <div class="pt-2 border-t border-gray-800/40">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="metric-label">🐳 容器</span>
+                        <span class="text-xs text-gray-500">{{ s.containers_running }}/{{ s.containers_total }} 运行中</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for c in s.containers %}
+                        <span class="container-chip {% if c.status|slice:':2' == 'Up' %}running{% endif %}">
+                            <span class="chip-dot {% if c.status|slice:':2' == 'Up' %}running{% else %}stopped{% endif %}"></span>
+                            {{ c.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <!-- 离线提示 -->
+            <div class="text-center py-6">
+                <p class="text-gray-600 text-sm">{{ s.error|default:"无法连接" }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 底部提示 -->
+    <p class="text-center text-xs text-gray-700 mt-6">数据每 30 秒自动刷新 · 点击服务器卡片查看详情</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 30秒自动刷新
+    setTimeout(() => location.reload(), 30000);
+</script>
+{% endblock %}

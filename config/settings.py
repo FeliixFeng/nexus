@@ -97,3 +97,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Nexus PIN (6位数字)
 NEXUS_PIN = os.environ.get('NEXUS_PIN', '123456')
+
+# 监控 Agent 配置
+MONITOR_SERVERS = [
+    {"name": "solar", "url": "http://localhost:9100/metrics", "role": "远程开发服务器"},
+    {"name": "ivory", "url": "http://100.67.174.27:9100/metrics", "role": "Docker 容器服务器"},
+]
