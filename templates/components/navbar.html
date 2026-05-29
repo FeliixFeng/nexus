@@ -70,9 +70,7 @@
     <!-- 抽屉 -->
     <div id="mobile-drawer" class="absolute top-0 right-0 h-full w-44 bg-gray-950/98 backdrop-blur-2xl border-l border-gray-800/40 transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
         <!-- 抽屉顶部装饰 -->
-        <div class="pt-20 px-6 pb-6">
-            <div class="w-8 h-0.5 bg-gradient-to-r from-blue-500/60 to-purple-500/60 rounded-full mb-6"></div>
-        </div>
+        <div class="pt-20 px-6 pb-2"></div>
         <!-- 导航链接 -->
         <nav class="flex-1 px-4 space-y-1">
             <a href="{% url 'nexus_core:home' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'home' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
