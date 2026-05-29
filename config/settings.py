@@ -1,15 +1,20 @@
 """
 Django settings for Nexus project.
+
+Sensitive values are loaded from .env (see .env.example for template).
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-fmg0g89o_*zd!j$l-2j0lkb99ads#6^i8k#6uu=5op!lakc$kb')
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+# Load .env file
+load_dotenv(BASE_DIR / '.env')
+
+# SECURITY — all from .env
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
 # Application definition
@@ -90,5 +95,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# PIN码配置（6位数字）
+# Nexus PIN (6位数字)
 NEXUS_PIN = os.environ.get('NEXUS_PIN', '123456')
