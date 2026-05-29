@@ -157,7 +157,7 @@
             <span class="now-text">{{ item.text }}</span>
             {% if is_editor %}
             <button class="done-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>
-            <span class="edit-only" style="display:none">
+            <span class="edit-only" >
                 <button class="sm-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">改</button>
                 <button class="sm-btn danger" onclick="deleteNow({{ item.id }})">删</button>
             </span>
@@ -167,7 +167,7 @@
     </div>
 
     {% if is_editor %}
-    <div class="edit-add mb-10" style="display:none">
+    <div class="edit-add mb-10" >
         <div id="now-add-trigger" class="add-bar" onclick="showNowAdd()">+ 添加当前在做</div>
         <div id="now-add-form" class="hidden mt-3">
             <div class="flex gap-2 items-center">
@@ -195,7 +195,7 @@
             <p class="tl-text">
                 <span class="tl-icon">{{ act.icon }}</span>{{ act.text }}
                 {% if is_editor %}
-                <span class="edit-only" style="display:none">
+                <span class="edit-only" >
                     <button class="sm-btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">改</button>
                     <button class="sm-btn danger" onclick="deleteTl({{ act.id }})">删</button>
                 </span>
@@ -208,7 +208,7 @@
     </div>
 
     {% if is_editor %}
-    <div class="edit-add mt-6" style="display:none">
+    <div class="edit-add mt-6" >
         <div id="tl-add-trigger" class="add-bar" onclick="showTlAdd()">+ 添加里程碑</div>
         <div id="tl-add-form" class="hidden mt-3">
             <div class="flex gap-2 items-center">
