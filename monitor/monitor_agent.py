@@ -27,16 +27,27 @@ def _docker_via_socket():
     try:
         import socket
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        s.settimeout(3)
+        s.settimeout(2)
         s.connect(sock_path)
-        s.sendall(b"GET /containers/json HTTP/1.1\r\nHost: localhost\r\n\r\n")
+        s.sendall(b"GET /containers/json HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")
+
+        # 分块读取直到收到完整响应
         response = b""
         while True:
-            chunk = s.recv(4096)
-            if not chunk:
+            try:
+                chunk = s.recv(65536)
+                if not chunk:
+                    break
+                response += chunk
+                # 检查是否已收到完整的 chunked 响应（以 0\r\n\r\n 结尾）
+                if response.endswith(b"0\r\n\r\n"):
+                    break
+            except socket.timeout:
                 break
-            response += chunk
         s.close()
+
+        if not response:
+            return None
 
         # 解析 HTTP 响应体
         parts = response.split(b"\r\n\r\n", 1)
@@ -80,7 +91,7 @@ def _docker_via_socket():
 
 def collect_metrics():
     """采集系统指标"""
-    cpu_percent = psutil.cpu_percent(interval=0.5)
+    cpu_percent = psutil.cpu_percent(interval=0)
     cpu_count = psutil.cpu_count()
     load_avg = [round(x, 2) for x in psutil.getloadavg()]
 
