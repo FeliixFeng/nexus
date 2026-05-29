@@ -64,13 +64,13 @@
         font-size: 0.72rem;
         border-radius: 6px;
         cursor: pointer;
-        background: transparent;
-        border: 1px solid rgba(52, 211, 153, 0.25);
-        color: rgba(52, 211, 153, 0.7);
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        color: #34d399;
         transition: all 0.2s;
         flex-shrink: 0;
     }
-    .done-btn:hover { background: rgba(52, 211, 153, 0.1); color: #34d399; border-color: rgba(52, 211, 153, 0.4); }
+    .done-btn:hover { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
 
     /* 编辑模式下的额外按钮 */
     .edit-only { display: none; }
@@ -141,7 +141,7 @@
     </div>
 
     {% if is_editor %}
-    <div class="text-center mb-6">
+    <div class="flex justify-end mb-4">
         <button class="edit-toggle" onclick="toggleEditMode()">✏️ 编辑</button>
     </div>
     {% endif %}
