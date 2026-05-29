@@ -188,3 +188,27 @@ Link.objects.filter(name='名称').delete()
 - 语录轮换做成可编辑
 - 正式部署（gunicorn + systemd）
 - 可能的未来模块：书签、RSS、天气等
+
+## 监控系统
+
+### Agent 脚本
+- `monitor/monitor_agent.py` — 通用监控探针，每台机器部署一份
+- 用 `psutil` 采集 CPU/内存/磁盘/网络/uptime/电池/Docker
+- 暴露 HTTP :9100，`/metrics` 返回 JSON，`/health` 健康检查
+- systemd 用户服务：`nexus-monitor.service`
+
+### 部署位置
+- solar: localhost:9100
+- ivory: 100.67.174.27:9100
+
+### 添加新机器
+1. 把 `monitor_agent.py` 复制到目标机器
+2. `pip install psutil`
+3. 创建 systemd 用户服务（参考现有配置）
+4. 在 `config/settings.py` 的 `MONITOR_SERVERS` 里加一行
+
+### Django 端
+- 视图：`nexus_core/monitor_views.py`
+- 模板：`nexus_core/templates/core/monitor.html`
+- URL: `/monitor/`
+- 服务器配置在 `settings.py` 的 `MONITOR_SERVERS` 列表
