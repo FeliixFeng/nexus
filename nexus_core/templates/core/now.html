@@ -4,60 +4,20 @@
 
 {% block extra_css %}
 <style>
-    /* Now 条目 */
     .now-item {
-        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
         border-radius: 12px;
         background: rgba(17, 24, 39, 0.4);
         border: 1px solid rgba(75, 85, 99, 0.2);
         transition: all 0.2s;
     }
-    .now-item:hover {
-        border-color: rgba(99, 102, 241, 0.3);
-        background: rgba(99, 102, 241, 0.04);
-    }
+    .now-item:hover { border-color: rgba(99, 102, 241, 0.3); }
     .now-icon { font-size: 1.1rem; flex-shrink: 0; }
-    .now-text { color: #d1d5db; font-size: 0.9rem; }
+    .now-text { color: #d1d5db; font-size: 0.9rem; flex: 1; }
 
-    /* 操作按钮行 */
-    .action-row {
-        display: flex;
-        gap: 6px;
-        margin-top: 10px;
-    }
-    /* 桌面端：隐藏在右侧，hover 显示 */
-    @media (min-width: 768px) {
-        .now-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-        }
-        .now-body { flex: 1; }
-        .action-row {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-top: 0;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .now-item:hover .action-row { opacity: 1; }
-
-        .tl-item { position: relative; }
-        .tl-item .action-row {
-            position: absolute;
-            right: 0;
-            top: 12px;
-            margin-top: 0;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .tl-item:hover .action-row { opacity: 1; }
-    }
-
-    /* 时间线 */
     .timeline {
         position: relative;
         padding-left: 24px;
@@ -65,35 +25,27 @@
     .timeline::before {
         content: '';
         position: absolute;
-        left: 7px;
-        top: 0;
-        bottom: 0;
+        left: 7px; top: 0; bottom: 0;
         width: 2px;
         background: linear-gradient(to bottom, rgba(99,102,241,0.3), rgba(139,92,246,0.15), transparent);
     }
-    .tl-item {
-        position: relative;
-        padding: 12px 0 20px;
-    }
+    .tl-item { position: relative; padding: 12px 0 20px; }
     .tl-item::before {
         content: '';
         position: absolute;
-        left: -20px;
-        top: 18px;
-        width: 8px;
-        height: 8px;
+        left: -20px; top: 18px;
+        width: 8px; height: 8px;
         border-radius: 50%;
         background: rgba(99, 102, 241, 0.5);
         box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
     }
-    .tl-item:hover::before { background: rgba(99, 102, 241, 0.8); }
     .tl-date { font-size: 0.72rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 4px; font-family: monospace; }
     .tl-text { font-size: 0.92rem; color: #d1d5db; }
     .tl-icon { margin-right: 6px; }
 
-    /* 按钮 */
-    .act-btn {
-        padding: 4px 10px;
+    /* 小按钮 */
+    .sm-btn {
+        padding: 3px 10px;
         font-size: 0.72rem;
         border-radius: 6px;
         cursor: pointer;
@@ -103,12 +55,51 @@
         transition: all 0.2s;
         white-space: nowrap;
     }
-    .act-btn:hover { background: rgba(55, 65, 81, 0.8); color: white; }
-    .act-btn.danger:hover { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
-    .act-btn.done { color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
-    .act-btn.done:hover { background: rgba(52, 211, 153, 0.1); }
+    .sm-btn:hover { background: rgba(55, 65, 81, 0.8); color: white; }
+    .sm-btn.danger:hover { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
 
-    /* 表单 */
+    /* 完成按钮 */
+    .done-btn {
+        padding: 3px 10px;
+        font-size: 0.72rem;
+        border-radius: 6px;
+        cursor: pointer;
+        background: transparent;
+        border: 1px solid rgba(52, 211, 153, 0.25);
+        color: rgba(52, 211, 153, 0.7);
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+    .done-btn:hover { background: rgba(52, 211, 153, 0.1); color: #34d399; border-color: rgba(52, 211, 153, 0.4); }
+
+    /* 编辑模式下的额外按钮 */
+    .edit-only { display: none; }
+    body.edit-mode .edit-only { display: inline-flex; }
+
+    /* 模块头部 */
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    .section-title {
+        font-size: 0.8rem;
+        color: rgba(156, 163, 175, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+    }
+    .edit-toggle {
+        font-size: 0.72rem;
+        color: rgba(107, 114, 128, 0.6);
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .edit-toggle:hover { color: #818cf8; background: rgba(99, 102, 241, 0.08); }
+    body.edit-mode .edit-toggle { color: #818cf8; }
+
     .form-input {
         background: rgba(17, 24, 39, 0.8);
         border: 1px solid rgba(75, 85, 99, 0.4);
@@ -133,6 +124,10 @@
         font-size: 0.85rem;
     }
     .add-bar:hover { border-color: rgba(99, 102, 241, 0.4); color: #818cf8; background: rgba(99, 102, 241, 0.04); }
+
+    /* 新增表单也受编辑模式控制 */
+    .edit-add { display: none; }
+    body.edit-mode .edit-add { display: block; }
 </style>
 {% endblock %}
 
@@ -145,43 +140,48 @@
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
     </div>
 
+    {% if is_editor %}
+    <div class="text-center mb-6">
+        <button class="edit-toggle" onclick="toggleEditMode()">✏️ 编辑</button>
+    </div>
+    {% endif %}
+
     <!-- 当前在做 -->
-    <div id="now-list" class="space-y-2 mb-6">
+    <div class="section-header">
+        <span class="section-title">当前在做</span>
+    </div>
+    <div id="now-list" class="space-y-2 mb-4">
         {% for item in now_items %}
         <div class="now-item" id="now-{{ item.id }}">
-            <div class="now-body">
-                <div class="flex items-center gap-2">
-                    <span class="now-icon">{{ item.icon }}</span>
-                    <span class="now-text">{{ item.text }}</span>
-                </div>
-            </div>
+            <span class="now-icon">{{ item.icon }}</span>
+            <span class="now-text">{{ item.text }}</span>
             {% if is_editor %}
-            <div class="action-row">
-                <button class="act-btn done" onclick="completeNow({{ item.id }})" title="完成，转为里程碑">✓ 完成</button>
-                <button class="act-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">编辑</button>
-                <button class="act-btn danger" onclick="deleteNow({{ item.id }})">删除</button>
-            </div>
+            <button class="done-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>
+            <span class="edit-only" style="display:none">
+                <button class="sm-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">改</button>
+                <button class="sm-btn danger" onclick="deleteNow({{ item.id }})">删</button>
+            </span>
             {% endif %}
         </div>
         {% endfor %}
     </div>
 
     {% if is_editor %}
-    <div class="mb-10">
+    <div class="edit-add mb-10" style="display:none">
         <div id="now-add-trigger" class="add-bar" onclick="showNowAdd()">+ 添加当前在做</div>
         <div id="now-add-form" class="hidden mt-3">
             <div class="flex gap-2 items-center">
                 <input type="text" id="now-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
                 <input type="text" id="now-text-input" class="form-input flex-1" placeholder="正在做什么...">
-                <button class="act-btn" onclick="createNow()">添加</button>
-                <button class="act-btn" onclick="hideNowAdd()">取消</button>
+                <button class="sm-btn" onclick="createNow()">添加</button>
+                <button class="sm-btn" onclick="hideNowAdd()">取消</button>
             </div>
         </div>
     </div>
     {% endif %}
 
     <!-- 分隔 -->
-    <div class="flex items-center gap-4 mb-8">
+    <div class="flex items-center gap-4 mb-6 mt-8">
         <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
         <span class="text-xs text-gray-600 uppercase tracking-wider">Timeline</span>
         <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
@@ -192,13 +192,15 @@
         {% for act in activities %}
         <div class="tl-item" id="tl-{{ act.id }}">
             <p class="tl-date">{{ act.date_label }}</p>
-            <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
-            {% if is_editor %}
-            <div class="action-row">
-                <button class="act-btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">编辑</button>
-                <button class="act-btn danger" onclick="deleteTl({{ act.id }})">删除</button>
-            </div>
-            {% endif %}
+            <p class="tl-text">
+                <span class="tl-icon">{{ act.icon }}</span>{{ act.text }}
+                {% if is_editor %}
+                <span class="edit-only" style="display:none">
+                    <button class="sm-btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">改</button>
+                    <button class="sm-btn danger" onclick="deleteTl({{ act.id }})">删</button>
+                </span>
+                {% endif %}
+            </p>
         </div>
         {% empty %}
         <p class="text-gray-600 text-sm text-center py-8">暂无里程碑</p>
@@ -206,15 +208,15 @@
     </div>
 
     {% if is_editor %}
-    <div class="mt-6">
+    <div class="edit-add mt-6" style="display:none">
         <div id="tl-add-trigger" class="add-bar" onclick="showTlAdd()">+ 添加里程碑</div>
         <div id="tl-add-form" class="hidden mt-3">
             <div class="flex gap-2 items-center">
                 <input type="text" id="tl-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
                 <input type="text" id="tl-text-input" class="form-input flex-1" placeholder="做到了什么...">
                 <input type="text" id="tl-date-input" class="form-input" style="width:100px" placeholder="2026.05">
-                <button class="act-btn" onclick="createTl()">添加</button>
-                <button class="act-btn" onclick="hideTlAdd()">取消</button>
+                <button class="sm-btn" onclick="createTl()">添加</button>
+                <button class="sm-btn" onclick="hideTlAdd()">取消</button>
             </div>
         </div>
     </div>
@@ -226,6 +228,18 @@
 <script>
 function getCSRF() {
     return document.cookie.split('; ').find(r => r.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+// ─── 编辑模式切换 ──────────────────────────
+
+function toggleEditMode() {
+    document.body.classList.toggle('edit-mode');
+    const btn = document.querySelector('.edit-toggle');
+    if (document.body.classList.contains('edit-mode')) {
+        btn.textContent = '✅ 完成编辑';
+    } else {
+        btn.textContent = '✏️ 编辑';
+    }
 }
 
 // ─── Now CRUD ──────────────────────────────
@@ -254,11 +268,11 @@ function createNow() {
 
 function editNow(id, icon, text) {
     const el = document.getElementById('now-' + id);
-    el.innerHTML = `<div class="flex gap-2 items-center flex-wrap">
+    el.innerHTML = `<div class="flex gap-2 items-center w-full">
         <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="ne-icon-${id}">
         <input type="text" class="form-input flex-1" value="${text}" id="ne-text-${id}" style="min-width:0">
-        <button class="act-btn" onclick="saveNow(${id})">保存</button>
-        <button class="act-btn" onclick="location.reload()">取消</button>
+        <button class="sm-btn" onclick="saveNow(${id})">保存</button>
+        <button class="sm-btn" onclick="location.reload()">取消</button>
     </div>`;
     document.getElementById('ne-text-' + id).focus();
 }
@@ -286,7 +300,7 @@ function deleteNow(id) {
 }
 
 function completeNow(id) {
-    if (!confirm('完成这个项目？会移到里程碑')) return;
+    if (!confirm('完成？会移到里程碑')) return;
     fetch(`/api/now/${id}/complete/`, {
         method: 'POST',
         headers: {'X-CSRFToken': getCSRF()}
@@ -328,8 +342,8 @@ function editTl(id, icon, text, date) {
         <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="te-icon-${id}">
         <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}" style="min-width:0">
         <input type="text" class="form-input" style="width:100px" value="${date}" id="te-date-${id}">
-        <button class="act-btn" onclick="saveTl(${id})">保存</button>
-        <button class="act-btn" onclick="location.reload()">取消</button>
+        <button class="sm-btn" onclick="saveTl(${id})">保存</button>
+        <button class="sm-btn" onclick="location.reload()">取消</button>
     </div>`;
     document.getElementById('te-text-' + id).focus();
 }
@@ -347,7 +361,7 @@ function saveTl(id) {
 }
 
 function deleteTl(id) {
-    if (!confirm('确定删除这条里程碑？')) return;
+    if (!confirm('确定删除？')) return;
     fetch(`/api/activity/${id}/delete/`, {
         method: 'POST',
         headers: {'X-CSRFToken': getCSRF()}
