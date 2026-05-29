@@ -1,15 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Now · Nexus{% endblock %}
+{% block title %}动态 · Nexus{% endblock %}
 
 {% block extra_css %}
 <style>
     /* Now 条目 */
     .now-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
+        padding: 14px 16px;
         border-radius: 12px;
         background: rgba(17, 24, 39, 0.4);
         border: 1px solid rgba(75, 85, 99, 0.2);
@@ -19,8 +16,46 @@
         border-color: rgba(99, 102, 241, 0.3);
         background: rgba(99, 102, 241, 0.04);
     }
-    .now-icon { font-size: 1.2rem; flex-shrink: 0; }
-    .now-text { color: #d1d5db; font-size: 0.92rem; }
+    .now-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .now-text { color: #d1d5db; font-size: 0.9rem; }
+
+    /* 操作按钮行 */
+    .action-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 10px;
+    }
+    /* 桌面端：隐藏在右侧，hover 显示 */
+    @media (min-width: 768px) {
+        .now-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .now-body { flex: 1; }
+        .action-row {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: 0;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .now-item:hover .action-row { opacity: 1; }
+
+        .tl-item { position: relative; }
+        .tl-item .action-row {
+            position: absolute;
+            right: 0;
+            top: 12px;
+            margin-top: 0;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tl-item:hover .action-row { opacity: 1; }
+    }
 
     /* 时间线 */
     .timeline {
@@ -55,17 +90,9 @@
     .tl-date { font-size: 0.72rem; color: rgba(107, 114, 128, 0.6); margin-bottom: 4px; font-family: monospace; }
     .tl-text { font-size: 0.92rem; color: #d1d5db; }
     .tl-icon { margin-right: 6px; }
-    .tl-actions {
-        opacity: 0;
-        transition: opacity 0.2s;
-        position: absolute;
-        right: 0;
-        top: 12px;
-    }
-    .tl-item:hover .tl-actions { opacity: 1; }
 
-    /* 编辑按钮 */
-    .edit-btn {
+    /* 按钮 */
+    .act-btn {
         padding: 4px 10px;
         font-size: 0.72rem;
         border-radius: 6px;
@@ -74,20 +101,12 @@
         border: 1px solid rgba(75, 85, 99, 0.3);
         color: #9ca3af;
         transition: all 0.2s;
+        white-space: nowrap;
     }
-    .edit-btn:hover { background: rgba(55, 65, 81, 0.8); color: white; }
-    .edit-btn.danger:hover { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
-
-    /* Now 编辑动作 */
-    .now-actions {
-        opacity: 0;
-        transition: opacity 0.2s;
-        margin-left: auto;
-        display: flex;
-        gap: 4px;
-        flex-shrink: 0;
-    }
-    .now-item:hover .now-actions { opacity: 1; }
+    .act-btn:hover { background: rgba(55, 65, 81, 0.8); color: white; }
+    .act-btn.danger:hover { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.3); color: #f87171; }
+    .act-btn.done { color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
+    .act-btn.done:hover { background: rgba(52, 211, 153, 0.1); }
 
     /* 表单 */
     .form-input {
@@ -129,14 +148,18 @@
     <!-- 当前在做 -->
     <div id="now-list" class="space-y-2 mb-6">
         {% for item in now_items %}
-        <div class="now-item" data-id="{{ item.id }}" id="now-{{ item.id }}">
-            <span class="now-icon">{{ item.icon }}</span>
-            <span class="now-text">{{ item.text }}</span>
+        <div class="now-item" id="now-{{ item.id }}">
+            <div class="now-body">
+                <div class="flex items-center gap-2">
+                    <span class="now-icon">{{ item.icon }}</span>
+                    <span class="now-text">{{ item.text }}</span>
+                </div>
+            </div>
             {% if is_editor %}
-            <div class="now-actions">
-                <button class="edit-btn" onclick="completeNow({{ item.id }})" title="完成，转为里程碑" style="color:#34d399;border-color:rgba(52,211,153,0.3)">✓</button>
-                <button class="edit-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">改</button>
-                <button class="edit-btn danger" onclick="deleteNow({{ item.id }})">删</button>
+            <div class="action-row">
+                <button class="act-btn done" onclick="completeNow({{ item.id }})" title="完成，转为里程碑">✓ 完成</button>
+                <button class="act-btn" onclick="editNow({{ item.id }}, '{{ item.icon }}', '{{ item.text|escapejs }}')">编辑</button>
+                <button class="act-btn danger" onclick="deleteNow({{ item.id }})">删除</button>
             </div>
             {% endif %}
         </div>
@@ -150,8 +173,8 @@
             <div class="flex gap-2 items-center">
                 <input type="text" id="now-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
                 <input type="text" id="now-text-input" class="form-input flex-1" placeholder="正在做什么...">
-                <button class="edit-btn" onclick="createNow()">添加</button>
-                <button class="edit-btn" onclick="hideNowAdd()">取消</button>
+                <button class="act-btn" onclick="createNow()">添加</button>
+                <button class="act-btn" onclick="hideNowAdd()">取消</button>
             </div>
         </div>
     </div>
@@ -167,13 +190,13 @@
     <!-- 时间线 -->
     <div id="tl-list" class="timeline">
         {% for act in activities %}
-        <div class="tl-item" data-id="{{ act.id }}" id="tl-{{ act.id }}">
+        <div class="tl-item" id="tl-{{ act.id }}">
             <p class="tl-date">{{ act.date_label }}</p>
             <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
             {% if is_editor %}
-            <div class="tl-actions">
-                <button class="edit-btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">编辑</button>
-                <button class="edit-btn danger" onclick="deleteTl({{ act.id }})">删除</button>
+            <div class="action-row">
+                <button class="act-btn" onclick="editTl({{ act.id }}, '{{ act.icon }}', '{{ act.text|escapejs }}', '{{ act.date_label|escapejs }}')">编辑</button>
+                <button class="act-btn danger" onclick="deleteTl({{ act.id }})">删除</button>
             </div>
             {% endif %}
         </div>
@@ -190,8 +213,8 @@
                 <input type="text" id="tl-icon-input" class="form-input" style="width:48px;text-align:center" value="📌" maxlength="4">
                 <input type="text" id="tl-text-input" class="form-input flex-1" placeholder="做到了什么...">
                 <input type="text" id="tl-date-input" class="form-input" style="width:100px" placeholder="2026.05">
-                <button class="edit-btn" onclick="createTl()">添加</button>
-                <button class="edit-btn" onclick="hideTlAdd()">取消</button>
+                <button class="act-btn" onclick="createTl()">添加</button>
+                <button class="act-btn" onclick="hideTlAdd()">取消</button>
             </div>
         </div>
     </div>
@@ -231,11 +254,11 @@ function createNow() {
 
 function editNow(id, icon, text) {
     const el = document.getElementById('now-' + id);
-    el.innerHTML = `<div class="flex gap-2 items-center w-full">
+    el.innerHTML = `<div class="flex gap-2 items-center flex-wrap">
         <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="ne-icon-${id}">
-        <input type="text" class="form-input flex-1" value="${text}" id="ne-text-${id}">
-        <button class="edit-btn" onclick="saveNow(${id})">保存</button>
-        <button class="edit-btn" onclick="location.reload()">取消</button>
+        <input type="text" class="form-input flex-1" value="${text}" id="ne-text-${id}" style="min-width:0">
+        <button class="act-btn" onclick="saveNow(${id})">保存</button>
+        <button class="act-btn" onclick="location.reload()">取消</button>
     </div>`;
     document.getElementById('ne-text-' + id).focus();
 }
@@ -301,12 +324,12 @@ function createTl() {
 
 function editTl(id, icon, text, date) {
     const el = document.getElementById('tl-' + id);
-    el.innerHTML = `<div class="flex gap-2 items-center">
+    el.innerHTML = `<div class="flex gap-2 items-center flex-wrap">
         <input type="text" class="form-input" style="width:48px;text-align:center" value="${icon}" maxlength="4" id="te-icon-${id}">
-        <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}">
+        <input type="text" class="form-input flex-1" value="${text}" id="te-text-${id}" style="min-width:0">
         <input type="text" class="form-input" style="width:100px" value="${date}" id="te-date-${id}">
-        <button class="edit-btn" onclick="saveTl(${id})">保存</button>
-        <button class="edit-btn" onclick="location.reload()">取消</button>
+        <button class="act-btn" onclick="saveTl(${id})">保存</button>
+        <button class="act-btn" onclick="location.reload()">取消</button>
     </div>`;
     document.getElementById('te-text-' + id).focus();
 }
