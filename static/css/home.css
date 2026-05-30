@@ -321,3 +321,37 @@ body:hover #spotlight { opacity: 1; }
     #activity-card { order: 5; }
     #services-card { order: 6; }
 }
+
+/* ========== 歌词 ========== */
+.lyrics-container {
+    width: 100%;
+    max-height: 120px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 4px;
+}
+.lyrics-scroll {
+    max-height: 120px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    text-align: center;
+    padding: 0 8px;
+}
+.lyrics-scroll::-webkit-scrollbar { width: 2px; }
+.lyrics-scroll::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.3); border-radius: 2px; }
+.lyric-line {
+    font-size: 0.72rem;
+    color: rgba(156, 163, 175, 0.35);
+    line-height: 1.8;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.lyric-line:hover { color: rgba(156, 163, 175, 0.6); }
+.lyric-line.active {
+    color: #e5e7eb;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+}
+.music-title { cursor: pointer; }
+.music-title:hover { opacity: 0.8; }

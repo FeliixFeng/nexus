@@ -26,6 +26,7 @@ urlpatterns = [
     # Music API
     path('api/music/status/', music_views.music_status, name='music_status'),
     path('api/music/control/', music_views.music_control, name='music_control'),
+    path('api/music/lyrics/', music_views.music_lyrics, name='music_lyrics'),
 
     # Link API
     path('api/links/', api_views.link_list, name='link_list'),

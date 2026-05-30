@@ -4,7 +4,7 @@
 {% block title %}Nexus · FelixFeng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}?v=7">
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=8">
 <style>
     .music-title {
         color: #e5e7eb; font-size: 0.92rem; font-weight: 500;
@@ -99,11 +99,15 @@
         <div class="flex-1 flex flex-col justify-between items-center text-center">
             <div class="flex items-start gap-2 justify-center">
                 <span style="font-size:0.8rem; opacity:0.25; line-height:1.4; margin-top:1px;">🎵</span>
-                <div class="music-title" id="music-title" style="display:none;"></div>
+                <div class="music-title" id="music-title" style="display:none;" onclick="toggleLyrics()"></div>
                 <div class="music-nothing" id="music-loading">连接中...</div>
                 <div class="music-nothing" id="music-stopped" style="display:none;">未播放</div>
             </div>
             <div class="music-artist text-center" id="music-artist" style="display:none;"></div>
+            <!-- 歌词区域 -->
+            <div id="lyrics-container" class="lyrics-container" style="display:none;">
+                <div id="lyrics-scroll" class="lyrics-scroll"></div>
+            </div>
             <div class="flex items-center justify-center gap-2 mt-3">
                 <button class="music-ctrl" onclick="musicCtrl('restart')" title="重新播放">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
@@ -307,6 +311,18 @@ function fetchMusicStatus() {
             playBtn.innerHTML = d.state === 'play'
                 ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
                 : '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+            // 歌词：歌曲切换时重新获取
+            const songKey = d.title + '|' + d.artist;
+            if (songKey !== lastLyricsTitle) {
+                lastLyricsTitle = songKey;
+                lyricsData = [];
+                currentLyricIdx = -1;
+                if (lyricsVisible) fetchLyrics();
+            }
+            // 同步歌词滚动
+            if (lyricsVisible && lyricsData.length > 0 && d.elapsed) {
+                updateLyricsScroll(parseFloat(d.elapsed));
+            }
         } else {
             titleEl.style.display = 'none';
             artistEl.style.display = 'none';
@@ -324,6 +340,99 @@ function fetchMusicStatus() {
 
 fetchMusicStatus();
 setInterval(fetchMusicStatus, 10000);
+// 歌词显示时加快轮询
+setInterval(() => { if (lyricsVisible) fetchMusicStatus(); }, 3000);
+
+// ========== 歌词 ==========
+let lyricsData = [];      // [{time: seconds, text: "..."}]
+let lyricsVisible = false;
+let currentLyricIdx = -1;
+let lastLyricsTitle = '';
+
+function toggleLyrics() {
+    const container = document.getElementById('lyrics-container');
+    lyricsVisible = !lyricsVisible;
+    container.style.display = lyricsVisible ? '' : 'none';
+    if (lyricsVisible && lyricsData.length === 0) fetchLyrics();
+}
+
+function parseLRC(lrc) {
+    const lines = lrc.split(/\r?\n/);
+    const result = [];
+    const timeReg = /\[(\d{2}):(\d{2})[\.:](\d{2,3})\]/g;
+    for (const line of lines) {
+        const times = [];
+        let match;
+        while ((match = timeReg.exec(line)) !== null) {
+            const min = parseInt(match[1]);
+            const sec = parseInt(match[2]);
+            const ms = parseInt(match[3].padEnd(3, '0'));
+            times.push(min * 60 + sec + ms / 1000);
+        }
+        const text = line.replace(/\[\d{2}:\d{2}[\.:]\d{2,3}\]/g, '').trim();
+        if (text && times.length > 0) {
+            for (const t of times) {
+                result.push({time: t, text: text});
+            }
+        }
+    }
+    result.sort((a, b) => a.time - b.time);
+    return result;
+}
+
+function fetchLyrics() {
+    fetch('/api/music/lyrics/').then(r => r.json()).then(d => {
+        if (d.success && d.lyrics) {
+            lyricsData = parseLRC(d.lyrics);
+            renderLyrics();
+        } else {
+            lyricsData = [];
+            const scroll = document.getElementById('lyrics-scroll');
+            scroll.innerHTML = '<div class="lyric-line" style="opacity:0.3">暂无歌词</div>';
+        }
+    }).catch(() => {});
+}
+
+function renderLyrics() {
+    const scroll = document.getElementById('lyrics-scroll');
+    if (lyricsData.length === 0) {
+        scroll.innerHTML = '<div class="lyric-line" style="opacity:0.3">暂无歌词</div>';
+        return;
+    }
+    scroll.innerHTML = lyricsData.map((l, i) =>
+        `<div class="lyric-line" data-idx="${i}" onclick="seekToLyric(${l.time})">${l.text}</div>`
+    ).join('');
+}
+
+function seekToLyric(time) {
+    musicCtrl('seek_' + time);
+    // MPD seekcur
+    fetch('/api/music/control/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({action: 'seek', time: Math.floor(time)})
+    }).then(() => setTimeout(fetchMusicStatus, 300));
+}
+
+function updateLyricsScroll(elapsed) {
+    if (lyricsData.length === 0) return;
+    let idx = -1;
+    for (let i = lyricsData.length - 1; i >= 0; i--) {
+        if (elapsed >= lyricsData[i].time) { idx = i; break; }
+    }
+    if (idx === currentLyricIdx) return;
+    currentLyricIdx = idx;
+    const lines = document.querySelectorAll('#lyrics-scroll .lyric-line');
+    lines.forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+    });
+    if (idx >= 0 && lines[idx]) {
+        const container = document.getElementById('lyrics-scroll');
+        const el = lines[idx];
+        const offset = el.offsetTop - container.offsetHeight / 2 + el.offsetHeight / 2;
+        container.scrollTo({top: Math.max(0, offset), behavior: 'smooth'});
+    }
+}
 
 function fetchMonitor() {
     fetch('/api/monitor/data/').then(r => r.json()).then(d => {
