@@ -1,0 +1,17 @@
+{
+    "name": "Nexus",
+    "short_name": "Nexus",
+    "description": "个人模块化门户平台",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a1a",
+    "theme_color": "#6366f1",
+    "icons": [
+        {
+            "src": "/static/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
