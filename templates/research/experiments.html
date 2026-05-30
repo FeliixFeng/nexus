@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}实验日志 · Nexus{% endblock %}
+
+{% block extra_css %}
+<style>
+    .exp-card {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: fadeInUp 0.4s ease forwards;
+    }
+    .exp-card:nth-child(1) { animation-delay: 0.05s; }
+    .exp-card:nth-child(2) { animation-delay: 0.1s; }
+    .exp-card:nth-child(3) { animation-delay: 0.15s; }
+    .exp-card:nth-child(4) { animation-delay: 0.2s; }
+    .exp-card:nth-child(5) { animation-delay: 0.25s; }
+
+    .exp-card:hover {
+        border-color: rgba(139, 92, 246, 0.35);
+        box-shadow: 0 0 16px -4px rgba(139, 92, 246, 0.15);
+        background: rgba(139, 92, 246, 0.04);
+    }
+
+    @keyframes fadeInUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pt-8 pb-10 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- 标题 -->
+        <div class="text-center mb-6 md:mb-10">
+            <h1 class="text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Experiments</h1>
+            <h2 class="text-2xl md:text-3xl font-bold text-white">实验日志{% if experiments %}<span class="count-badge">{{ experiments|length }}</span>{% endif %}</h2>
+            <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-4"></div>
+        </div>
+
+        <!-- 搜索 + 新建 -->
+        <div class="flex flex-col md:flex-row md:items-center gap-4 mb-8">
+            <div class="relative flex-1 max-w-sm">
+                <input type="text" 
+                       name="q"
+                       value="{{ search }}"
+                       placeholder="搜索实验..."
+                       hx-get="{% url 'research:experiment_list' %}"
+                       hx-trigger="keyup changed delay:300ms"
+                       hx-target="#exp-list"
+                       hx-swap="innerHTML"
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30 transition-all">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            {% if is_editor %}
+            <button onclick="document.getElementById('add-exp-modal').classList.remove('hidden')" 
+                    class="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity flex-shrink-0">
+                + 添加实验
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- 实验列表 -->
+        <div id="exp-list" class="space-y-3">
+            {% include 'research/_experiment_list.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- 添加实验弹窗 -->
+{% if is_editor %}
+<div id="add-exp-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-md">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-white">添加实验</h3>
+            <button onclick="document.getElementById('add-exp-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">✕</button>
+        </div>
+        <form method="post" action="{% url 'research:experiment_create' %}">
+            {% csrf_token %}
+            <div class="space-y-3">
+                <input name="name" placeholder="实验名称 *" required
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50">
+                <input name="model_name" placeholder="模型/方法"
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50">
+                <input name="dataset" placeholder="数据集"
+                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50">
+                <textarea name="params" placeholder="参数配置（如 lr=0.001, batch=32）" rows="2"
+                          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50"></textarea>
+                <textarea name="metrics" placeholder="指标结果（如 Accuracy=0.95, F1=0.92）" rows="2"
+                          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50"></textarea>
+                <div class="grid grid-cols-2 gap-3">
+                    <input name="gpu_hours" type="number" step="0.1" placeholder="GPU 小时"
+                           class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50">
+                    <input name="checkpoint" placeholder="权重路径"
+                           class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50">
+                </div>
+                <textarea name="notes" placeholder="备注" rows="2"
+                          class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50"></textarea>
+            </div>
+            <button type="submit" 
+                    class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity">
+                保存
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

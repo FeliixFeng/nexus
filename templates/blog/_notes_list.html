@@ -1,0 +1,46 @@
+{% if search %}
+<div class="mb-4 text-gray-400 text-sm">
+    搜索 "{{ search }}" · {{ posts|length }} 篇
+</div>
+{% endif %}
+
+{% if posts %}
+{% for post in posts %}
+<div class="blog-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
+    <a href="{% url 'blog:post_detail' post.slug %}" class="block">
+        <h2 class="text-lg font-semibold text-white mb-2">
+            {% if post.is_pinned %}<span class="text-yellow-500 mr-1">📌</span>{% endif %}
+            {{ post.title }}
+        </h2>
+        {% if post.summary %}
+        <p class="text-gray-400 text-sm mb-3 line-clamp-2">{{ post.summary }}</p>
+        {% endif %}
+    </a>
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 text-xs text-gray-500">
+            {% if post.published_at %}
+            <span>{{ post.published_at|date:"m-d" }}</span>
+            {% endif %}
+            {% if post.tags.all %}
+            <div class="flex gap-1.5">
+                {% for tag in post.tags.all %}
+                <span class="px-2 py-0.5 bg-white/5 rounded">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% if is_editor %}
+        <a href="{% url 'blog:post_update' post.slug %}" 
+           class="text-xs text-gray-500 hover:text-purple-400 transition-colors px-2 py-1">
+            编辑
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <p class="empty-state-text">{% if search %}没有找到匹配的笔记{% else %}暂无笔记{% endif %}</p>
+</div>
+{% endif %}

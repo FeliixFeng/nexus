@@ -7,6 +7,8 @@ from .models import Post, Tag
 from nexus_core.pin_utils import is_pin_verified
 
 
+from django.http import HttpResponse
+
 def post_list(request):
     """文章列表"""
     from django.db.models import Q
@@ -14,8 +16,8 @@ def post_list(request):
     tag_slug = request.GET.get('tag')
     search = request.GET.get('q')
     
+    # 标签筛选
     if tag_slug:
-        # 如果是科技日报标签，显示所有日报
         if tag_slug == '科技日报':
             posts = Post.objects.filter(
                 status='published',
@@ -46,7 +48,6 @@ def post_list(request):
     # 搜索
     if search:
         if isinstance(posts, list):
-            # 如果 posts 是列表，先转为 QuerySet
             post_ids = [p.id for p in posts]
             posts = Post.objects.filter(id__in=post_ids).filter(
                 Q(title__icontains=search) | Q(content__icontains=search)
@@ -57,13 +58,22 @@ def post_list(request):
             )
     
     tags = Tag.objects.all()
+    is_editor = is_pin_verified(request)
+    
+    # HTMX 请求只返回笔记列表局部
+    if request.headers.get('HX-Request'):
+        return render(request, 'blog/_notes_list.html', {
+            'posts': posts,
+            'search': search or '',
+            'is_editor': is_editor,
+        })
     
     context = {
         'posts': posts,
         'tags': tags,
         'current_tag': tag_slug,
         'search': search or '',
-        'is_editor': is_pin_verified(request),
+        'is_editor': is_editor,
     }
     return render(request, 'blog/list.html', context)
 

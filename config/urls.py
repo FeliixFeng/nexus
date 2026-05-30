@@ -9,6 +9,7 @@ urlpatterns = [
     path('', include('nexus_core.urls')),
     path('blog/', include('blog.urls')),
     path('links/', include('links.urls')),
+    path('research/', include('research.urls')),
     path('api/verify-pin/', verify_pin, name='verify_pin'),
     path('api/lock-pin/', lock_pin, name='lock_pin'),
 ]

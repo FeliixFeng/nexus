@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'nexus_core',
     'blog',
     'links',
+    'research',
 ]
 
 MIDDLEWARE = [

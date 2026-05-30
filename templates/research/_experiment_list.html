@@ -1,0 +1,75 @@
+{% if search %}
+<div class="mb-4 text-gray-400 text-sm">
+    搜索 "{{ search }}" · {{ experiments|length }} 条
+</div>
+{% endif %}
+
+{% if experiments %}
+{% for exp in experiments %}
+<div class="exp-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
+    <div class="flex items-start justify-between mb-3">
+        <div>
+            <h3 class="text-base font-medium text-white">{{ exp.name }}</h3>
+            {% if exp.paper %}
+            <a href="{% url 'research:paper_detail' exp.paper.pk %}" class="text-xs text-purple-400 hover:text-purple-300">📄 {{ exp.paper.title|truncatechars:40 }}</a>
+            {% endif %}
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-500">{{ exp.created_at|date:"m-d H:i" }}</span>
+            {% if is_editor %}
+            <form method="post" action="{% url 'research:experiment_delete' exp.pk %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="text-xs text-red-400/50 hover:text-red-400 ml-2">删除</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        {% if exp.model_name %}
+        <div>
+            <span class="text-gray-500">模型</span>
+            <div class="text-white">{{ exp.model_name }}</div>
+        </div>
+        {% endif %}
+        {% if exp.dataset %}
+        <div>
+            <span class="text-gray-500">数据集</span>
+            <div class="text-white">{{ exp.dataset }}</div>
+        </div>
+        {% endif %}
+        {% if exp.gpu_hours %}
+        <div>
+            <span class="text-gray-500">GPU</span>
+            <div class="text-white">{{ exp.gpu_hours }}h</div>
+        </div>
+        {% endif %}
+        {% if exp.checkpoint %}
+        <div>
+            <span class="text-gray-500">权重</span>
+            <div class="text-white font-mono truncate">{{ exp.checkpoint }}</div>
+        </div>
+        {% endif %}
+    </div>
+    {% if exp.params %}
+    <div class="mt-3 text-xs">
+        <span class="text-gray-500">参数:</span>
+        <span class="text-gray-300 font-mono ml-1">{{ exp.params }}</span>
+    </div>
+    {% endif %}
+    {% if exp.metrics %}
+    <div class="mt-1 text-xs">
+        <span class="text-gray-500">指标:</span>
+        <span class="text-green-400/70 font-mono ml-1">{{ exp.metrics }}</span>
+    </div>
+    {% endif %}
+    {% if exp.notes %}
+    <div class="mt-2 text-xs text-gray-400">{{ exp.notes }}</div>
+    {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<div class="text-center py-12 opacity-50">
+    <div class="text-4xl mb-3">🧪</div>
+    <p class="text-gray-400 text-sm">{% if search %}没有找到匹配的实验{% else %}暂无实验记录{% endif %}</p>
+</div>
+{% endif %}
