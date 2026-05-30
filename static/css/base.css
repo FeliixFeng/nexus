@@ -212,3 +212,26 @@ html::-webkit-scrollbar {
 .shake {
     animation: shake 0.5s ease-in-out;
 }
+
+/* ========== 移动端底部导航栏 ========== */
+#mobile-tabbar {
+    background: rgba(10, 10, 20, 0.88);
+}
+#mobile-tabbar .tab-item {
+    -webkit-tap-highlight-color: transparent;
+}
+#mobile-tabbar .tab-item:active {
+    transform: scale(0.92);
+}
+/* iPhone 底部安全区 */
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 移动端：顶部栏和底部栏占位 */
+@media (max-width: 767px) {
+    body {
+        padding-top: 44px;    /* 顶部栏 h-11 = 44px */
+        padding-bottom: 56px; /* 底部栏 h-14 = 56px */
+    }
+}

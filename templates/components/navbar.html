@@ -1,20 +1,15 @@
 {% load static %}
-<!-- 导航栏 -->
-<nav id="navbar" class="nav-wrapper nav-transparent fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b" style="border-bottom-color: rgba(99, 102, 241, 0.25);">
+<!-- 导航栏（桌面端顶部） -->
+<nav id="navbar" class="nav-wrapper nav-transparent fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b hidden md:block" style="border-bottom-color: rgba(99, 102, 241, 0.25);">
     <div class="nav-glow"></div>
-    <div class="mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
+    <div class="mx-auto px-6 md:px-10 h-14 flex items-center justify-between max-w-[82vw]">
         <a href="{% url 'nexus_core:home' %}" class="flex items-center gap-2 group">
             <img src="{% static 'favicon.svg' %}" alt="N" class="w-7 h-7 rounded-lg group-hover:scale-110 transition-transform duration-200">
             <span class="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent tracking-tight">
                 Nexus
             </span>
-            <!-- 移动端当前页面标题 -->
-            <span class="md:hidden text-xs text-gray-500 ml-1">
-                {% if request.resolver_match.url_name == 'home' %}{% elif 'blog' in request.resolver_match.app_name %}/ 笔记{% elif 'links' in request.resolver_match.app_name %}/ 链接{% elif request.resolver_match.url_name == 'now_page' %}/ 动态{% elif request.resolver_match.url_name == 'monitor' %}/ 监控{% elif 'research' in request.resolver_match.app_name %}/ 学术{% elif request.resolver_match.url_name == 'post_detail' %}/ {{ post.title|truncatechars:8 }}{% elif request.resolver_match.url_name == 'post_list' %}/ 笔记{% endif %}
-            </span>
         </a>
-        <!-- 桌面端导航 -->
-        <div class="hidden md:flex items-center gap-1">
+        <div class="flex items-center gap-1">
             <a href="{% url 'nexus_core:home' %}" 
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                 首页
@@ -40,71 +35,75 @@
                 学术
             </a>
             
-            <!-- 分隔线 -->
             <div class="w-px h-4 bg-gray-700/50 mx-2"></div>
-            
-            <!-- 时间 -->
             <span id="nav-clock" class="text-xs text-gray-500 font-mono tabular-nums"></span>
-            
-            <!-- PIN按钮 -->
             <button id="pin-toggle" class="ml-2 text-gray-500 hover:text-gray-300 transition-colors text-base w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5" onclick="togglePin()">
                 {% if is_editor %}🔓{% else %}🔒{% endif %}
-            </button>
-        </div>
-
-        <!-- 移动端：时钟 + PIN + 汉堡 -->
-        <div class="flex md:hidden items-center gap-1">
-            <span id="nav-clock-mobile" class="text-xs text-gray-500 font-mono tabular-nums"></span>
-            <button id="pin-toggle-mobile" class="text-gray-500 hover:text-gray-300 transition-colors text-base w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5" onclick="togglePin()">
-                {% if is_editor %}🔓{% else %}🔒{% endif %}
-            </button>
-            <button id="hamburger" class="text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors" onclick="toggleMobileMenu()">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
             </button>
         </div>
     </div>
 </nav>
 
-<!-- 移动端侧边抽屉 -->
-<div id="mobile-menu" class="fixed inset-0 z-40 pointer-events-none">
-    <!-- 遮罩 -->
-    <div id="mobile-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="toggleMobileMenu()"></div>
-    <!-- 抽屉 -->
-    <div id="mobile-drawer" class="absolute top-0 right-0 h-full w-44 bg-gray-950/98 backdrop-blur-2xl border-l border-gray-800/40 transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
-        <!-- 抽屉顶部装饰 -->
-        <div class="pt-20 px-6 pb-2"></div>
-        <!-- 导航链接 -->
-        <nav class="flex-1 px-4 space-y-1">
-            <a href="{% url 'nexus_core:home' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'home' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                <span class="w-5 text-center text-base">🏠</span>
-                <span>首页</span>
-            </a>
-            <a href="{% url 'blog:post_list' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if 'blog' in request.resolver_match.app_name %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                <span class="w-5 text-center text-base">📝</span>
-                <span>笔记</span>
-            </a>
-            <a href="{% url 'links:link_list' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if 'links' in request.resolver_match.app_name %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                <span class="w-5 text-center text-base">🔗</span>
-                <span>链接</span>
-            </a>
-            <a href="{% url 'nexus_core:now_page' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'now_page' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                <span class="w-5 text-center text-base">⚡</span>
-                <span>动态</span>
-            </a>
-            <a href="{% url 'nexus_core:monitor' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'monitor' %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                <span class="w-5 text-center text-base">📊</span>
-                <span>监控</span>
-            </a>
-            <a href="{% url 'research:research_home' %}" onclick="toggleMobileMenu()" class="drawer-link flex items-center gap-3 py-3 px-4 rounded-xl text-sm transition-all {% if 'research' in request.resolver_match.app_name %}text-white bg-white/8 border border-white/10{% else %}text-gray-400 hover:text-white hover:bg-white/5{% endif %}">
-                <span class="w-5 text-center text-base">📚</span>
-                <span>学术</span>
-            </a>
-        </nav>
-        <!-- 抽屉底部 -->
-        <div class="px-6 py-6 border-t border-gray-800/40">
-            <p class="text-xs text-gray-600">Nexus · FelixFeng</p>
+<!-- 移动端顶部栏（简化版） -->
+<nav id="mobile-topbar" class="md:hidden fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b" style="border-bottom-color: rgba(99, 102, 241, 0.25);">
+    <div class="h-11 flex items-center justify-between px-4">
+        <a href="{% url 'nexus_core:home' %}" class="flex items-center gap-1.5">
+            <img src="{% static 'favicon.svg' %}" alt="N" class="w-5 h-5 rounded">
+            <span class="text-sm font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Nexus</span>
+        </a>
+        <div class="flex items-center gap-1">
+            <span id="nav-clock-mobile" class="text-[10px] text-gray-500 font-mono tabular-nums"></span>
+            <button id="pin-toggle-mobile" class="text-gray-500 hover:text-gray-300 transition-colors w-7 h-7 flex items-center justify-center rounded-lg" onclick="togglePin()">
+                {% if is_editor %}🔓{% else %}🔒{% endif %}
+            </button>
         </div>
     </div>
-</div>
+</nav>
+
+<!-- 移动端底部导航栏 -->
+<nav id="mobile-tabbar" class="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t safe-area-bottom" style="border-top-color: rgba(99, 102, 241, 0.15); background: rgba(10, 10, 20, 0.85);">
+    <div class="flex items-center justify-around h-14 px-2">
+        <a href="{% url 'nexus_core:home' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'home' %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
+            </svg>
+            <span class="text-[10px]">首页</span>
+        </a>
+        <a href="{% url 'blog:post_list' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'blog' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span class="text-[10px]">笔记</span>
+        </a>
+        <a href="{% url 'links:link_list' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'links' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+            <span class="text-[10px]">链接</span>
+        </a>
+        <a href="{% url 'nexus_core:now_page' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'now_page' %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span class="text-[10px]">动态</span>
+        </a>
+        <a href="{% url 'nexus_core:monitor' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'monitor' %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span class="text-[10px]">监控</span>
+        </a>
+        <a href="{% url 'research:research_home' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'research' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            <span class="text-[10px]">学术</span>
+        </a>
+    </div>
+</nav>

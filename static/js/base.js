@@ -1,27 +1,39 @@
 // ========== 导航栏：滚动隐藏 + 透明变色 ==========
 (function() {
     const nav = document.getElementById('navbar');
+    const mobileTopbar = document.getElementById('mobile-topbar');
     let lastScroll = 0;
     let ticking = false;
     const threshold = 80;
 
     function updateNav() {
         const scrollY = window.scrollY;
-        if (scrollY > 20) {
-            nav.classList.remove('nav-transparent');
-            nav.classList.add('nav-solid');
-        } else {
-            nav.classList.remove('nav-solid');
-            nav.classList.add('nav-transparent');
-        }
-        if (scrollY > threshold) {
-            if (scrollY > lastScroll + 8) {
-                nav.classList.add('nav-hidden');
-            } else if (scrollY < lastScroll - 3) {
+        // 桌面端导航栏
+        if (nav) {
+            if (scrollY > 20) {
+                nav.classList.remove('nav-transparent');
+                nav.classList.add('nav-solid');
+            } else {
+                nav.classList.remove('nav-solid');
+                nav.classList.add('nav-transparent');
+            }
+            if (scrollY > threshold) {
+                if (scrollY > lastScroll + 8) {
+                    nav.classList.add('nav-hidden');
+                } else if (scrollY < lastScroll - 3) {
+                    nav.classList.remove('nav-hidden');
+                }
+            } else {
                 nav.classList.remove('nav-hidden');
             }
-        } else {
-            nav.classList.remove('nav-hidden');
+        }
+        // 移动端顶部栏背景
+        if (mobileTopbar) {
+            if (scrollY > 20) {
+                mobileTopbar.style.background = 'rgba(6, 6, 14, 0.85)';
+            } else {
+                mobileTopbar.style.background = 'transparent';
+            }
         }
         lastScroll = scrollY;
         ticking = false;
@@ -48,31 +60,8 @@
     }, { passive: true });
 })();
 
-// ========== 移动端菜单 ==========
-function toggleMobileMenu() {
-    const menu = document.getElementById('mobile-menu');
-    const overlay = document.getElementById('mobile-overlay');
-    const drawer = document.getElementById('mobile-drawer');
-    const isOpen = drawer.classList.contains('translate-x-full');
+// ========== 移动端菜单（已改为底部Tab栏） ==========
 
-    if (isOpen) {
-        menu.classList.remove('pointer-events-none');
-        menu.classList.add('pointer-events-auto');
-        overlay.classList.remove('opacity-0');
-        overlay.classList.add('opacity-100');
-        drawer.classList.remove('translate-x-full');
-        document.body.style.overflow = 'hidden';
-    } else {
-        overlay.classList.remove('opacity-100');
-        overlay.classList.add('opacity-0');
-        drawer.classList.add('translate-x-full');
-        document.body.style.overflow = '';
-        setTimeout(() => {
-            menu.classList.remove('pointer-events-auto');
-            menu.classList.add('pointer-events-none');
-        }, 300);
-    }
-}
 
 // ========== 时钟 ==========
 (function() {
