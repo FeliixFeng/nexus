@@ -280,18 +280,17 @@ function updateModeBtn() {
 }
 
 function cycleMode() {
-    // 顺序 → 随机 → 列表循环 → 单曲循环 → 顺序
-    if (!musicState.random && !musicState.repeat && !musicState.single) {
-        musicCtrl('random');      // → 随机
-    } else if (musicState.random) {
-        musicCtrl('random');      // 先关随机
+    // 随机 → 列表循环 → 单曲循环 → 随机
+    if (musicState.random) {
+        musicCtrl('random');      // 关随机
         setTimeout(() => musicCtrl('repeat'), 150);  // → 列表循环
     } else if (musicState.repeat && !musicState.single) {
         musicCtrl('single');      // → 单曲循环
     } else {
-        // 关掉所有回到顺序
+        // 单曲循环 → 随机（关single、关repeat，开random）
         if (musicState.single) musicCtrl('single');
         if (musicState.repeat) setTimeout(() => musicCtrl('repeat'), 150);
+        setTimeout(() => musicCtrl('random'), 300);
     }
 }
 
