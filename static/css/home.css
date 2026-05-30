@@ -355,3 +355,48 @@ body:hover #spotlight { opacity: 1; }
 }
 .music-title { cursor: pointer; }
 .music-title:hover { opacity: 0.8; }
+
+/* ========== 音量 ========== */
+.volume-wrap { position: relative; }
+.volume-popup {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 6px;
+    background: rgba(17, 24, 39, 0.95);
+    border: 1px solid rgba(75, 85, 99, 0.3);
+    border-radius: 8px;
+    padding: 6px 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    z-index: 10;
+}
+.volume-popup.show { display: flex; }
+.volume-slider {
+    width: 80px;
+    height: 3px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(75, 85, 99, 0.4);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #8b5cf6;
+    cursor: pointer;
+}
+.volume-val {
+    font-size: 0.65rem;
+    color: rgba(156, 163, 175, 0.7);
+    min-width: 1.5em;
+    text-align: right;
+}

@@ -93,6 +93,10 @@ def music_control(request):
             # 跳转到指定秒数
             time = data.get('time', 0)
             client.seekcur(int(time))
+        elif action == 'setvol':
+            # 设置音量 0-100
+            vol = max(0, min(100, int(data.get('volume', 50))))
+            client.setvol(vol)
 
         client.disconnect()
         return JsonResponse({'success': True})
