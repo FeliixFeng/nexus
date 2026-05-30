@@ -233,15 +233,52 @@ body:hover #spotlight { opacity: 1; }
 .service-name { color: #9ca3af; transition: color 0.2s; }
 
 /* ---- 动态 ---- */
+.act-section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.62rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(156, 163, 175, 0.35);
+    padding: 8px 0 4px;
+    margin-top: 4px;
+}
+.act-section-label:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+.act-section-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+}
+.act-section-dot.doing {
+    background: #34d399;
+    box-shadow: 0 0 4px rgba(52, 211, 153, 0.4);
+}
+.act-section-dot.done {
+    background: rgba(99, 102, 241, 0.5);
+}
 .act-item {
     display: flex; align-items: center; gap: 8px;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(55, 65, 81, 0.25);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.2);
 }
 .act-item:last-child { border-bottom: none; }
-.act-icon { font-size: 0.9rem; flex-shrink: 0; }
-.act-text { font-size: 0.82rem; color: #d1d5db; line-height: 1.4; }
-.act-date { font-size: 0.6rem; color: rgba(107, 114, 128, 0.45); flex-shrink: 0; font-family: monospace; }
+.act-item.doing {
+    padding-left: 4px;
+}
+.act-item.done {
+    opacity: 0.75;
+}
+.act-icon { font-size: 0.85rem; flex-shrink: 0; }
+.act-text { font-size: 0.8rem; color: #d1d5db; line-height: 1.4; }
+.act-item.doing .act-text {
+    color: #e5e7eb;
+}
+.act-date { font-size: 0.58rem; color: rgba(107, 114, 128, 0.4); flex-shrink: 0; font-family: monospace; }
 .act-badge {
     font-size: 0.55rem; padding: 1px 6px; border-radius: 6px;
     background: rgba(52, 211, 153, 0.1); color: rgba(52, 211, 153, 0.6);

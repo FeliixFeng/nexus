@@ -177,24 +177,36 @@
             <a href="{% url 'nexus_core:now_page' %}" class="view-all">全部 →</a>
         </div>
         <div class="card-scroll">
+            {% if now_items %}
+            <div class="act-section-label">
+                <span class="act-section-dot doing"></span>
+                <span>进行中</span>
+            </div>
             {% for item in now_items %}
-            <div class="act-item">
+            <div class="act-item doing">
                 <span class="act-icon">{{ item.icon }}</span>
                 <p class="act-text flex-1">{{ item.text }}</p>
-                <span class="act-badge">进行中</span>
             </div>
             {% endfor %}
+            {% endif %}
+
+            {% if activities %}
+            <div class="act-section-label">
+                <span class="act-section-dot done"></span>
+                <span>已完成</span>
+            </div>
             {% for act in activities|slice:":4" %}
-            <div class="act-item">
+            <div class="act-item done">
                 <span class="act-icon">{{ act.icon|default:"📌" }}</span>
                 <p class="act-text flex-1">{{ act.text|truncatewords:10 }}</p>
                 <span class="act-date">{{ act.date_label }}</span>
             </div>
-            {% empty %}
-            {% if not now_items %}
+            {% endfor %}
+            {% endif %}
+
+            {% if not now_items and not activities %}
             <p class="text-gray-600 text-sm">暂无动态</p>
             {% endif %}
-            {% endfor %}
         </div>
     </div>
 
