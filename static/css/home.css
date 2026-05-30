@@ -316,7 +316,7 @@ body:hover #spotlight { opacity: 1; }
     #time-card { order: 1; }
     #music-card { order: 2; }
     #monitor-card { order: 3; }
-    #notes-card { order: 4; max-height: 280px; }
-    #activity-card { order: 5; max-height: 280px; }
+    #notes-card { order: 4; }
+    #activity-card { order: 5; }
     #services-card { order: 6; }
 }
