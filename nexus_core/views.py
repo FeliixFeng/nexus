@@ -10,7 +10,7 @@ def home(request):
     """首页"""
     recent_posts = Post.objects.filter(status='published')[:6]
     all_links = Link.objects.filter(is_visible=True)
-    activities = Activity.objects.filter(is_visible=True)[:6]
+    activities = Activity.objects.filter(is_visible=True).order_by('sort_order')[:6]
     now_items = NowItem.objects.all()[:5]
 
     context = {
@@ -30,6 +30,6 @@ def now_page(request):
     """动态页 — 纯展示，完成按钮需要 API Key"""
     return render(request, 'core/now.html', {
         'now_items': NowItem.objects.all(),
-        'activities': Activity.objects.filter(is_visible=True),
+        'activities': Activity.objects.filter(is_visible=True).order_by('sort_order'),
         'NEXUS_API_KEY': settings.NEXUS_API_KEY,
     })

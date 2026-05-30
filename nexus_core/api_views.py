@@ -309,6 +309,7 @@ def note_import(request):
 
     md_content = ''
     title = ''
+    tags = []
 
     # 文件上传方式
     if request.FILES.get('file'):
@@ -320,13 +321,30 @@ def note_import(request):
         data = json.loads(request.body)
         md_content = data.get('content', '')
         title = data.get('title', '')
+        tags = data.get('tags', [])
     else:
         data = request.POST
         md_content = data.get('content', '')
         title = data.get('title', '')
+        tags = request.POST.getlist('tags', [])
 
     if not md_content.strip():
         return JsonResponse({'success': False, 'error': 'content required'}, status=400)
+
+    # 清理 Obsidian 特有语法
+    lines = md_content.split('\n')
+    cleaned_lines = []
+    for line in lines:
+        # 跳过开头的 obsidian 链接行
+        stripped = line.strip()
+        if stripped.startswith('> [[') and stripped.endswith(']]'):
+            continue
+        # 转换 [[wikilink]] 为普通文本
+        import re
+        line = re.sub(r'\[\[([^\]|]+)\|([^\]]+)\]\]', r'\2', line)  # [[link|text]] -> text
+        line = re.sub(r'\[\[([^\]]+)\]\]', r'\1', line)  # [[link]] -> link
+        cleaned_lines.append(line)
+    md_content = '\n'.join(cleaned_lines)
 
     # 自动提取标题：取第一个 # 标题
     if not title:
@@ -338,7 +356,7 @@ def note_import(request):
     if not title:
         title = 'Untitled'
 
-    # 自动生成摘要
+    # 自动生成摘要：取第一个非空非标题段落
     summary = ''
     for line in md_content.split('\n'):
         line = line.strip()
@@ -352,4 +370,12 @@ def note_import(request):
         summary=summary,
         status='published',
     )
+
+    # 添加标签
+    if tags:
+        from blog.models import Tag
+        for tag_name in tags:
+            tag, _ = Tag.objects.get_or_create(name=tag_name)
+            post.tags.add(tag)
+
     return JsonResponse({'success': True, 'id': post.id, 'title': post.title, 'slug': post.slug})
