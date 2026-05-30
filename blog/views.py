@@ -9,18 +9,54 @@ from nexus_core.pin_utils import is_pin_verified
 
 def post_list(request):
     """文章列表"""
-    posts = Post.objects.filter(status='published')
-    tags = Tag.objects.all()
+    from django.db.models import Q
     
-    # 标签筛选
     tag_slug = request.GET.get('tag')
+    search = request.GET.get('q')
+    
     if tag_slug:
-        posts = posts.filter(tags__name=tag_slug)
+        # 如果是科技日报标签，显示所有日报
+        if tag_slug == '科技日报':
+            posts = Post.objects.filter(
+                status='published',
+                tags__name='科技日报'
+            ).order_by('-created_at')
+        else:
+            # 其他标签正常筛选
+            posts = Post.objects.filter(
+                status='published',
+                tags__name=tag_slug
+            ).order_by('-created_at')
+    else:
+        # 全部笔记：最新一条日报 + 其他笔记
+        latest_daily = Post.objects.filter(
+            status='published',
+            tags__name='科技日报'
+        ).order_by('-created_at').first()
+        
+        other_posts = Post.objects.filter(
+            status='published'
+        ).exclude(tags__name='科技日报').order_by('-created_at')
+        
+        posts = []
+        if latest_daily:
+            posts.append(latest_daily)
+        posts.extend(other_posts)
     
     # 搜索
-    search = request.GET.get('q')
     if search:
-        posts = posts.filter(title__icontains=search) | posts.filter(content__icontains=search)
+        if isinstance(posts, list):
+            # 如果 posts 是列表，先转为 QuerySet
+            post_ids = [p.id for p in posts]
+            posts = Post.objects.filter(id__in=post_ids).filter(
+                Q(title__icontains=search) | Q(content__icontains=search)
+            )
+        else:
+            posts = posts.filter(
+                Q(title__icontains=search) | Q(content__icontains=search)
+            )
+    
+    tags = Tag.objects.all()
     
     context = {
         'posts': posts,
