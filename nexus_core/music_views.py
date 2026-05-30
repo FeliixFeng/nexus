@@ -38,6 +38,7 @@ def music_status(request):
             'volume': int(status.get('volume', 0)),
             'random': status.get('random', '0') == '1',
             'repeat': status.get('repeat', '0') == '1',
+            'single': status.get('single', '0') == '1',
             'elapsed': status.get('elapsed', '0'),
             'duration': status.get('duration', '0'),
         })
@@ -85,6 +86,11 @@ def music_control(request):
             status = client.status()
             new_state = '0' if status.get('repeat', '0') == '1' else '1'
             client.repeat(new_state)
+        elif action == 'single':
+            # 切换单曲循环
+            status = client.status()
+            new_state = '0' if status.get('single', '0') == '1' else '1'
+            client.single(new_state)
         elif action == 'play_random':
             # 随机切一首播放
             client.random(1)

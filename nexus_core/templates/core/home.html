@@ -264,10 +264,14 @@ function updateModeBtn() {
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>';
         btn.classList.add('active');
         btn.title = '随机播放 (点击切换)';
+    } else if (musicState.single) {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/><text x="12" y="14.5" text-anchor="middle" font-size="7" font-weight="bold" fill="currentColor">1</text></svg>';
+        btn.classList.add('active');
+        btn.title = '单曲循环 (点击切换)';
     } else if (musicState.repeat) {
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>';
         btn.classList.add('active');
-        btn.title = '循环播放 (点击切换)';
+        btn.title = '列表循环 (点击切换)';
     } else {
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>';
         btn.classList.remove('active');
@@ -276,14 +280,18 @@ function updateModeBtn() {
 }
 
 function cycleMode() {
-    // 顺序 → 随机 → 循环 → 顺序
-    if (!musicState.random && !musicState.repeat) {
+    // 顺序 → 随机 → 列表循环 → 单曲循环 → 顺序
+    if (!musicState.random && !musicState.repeat && !musicState.single) {
         musicCtrl('random');      // → 随机
     } else if (musicState.random) {
         musicCtrl('random');      // 先关随机
-        setTimeout(() => musicCtrl('repeat'), 150);  // 再开循环
+        setTimeout(() => musicCtrl('repeat'), 150);  // → 列表循环
+    } else if (musicState.repeat && !musicState.single) {
+        musicCtrl('single');      // → 单曲循环
     } else {
-        musicCtrl('repeat');      // 关循环，回到顺序
+        // 关掉所有回到顺序
+        if (musicState.single) musicCtrl('single');
+        if (musicState.repeat) setTimeout(() => musicCtrl('repeat'), 150);
     }
 }
 
