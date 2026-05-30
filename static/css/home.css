@@ -312,6 +312,7 @@ body:hover #spotlight { opacity: 1; }
         height: auto;
     }
     .bento > .card { grid-column: auto !important; grid-row: auto !important; }
+    .card-scroll { overflow-y: visible; }
     .time-big { font-size: 1.5rem; }
     #time-card { order: 1; }
     #music-card { order: 2; }
