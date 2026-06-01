@@ -6,37 +6,37 @@
 
 {% if posts %}
 {% for post in posts %}
-<div class="blog-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
-    <a href="{% url 'blog:post_detail' post.slug %}" class="block">
-        <h2 class="text-lg font-semibold text-white mb-2">
-            {% if post.is_pinned %}<span class="text-yellow-500 mr-1">📌</span>{% endif %}
-            {{ post.title }}
-        </h2>
-        {% if post.summary %}
-        <p class="text-gray-400 text-sm mb-3 line-clamp-2">{{ post.summary }}</p>
-        {% endif %}
-    </a>
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3 text-xs text-gray-500">
-            {% if post.published_at %}
-            <span>{{ post.published_at|date:"m-d" }}</span>
+<a href="{% url 'blog:post_detail' post.slug %}" class="blog-card block bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 transition-all hover:bg-white/[0.06] hover:border-indigo-500/20 group">
+    <div class="flex items-start justify-between gap-3">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-base font-medium text-gray-200 group-hover:text-white transition-colors mb-1.5 truncate">
+                {% if post.is_pinned %}<span class="text-yellow-500/70 mr-1 text-sm">📌</span>{% endif %}
+                {{ post.title }}
+            </h2>
+            {% if post.summary %}
+            <p class="text-gray-500 text-sm line-clamp-1 mb-2.5">{{ post.summary }}</p>
             {% endif %}
-            {% if post.tags.all %}
-            <div class="flex gap-1.5">
-                {% for tag in post.tags.all %}
-                <span class="px-2 py-0.5 bg-white/5 rounded">{{ tag.name }}</span>
-                {% endfor %}
+            <div class="flex items-center gap-3 text-xs text-gray-600">
+                {% if post.published_at %}
+                <span class="font-mono">{{ post.published_at|date:"m/d" }}</span>
+                {% endif %}
+                {% if post.tags.all %}
+                <div class="flex gap-1.5">
+                    {% for tag in post.tags.all %}
+                    <span class="px-1.5 py-0.5 bg-white/[0.04] rounded text-[0.7rem] text-gray-500">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
         {% if is_editor %}
-        <a href="{% url 'blog:post_update' post.slug %}" 
-           class="text-xs text-gray-500 hover:text-purple-400 transition-colors px-2 py-1">
+        <span class="text-xs text-gray-600 group-hover:text-gray-400 transition-colors px-2 py-1 flex-shrink-0" 
+              onclick="event.stopPropagation(); window.location.href='{% url 'blog:post_update' post.slug %}'">
             编辑
-        </a>
+        </span>
         {% endif %}
     </div>
-</div>
+</a>
 {% endfor %}
 {% else %}
 <div class="empty-state">

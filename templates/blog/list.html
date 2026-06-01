@@ -23,9 +23,9 @@
 
     /* hover glow */
     .blog-card:hover {
-        border-color: rgba(139, 92, 246, 0.35);
-        box-shadow: 0 0 16px -4px rgba(139, 92, 246, 0.15);
-        background: rgba(139, 92, 246, 0.04);
+        border-color: rgba(99, 102, 241, 0.2);
+        box-shadow: 0 0 20px -6px rgba(99, 102, 241, 0.1);
+        background: rgba(99, 102, 241, 0.03);
     }
 
     /* count badge */
@@ -35,11 +35,11 @@
         justify-content: center;
         margin-left: 8px;
         padding: 0 8px;
-        border-radius: 8px;
+        border-radius: 6px;
         font-size: 0.65rem;
         height: 1.4em;
-        background: rgba(99, 102, 241, 0.12);
-        color: rgba(129, 140, 248, 0.6);
+        background: rgba(99, 102, 241, 0.1);
+        color: rgba(129, 140, 248, 0.5);
         font-family: monospace;
         vertical-align: middle;
         position: relative;
@@ -96,7 +96,7 @@
                        hx-include="[name='tag']"
                        hx-target="#notes-list"
                        hx-swap="innerHTML"
-                       class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30 transition-all">
+                       class="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-2 pl-10 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/30 focus:ring-1 focus:ring-indigo-500/20 transition-all">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
@@ -108,20 +108,21 @@
             {% if tags %}
             <div class="flex flex-wrap gap-2">
                 <a href="{% url 'blog:post_list' %}" 
-                   class="tag-pill px-3 py-1 rounded-full text-sm transition-all {% if not current_tag %}bg-purple-500/20 text-purple-300 border border-purple-500/30{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %}">
-                    全部
+                   class="tag-pill px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1.5 {% if not current_tag %}bg-indigo-500/15 text-indigo-300 border border-indigo-500/25{% else %}bg-white/5 text-gray-400 hover:text-white border border-transparent hover:border-white/10{% endif %}">
+                    <span>全部</span>
                 </a>
                 {% for tag in tags %}
                 <a href="{% url 'blog:post_list' %}?tag={{ tag.name }}" 
-                   class="tag-pill px-3 py-1 rounded-full text-sm transition-all {% if current_tag == tag.name %}bg-purple-500/20 text-purple-300 border border-purple-500/30{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %}">
-                    {{ tag.name }}
+                   class="tag-pill px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1.5 {% if current_tag == tag.name %}bg-indigo-500/15 text-indigo-300 border border-indigo-500/25{% else %}bg-white/5 text-gray-400 hover:text-white border border-transparent hover:border-white/10{% endif %}">
+                    <span>{{ tag.name }}</span>
+                    <span class="text-[0.65rem] opacity-50 font-mono">{{ tag.post_count }}</span>
                 </a>
                 {% endfor %}
             </div>
             {% endif %}
             {% if is_editor %}
             <a href="{% url 'blog:post_create' %}" 
-               class="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity flex-shrink-0">
+               class="px-4 py-2 bg-indigo-500/15 border border-indigo-500/20 rounded-lg text-indigo-300 text-sm font-medium hover:bg-indigo-500/25 transition-all flex-shrink-0">
                 + 新建
             </a>
             {% endif %}
@@ -175,7 +176,7 @@
             <div class="empty-state-icon">📝</div>
             <p class="empty-state-text">暂无笔记</p>
             {% if is_editor %}
-            <a href="{% url 'blog:post_create' %}" class="text-purple-400 hover:text-purple-300 mt-3 inline-block text-sm">
+            <a href="{% url 'blog:post_create' %}" class="text-indigo-400 hover:text-indigo-300 mt-3 inline-block text-sm">
                 写第一篇笔记 →
             </a>
             {% endif %}

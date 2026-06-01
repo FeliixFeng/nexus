@@ -1,13 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.db.models import Count, Q
 import markdown
+import re
 from .models import Post, Tag
 from nexus_core.pin_utils import is_pin_verified
 
 
-from django.http import HttpResponse
+def estimate_reading_time(content):
+    """估算阅读时长（中文按每分钟300字）"""
+    # 去掉 markdown 语法标记
+    text = re.sub(r'[#*`\[\]()>!|_\-\n\r]', '', content)
+    text = re.sub(r'\s+', '', text)
+    char_count = len(text)
+    minutes = max(1, round(char_count / 300))
+    return minutes
 
 def post_list(request):
     """文章列表"""
@@ -57,7 +66,7 @@ def post_list(request):
                 Q(title__icontains=search) | Q(content__icontains=search)
             )
     
-    tags = Tag.objects.all()
+    tags = Tag.objects.annotate(post_count=Count('post', filter=Q(post__status='published'))).order_by('-post_count')
     is_editor = is_pin_verified(request)
     
     # HTMX 请求只返回笔记列表局部
@@ -97,6 +106,7 @@ def post_detail(request, slug):
         'post': post,
         'prev_post': prev_post,
         'next_post': next_post,
+        'reading_time': estimate_reading_time(post.content),
         'is_editor': is_pin_verified(request),
     }
     return render(request, 'blog/detail.html', context)
