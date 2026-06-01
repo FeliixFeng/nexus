@@ -28,7 +28,7 @@
             </a>
             <a href="{% url 'nexus_core:monitor' %}" 
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'monitor' %}active{% endif %}">
-                监控
+                更多
             </a>
             <a href="{% url 'research:research_home' %}" 
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'research' in request.resolver_match.app_name %}active{% endif %}">
@@ -94,9 +94,9 @@
         <a href="{% url 'nexus_core:monitor' %}" 
            class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'monitor' %}text-purple-400{% else %}text-gray-500{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
             </svg>
-            <span class="text-[10px]">监控</span>
+            <span class="text-[10px]">更多</span>
         </a>
         <a href="{% url 'research:research_home' %}" 
            class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'research' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
