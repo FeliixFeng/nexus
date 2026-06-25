@@ -1,0 +1,29 @@
+{% load markdown_extras %}
+{% load static %}
+
+{% for post in posts %}
+<a href="{% url 'blog:post_detail' post.slug %}" class="note-card">
+    <div class="note-card-body">
+        <div class="note-card-meta">
+            {% for tag in post.tags.all %}
+            <span class="note-tag" style="--tag-hue: {{ forloop.counter0|add:"0" }};">{{ tag.name }}</span>
+            {% endfor %}
+            <span class="note-date">{{ post.published_at|date:"m/d" }}</span>
+            <span class="note-read-time">{{ post.content|reading_time }} min</span>
+        </div>
+        <h3 class="note-card-title">
+            {% if post.is_pinned %}<span class="note-pin">📌</span>{% endif %}
+            {{ post.title }}
+        </h3>
+        <p class="note-card-excerpt">{{ post.content|striptags_truncate:120 }}</p>
+    </div>
+    <div class="note-card-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </div>
+</a>
+{% empty %}
+<div class="note-empty">
+    <div class="note-empty-icon">📝</div>
+    <p>还没有笔记</p>
+</div>
+{% endfor %}

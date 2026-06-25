@@ -14,9 +14,9 @@
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                 首页
             </a>
-            <a href="{% url 'blog:post_list' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'blog' in request.resolver_match.app_name %}active{% endif %}">
-                笔记
+            <a href="{% url 'nexus_core:read_page' %}" 
+               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'read_page' %}active{% endif %}">
+                阅读
             </a>
             <a href="{% url 'links:link_list' %}" 
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'links' in request.resolver_match.app_name %}active{% endif %}">
@@ -29,10 +29,6 @@
             <a href="{% url 'nexus_core:monitor' %}" 
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'monitor' %}active{% endif %}">
                 更多
-            </a>
-            <a href="{% url 'research:research_home' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'research' in request.resolver_match.app_name %}active{% endif %}">
-                学术
             </a>
             
             <div class="w-px h-4 bg-gray-700/50 mx-2"></div>
@@ -70,12 +66,12 @@
             </svg>
             <span class="text-[10px]">首页</span>
         </a>
-        <a href="{% url 'blog:post_list' %}" 
-           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'blog' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
+        <a href="{% url 'nexus_core:read_page' %}" 
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'read_page' %}text-purple-400{% else %}text-gray-500{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
             </svg>
-            <span class="text-[10px]">笔记</span>
+            <span class="text-[10px]">阅读</span>
         </a>
         <a href="{% url 'links:link_list' %}" 
            class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'links' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
@@ -97,13 +93,6 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
             </svg>
             <span class="text-[10px]">更多</span>
-        </a>
-        <a href="{% url 'research:research_home' %}" 
-           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'research' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-            </svg>
-            <span class="text-[10px]">学术</span>
         </a>
     </div>
 </nav>

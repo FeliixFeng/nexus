@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,6 +90,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+WHITENOISE_USE_FINDERS = True
 
 # Media files
 MEDIA_URL = '/media/'
@@ -108,3 +111,15 @@ MONITOR_SERVERS = [
     {"name": "solar", "url": "http://localhost:9100/metrics", "role": "远程开发服务器"},
     {"name": "ivory", "url": "http://100.67.174.27:9100/metrics", "role": "Docker 容器服务器"},
 ]
+
+# RSS 订阅源
+RSS_FEEDS = [
+    {"name": "爱范儿", "url": "https://www.ifanr.com/feed", "icon": "📱", "color": "#f97316"},
+    {"name": "GitHub Blog", "url": "https://github.blog/feed/", "icon": "🐙", "color": "#8b5cf6"},
+    {"name": "少数派", "url": "https://sspai.com/feed", "icon": "🎯", "color": "#ef4444"},
+    {"name": "36氪", "url": "https://36kr.com/feed", "icon": "📰", "color": "#06b6d4"},
+    {"name": "InfoQ", "url": "https://www.infoq.cn/feed", "icon": "💡", "color": "#10b981"},
+]
+
+# RSS 代理服务器（海外，解决国内抓取超时问题）
+RSS_PROXY_URL = os.getenv("RSS_PROXY_URL", "")

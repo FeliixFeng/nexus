@@ -3,6 +3,8 @@ from . import views
 from . import api_views
 from . import monitor_views
 from . import music_views
+from . import rss_views
+from . import read_views
 
 app_name = 'nexus_core'
 
@@ -10,7 +12,10 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('now/', views.now_page, name='now_page'),
     path('monitor/', monitor_views.monitor, name='monitor'),
+    path('rss/', rss_views.rss_page, name='rss_page'),
+    path('read/', read_views.read_page, name='read_page'),
     path('api/monitor/data/', monitor_views.monitor_data, name='monitor_data'),
+    path('api/rss/data/', rss_views.rss_data, name='rss_data'),
 
     # NowItem API
     path('api/now/create/', api_views.now_create, name='now_create'),

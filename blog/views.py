@@ -27,32 +27,14 @@ def post_list(request):
     
     # 标签筛选
     if tag_slug:
-        if tag_slug == '科技日报':
-            posts = Post.objects.filter(
-                status='published',
-                tags__name='科技日报'
-            ).order_by('-created_at')
-        else:
-            # 其他标签正常筛选
-            posts = Post.objects.filter(
-                status='published',
-                tags__name=tag_slug
-            ).order_by('-created_at')
-    else:
-        # 全部笔记：最新一条日报 + 其他笔记
-        latest_daily = Post.objects.filter(
+        posts = Post.objects.filter(
             status='published',
-            tags__name='科技日报'
-        ).order_by('-created_at').first()
-        
-        other_posts = Post.objects.filter(
+            tags__name=tag_slug
+        ).order_by('-created_at')
+    else:
+        posts = Post.objects.filter(
             status='published'
-        ).exclude(tags__name='科技日报').order_by('-created_at')
-        
-        posts = []
-        if latest_daily:
-            posts.append(latest_daily)
-        posts.extend(other_posts)
+        ).order_by('-created_at')
     
     # 搜索
     if search:

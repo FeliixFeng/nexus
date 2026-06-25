@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load markdown_extras %}
+
+{% block title %}阅读 · Nexus{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===== 顶部切换 ===== */
+    .view-tabs {
+        display: flex; gap: 4px; justify-content: center;
+        margin-bottom: 1.5rem;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px;
+        padding: 3px;
+        width: fit-content;
+        margin-left: auto; margin-right: auto;
+    }
+    .view-tab {
+        padding: 6px 20px; border-radius: 8px;
+        font-size: 0.78rem; font-weight: 500; cursor: pointer;
+        color: rgba(156,163,175,0.6); transition: all 0.15s;
+        user-select: none;
+    }
+    .view-tab:hover { color: rgba(209,213,219,0.8); }
+    .view-tab.active { background: rgba(255,255,255,0.06); color: #f3f4f6; }
+
+    /* ===== 标签筛选 ===== */
+    .tag-bar {
+        display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+        margin-bottom: 1.2rem; -webkit-overflow-scrolling: touch;
+        justify-content: center; flex-wrap: wrap;
+    }
+    .tag-bar::-webkit-scrollbar { display: none; }
+    .tag-pill {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 4px 14px; border-radius: 8px;
+        font-size: 0.72rem; font-weight: 500; cursor: pointer;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        color: rgba(156,163,175,0.6); transition: all 0.15s;
+        text-decoration: none; white-space: nowrap;
+    }
+    .tag-pill:hover { border-color: rgba(255,255,255,0.12); color: #e5e7eb; }
+    .tag-pill.active { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+    .tag-pill .tag-count {
+        font-size: 0.6rem; opacity: 0.4; font-family: monospace;
+    }
+
+    /* ===== 搜索框 ===== */
+    .search-wrap {
+        margin-bottom: 1.2rem; display: flex; justify-content: center;
+    }
+    .search-input {
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px; padding: 8px 16px; color: #e5e7eb;
+        font-size: 0.82rem; width: 100%; max-width: 400px;
+        outline: none; transition: all 0.2s;
+    }
+    .search-input::placeholder { color: rgba(107,114,128,0.4); }
+    .search-input:focus { border-color: rgba(99,102,241,0.4); background: rgba(255,255,255,0.05); }
+
+    /* ===== 笔记卡片 ===== */
+    .note-card {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px; margin-bottom: 6px; border-radius: 10px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.04);
+        text-decoration: none; color: inherit;
+        transition: all 0.15s;
+    }
+    .note-card:hover {
+        background: rgba(255,255,255,0.04);
+        border-color: rgba(255,255,255,0.08);
+    }
+    .note-card-body { flex: 1; min-width: 0; }
+    .note-card-meta {
+        display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;
+    }
+    .note-tag {
+        display: inline-block; padding: 1px 8px; border-radius: 4px;
+        font-size: 0.62rem; font-weight: 500;
+        background: rgba(99,102,241,0.08); color: rgba(129,140,248,0.7);
+    }
+    .note-date {
+        font-size: 0.62rem; color: rgba(107,114,128,0.5); font-family: monospace;
+    }
+    .note-read-time {
+        font-size: 0.6rem; color: rgba(107,114,128,0.35);
+    }
+    .note-card-title {
+        font-size: 0.88rem; font-weight: 600; color: #e5e7eb;
+        line-height: 1.5; margin-bottom: 4px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .note-card:hover .note-card-title { color: #fff; }
+    .note-pin { font-size: 0.75rem; margin-right: 2px; }
+    .note-card-excerpt {
+        font-size: 0.73rem; color: rgba(156,163,175,0.45); line-height: 1.5;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .note-card-arrow {
+        flex-shrink: 0; margin-left: 12px;
+        color: rgba(107,114,128,0.25); transition: all 0.15s;
+    }
+    .note-card:hover .note-card-arrow { color: rgba(156,163,175,0.5); transform: translate(2px, -2px); }
+
+    .note-empty { text-align: center; padding: 3rem 1rem; }
+    .note-empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3; }
+    .note-empty p { color: rgba(107,114,128,0.4); font-size: 0.82rem; }
+
+    /* ===== RSS源筛选 ===== */
+    .source-bar {
+        display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+        margin-bottom: 1rem; -webkit-overflow-scrolling: touch;
+        justify-content: center; flex-wrap: wrap;
+    }
+    .source-bar::-webkit-scrollbar { display: none; }
+    .source-pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 12px; border-radius: 8px; white-space: nowrap;
+        font-size: 0.72rem; font-weight: 500; cursor: pointer;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        color: rgba(156,163,175,0.6); transition: all 0.15s;
+        user-select: none;
+    }
+    .source-pill:hover { border-color: rgba(255,255,255,0.12); color: #e5e7eb; }
+    .source-pill.active { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+    .source-pill .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .source-pill .rss-count {
+        font-size: 0.58rem; opacity: 0.4; font-family: monospace;
+    }
+
+    /* ===== RSS视图切换 ===== */
+    .rss-view-toggle {
+        display: flex; gap: 2px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 6px; padding: 2px;
+    }
+    .rss-view-btn {
+        padding: 4px 8px; border-radius: 4px; cursor: pointer;
+        color: rgba(107,114,128,0.5); transition: all 0.15s;
+        display: flex; align-items: center;
+    }
+    .rss-view-btn:hover { color: rgba(156,163,175,0.7); }
+    .rss-view-btn.active { background: rgba(255,255,255,0.06); color: #e5e7eb; }
+
+    /* ===== RSS卡片视图 ===== */
+    .rss-card {
+        background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+        border-radius: 10px; padding: 14px 18px; margin-bottom: 6px;
+        transition: all 0.15s; cursor: pointer; display: block;
+        text-decoration: none; color: inherit;
+    }
+    .rss-card:hover {
+        border-color: rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+    }
+    .rss-card .card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+    .rss-card .card-source {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 1px 7px; border-radius: 4px;
+        font-size: 0.62rem; font-weight: 600;
+    }
+    .rss-card .card-time { font-size: 0.62rem; color: rgba(107,114,128,0.5); font-family: monospace; }
+    .rss-card .card-title {
+        font-size: 0.88rem; font-weight: 600; color: #e5e7eb;
+        line-height: 1.5; margin-bottom: 4px;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .rss-card:hover .card-title { color: #fff; }
+    .rss-card .card-summary {
+        font-size: 0.73rem; color: rgba(156,163,175,0.45); line-height: 1.5;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ===== RSS紧凑列表视图 ===== */
+    .rss-list-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 14px; margin-bottom: 2px; border-radius: 8px;
+        text-decoration: none; color: inherit; transition: all 0.15s;
+    }
+    .rss-list-item:hover { background: rgba(255,255,255,0.03); }
+    .rss-list-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .rss-list-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .rss-list-title {
+        font-size: 0.82rem; color: #d1d5db; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+    .rss-list-item:hover .rss-list-title { color: #fff; }
+    .rss-list-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 12px; }
+    .rss-list-source { font-size: 0.6rem; color: rgba(107,114,128,0.4); }
+    .rss-list-time { font-size: 0.6rem; color: rgba(107,114,128,0.4); font-family: monospace; }
+
+    /* ===== 骨架屏 ===== */
+    .skeleton-card {
+        background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+        border-radius: 10px; padding: 14px 18px; margin-bottom: 6px;
+    }
+    .skeleton-line {
+        height: 12px; border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
+        background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ===== 空状态 & 刷新 ===== */
+    .rss-empty { text-align: center; padding: 3rem 1rem; }
+    .rss-empty .icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3; }
+    .rss-empty p { color: rgba(107,114,128,0.4); font-size: 0.82rem; }
+
+    .refresh-btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: 6px;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        color: rgba(156,163,175,0.5); font-size: 0.68rem;
+        cursor: pointer; transition: all 0.15s;
+    }
+    .refresh-btn:hover { border-color: rgba(255,255,255,0.12); color: #e5e7eb; }
+    .refresh-btn.loading { opacity: 0.5; pointer-events: none; }
+    .refresh-btn.loading svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== 视图容器 ===== */
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* ===== RSS工具栏 ===== */
+    .rss-toolbar {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1rem; gap: 8px; flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-3 md:px-10 pt-2 md:pt-8 pb-6 md:pb-10 max-w-full md:max-w-[82vw]">
+    <!-- 标题 -->
+    <div class="text-center mb-4 md:mb-10">
+        <h1 class="hidden md:block text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Read</h1>
+        <h2 class="text-xl md:text-3xl font-bold text-white">阅读</h2>
+        <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-3 md:mt-4"></div>
+    </div>
+
+    <!-- 顶部切换 -->
+    <div class="view-tabs">
+        <div class="view-tab active" onclick="switchView('notes')">📝 笔记</div>
+        <div class="view-tab" onclick="switchView('rss')">📡 RSS</div>
+    </div>
+
+    <!-- ===== 笔记视图 ===== -->
+    <div class="view-panel active" id="view-notes">
+        {% if tags %}
+        <div class="tag-bar">
+            <a href="{% url 'nexus_core:read_page' %}" class="tag-pill {% if not current_tag %}active{% endif %}">全部</a>
+            {% for tag in tags %}
+            <a href="{% url 'nexus_core:read_page' %}?tag={{ tag.name }}" class="tag-pill {% if current_tag == tag.name %}active{% endif %}">
+                {{ tag.name }} <span class="tag-count">{{ tag.post_count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="search-wrap">
+            <form hx-get="{% url 'nexus_core:read_page' %}" hx-target="#notes-list" hx-swap="innerHTML" hx-trigger="submit, keyup delay:300" hx-indicator="#search-spinner">
+                <input type="text" name="q" class="search-input" placeholder="搜索笔记..." value="{{ search }}" id="note-search">
+            </form>
+        </div>
+        <div id="notes-list">
+            {% include 'nexus_core/_read_notes.html' %}
+        </div>
+    </div>
+
+    <!-- ===== RSS视图 ===== -->
+    <div class="view-panel" id="view-rss">
+        <div class="source-bar" id="rss-source-bar">
+            <div class="source-pill active" data-source="" onclick="filterRSS(this, '')">全部</div>
+            {% for feed in feeds %}
+            <div class="source-pill" data-source="{{ feed.name }}" onclick="filterRSS(this, '{{ feed.name }}')">
+                <span class="pill-dot" style="background: {{ feed.color }};"></span>
+                <span>{{ feed.icon }} {{ feed.name }}</span>
+                <span class="rss-count" id="rss-count-{{ forloop.counter0 }}"></span>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="rss-toolbar">
+            <div class="rss-view-toggle">
+                <div class="rss-view-btn active" data-mode="card" onclick="switchRSSView(this, 'card')" title="卡片视图">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </div>
+                <div class="rss-view-btn" data-mode="list" onclick="switchRSSView(this, 'list')" title="列表视图">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+            </div>
+            <button class="refresh-btn" id="rss-refresh" onclick="loadRSS()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+                刷新
+            </button>
+        </div>
+        <div id="rss-list">
+            <div class="skeleton-card"><div class="skeleton-line w-1/3 mb-3" style="height:8px;"></div><div class="skeleton-line w-full mb-2"></div><div class="skeleton-line w-4/5"></div></div>
+            <div class="skeleton-card"><div class="skeleton-line w-1/4 mb-3" style="height:8px;"></div><div class="skeleton-line w-full mb-2"></div><div class="skeleton-line w-3/5"></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let rssData = null;
+let currentRSSSource = '';
+let currentRSSView = 'card';
+
+function switchView(view) {
+    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('view-' + view).classList.add('active');
+    if (view === 'rss' && !rssData) loadRSS();
+}
+
+function switchRSSView(el, mode) {
+    currentRSSView = mode;
+    document.querySelectorAll('.rss-view-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    if (rssData) {
+        const entries = currentRSSSource ? rssData.all.filter(e => e.source === currentRSSSource) : rssData.all;
+        renderRSSList('rss-list', entries);
+    }
+}
+
+function renderRSSList(containerId, entries) {
+    const list = document.getElementById(containerId);
+    if (!entries || entries.length === 0) {
+        list.innerHTML = '<div class="rss-empty"><div class="icon">📭</div><p>暂无文章</p></div>';
+        return;
+    }
+
+    let html = '';
+    if (currentRSSView === 'card') {
+        entries.forEach(e => {
+            html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-card">';
+            html += '<div class="card-top">';
+            html += '<span class="card-source" style="background:' + e.source_color + '12; color:' + e.source_color + ';">' + e.source_icon + ' ' + e.source + '</span>';
+            html += '<span class="card-time">' + timeAgo(e.published) + '</span>';
+            html += '</div>';
+            html += '<div class="card-title">' + e.title + '</div>';
+            if (e.summary) html += '<div class="card-summary">' + e.summary + '</div>';
+            html += '</a>';
+        });
+    } else {
+        entries.forEach(e => {
+            html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-list-item">';
+            html += '<div class="rss-list-left">';
+            html += '<span class="rss-list-dot" style="background:' + e.source_color + ';"></span>';
+            html += '<span class="rss-list-title">' + e.title + '</span>';
+            html += '</div>';
+            html += '<div class="rss-list-right">';
+            html += '<span class="rss-list-source">' + e.source_icon + '</span>';
+            html += '<span class="rss-list-time">' + timeAgo(e.published) + '</span>';
+            html += '</div></a>';
+        });
+    }
+    list.innerHTML = html;
+}
+
+function timeAgo(isoStr) {
+    if (!isoStr) return '';
+    const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+    if (diff < 604800) return Math.floor(diff / 86400) + '天前';
+    const d = new Date(isoStr);
+    return (d.getMonth() + 1) + '/' + d.getDate();
+}
+
+function filterRSS(el, source) {
+    currentRSSSource = source;
+    document.querySelectorAll('#rss-source-bar .source-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    if (!rssData) return;
+    const entries = source ? rssData.all.filter(e => e.source === source) : rssData.all;
+    renderRSSList('rss-list', entries);
+}
+
+function loadRSS() {
+    const btn = document.getElementById('rss-refresh');
+    btn.classList.add('loading');
+    fetch('/api/rss/data/')
+        .then(r => r.json())
+        .then(d => {
+            rssData = d;
+            d.feeds.forEach((f, i) => {
+                const el = document.getElementById('rss-count-' + i);
+                if (el) el.textContent = f.entries.length;
+            });
+            renderRSSList('rss-list', d.all);
+        })
+        .catch(() => {
+            document.getElementById('rss-list').innerHTML = '<div class="rss-empty"><div class="icon">⚠️</div><p>加载失败</p></div>';
+        })
+        .finally(() => btn.classList.remove('loading'));
+}
+</script>
+{% endblock %}

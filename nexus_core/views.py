@@ -8,24 +8,9 @@ from nexus_core.pin_utils import is_pin_verified
 
 def home(request):
     """首页"""
-    from django.db.models import Q
-    
-    # 获取最新一条科技日报
-    latest_daily = Post.objects.filter(
-        status='published',
-        tags__name='科技日报'
-    ).order_by('-created_at').first()
-    
-    # 获取其他笔记（排除科技日报）
-    other_posts = Post.objects.filter(
+    recent_posts = Post.objects.filter(
         status='published'
-    ).exclude(tags__name='科技日报').order_by('-created_at')[:5]
-    
-    # 合并：日报在最前面
-    recent_posts = []
-    if latest_daily:
-        recent_posts.append(latest_daily)
-    recent_posts.extend(other_posts)
+    ).order_by('-created_at')[:6]
     
     all_links = Link.objects.filter(is_visible=True)
     activities = Activity.objects.filter(is_visible=True).order_by('sort_order')[:6]

@@ -69,6 +69,112 @@
     .srv-bar.low { background: #34d399; }
     .srv-bar.mid { background: #fbbf24; }
     .srv-bar.high { background: #ef4444; }
+
+    /* 监控弹窗 */
+    .monitor-overlay {
+        display: none; position: fixed; inset: 0; z-index: 100;
+        background: rgba(0,0,0,0.72);
+        align-items: center; justify-content: center;
+        padding: 16px;
+    }
+    .monitor-overlay.show { display: flex; }
+    .monitor-panel {
+        background: rgba(15,20,35,0.98);
+        border: 1px solid rgba(99,102,241,0.12);
+        border-radius: 20px; padding: 24px;
+        max-width: 680px; width: 100%; max-height: 85vh;
+        overflow-y: auto; position: relative;
+        animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+        will-change: transform;
+        -webkit-overflow-scrolling: touch;
+    }
+    @keyframes modalIn {
+        from { opacity: 0; transform: scale(0.92) translateY(16px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .monitor-panel::-webkit-scrollbar { width: 4px; }
+    .monitor-panel::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 2px; }
+    .modal-close {
+        position: absolute; top: 14px; right: 14px;
+        width: 30px; height: 30px; border-radius: 8px;
+        background: rgba(55, 65, 81, 0.3); border: 1px solid rgba(75,85,99,0.2);
+        color: rgba(156,163,175,0.6); font-size: 0.9rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+    }
+    .modal-close:hover { background: rgba(99,102,241,0.12); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
+
+    /* 服务器卡片 */
+    .m-srv-card {
+        background: rgba(30, 37, 56, 0.5);
+        border: 1px solid rgba(75, 85, 99, 0.15);
+        border-radius: 16px; padding: 20px; margin-bottom: 14px;
+        position: relative; overflow: hidden;
+        opacity: 0; transform: translateY(16px);
+        animation: mCardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .m-srv-card:nth-child(1) { animation-delay: 0.08s; }
+    .m-srv-card:nth-child(2) { animation-delay: 0.18s; }
+    .m-srv-card:nth-child(3) { animation-delay: 0.28s; }
+    @keyframes mCardIn {
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .m-srv-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(129,140,248,0.2), transparent);
+        opacity: 0; transition: opacity 0.3s;
+    }
+    .m-srv-card:hover::before { opacity: 1; }
+    .m-srv-card:hover { border-color: rgba(99,102,241,0.25); }
+    .m-srv-card:last-child { margin-bottom: 0; }
+    .m-srv-card.offline { border-color: rgba(220,38,38,0.18); }
+    .m-srv-card.offline::before { background: linear-gradient(90deg, transparent, rgba(220,38,38,0.3), transparent); }
+
+    /* 指标条 */
+    .m-metric-bar {
+        height: 6px; border-radius: 3px;
+        background: rgba(55, 65, 81, 0.4); overflow: hidden;
+    }
+    .m-metric-fill {
+        height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .m-metric-fill.normal { background: linear-gradient(90deg, #6366f1, #818cf8); box-shadow: 0 0 8px rgba(99,102,241,0.2); }
+    .m-metric-fill.warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 8px rgba(245,158,11,0.2); }
+    .m-metric-fill.danger { background: linear-gradient(90deg, #ef4444, #f87171); box-shadow: 0 0 8px rgba(239,68,68,0.2); }
+
+    /* 运行时间标签 */
+    .m-uptime {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 2px 8px; border-radius: 6px;
+        background: rgba(55,65,81,0.3); border: 1px solid rgba(75,85,99,0.15);
+        font-size: 0.68rem; color: rgba(156,163,175,0.7);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 容器胶囊 */
+    .m-chip {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 3px 9px; border-radius: 8px;
+        font-size: 0.68rem; font-weight: 500;
+        background: rgba(30,37,56,0.6);
+        border: 1px solid rgba(75,85,99,0.2); color: rgba(156,163,175,0.8);
+        transition: all 0.15s;
+    }
+    .m-chip:hover { border-color: rgba(75,85,99,0.35); }
+    .m-chip.on { border-color: rgba(52,211,153,0.2); color: rgba(52,211,153,0.85); }
+    .m-chip-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .m-chip-dot.on { background: #34d399; box-shadow: 0 0 4px rgba(52,211,153,0.4); }
+    .m-chip-dot.off { background: #f87171; }
+
+    /* 首页小卡片 hover */
+    #monitor-card { cursor: pointer; }
+    #monitor-card:hover { border-color: rgba(99, 102, 241, 0.4); }
+
+    /* 状态圆点 */
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .status-dot.online { background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.5); animation: statusPulse 2.5s ease-in-out infinite; }
+    .status-dot.offline { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.5); }
+    @keyframes statusPulse { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
 </style>
 {% endblock %}
 
@@ -135,10 +241,10 @@
     </div>
 
     <!-- 服务器 -->
-    <div class="card" id="monitor-card">
+    <div class="card" id="monitor-card" onclick="openMonitorModal()">
         <div class="flex items-center justify-between mb-1">
             <span class="card-label">Servers</span>
-            <a href="{% url 'nexus_core:monitor' %}" class="view-all">详情 →</a>
+            <span class="text-xs text-indigo-400/60" id="monitor-summary"></span>
         </div>
         <div class="flex-1 flex flex-col justify-center">
             <div class="srv-item" id="srv-solar">
@@ -157,6 +263,18 @@
             </div>
         </div>
     </div>
+
+<!-- 监控弹窗 -->
+<div class="monitor-overlay" id="monitor-overlay" onclick="if(event.target===this)closeMonitorModal()">
+    <div class="monitor-panel">
+        <button class="modal-close" onclick="closeMonitorModal()">✕</button>
+        <div class="mb-5">
+            <h2 class="text-lg font-bold text-white mb-1 tracking-wide">服务器监控</h2>
+            <p class="text-xs text-gray-500 font-mono" id="modal-summary">加载中...</p>
+        </div>
+        <div id="modal-servers"></div>
+    </div>
+</div>
 
     <!-- 笔记 -->
     <div class="card" id="notes-card">
@@ -496,6 +614,7 @@ function updateLyricsScroll(elapsed) {
 function fetchMonitor() {
     fetch('/api/monitor/data/').then(r => r.json()).then(d => {
         if (!d.servers) return;
+        // 更新首页小卡片
         d.servers.forEach(s => {
             const dot = document.getElementById('srv-' + s.name + '-dot');
             const bar = document.getElementById('srv-' + s.name + '-bar');
@@ -518,10 +637,134 @@ function fetchMonitor() {
                 cpuEl.textContent = '离线';
             }
         });
+        // 更新摘要
+        const summaryEl = document.getElementById('monitor-summary');
+        if (summaryEl) summaryEl.textContent = d.online + '/' + d.total + ' 在线';
+        // 缓存数据给弹窗用
+        window._monitorData = d;
     }).catch(() => {});
 }
 
 fetchMonitor();
 setInterval(fetchMonitor, 30000);
+
+// ========== 监控弹窗 ==========
+function openMonitorModal() {
+    document.getElementById('monitor-overlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    // 暂停星空 canvas 动画
+    const canvas = document.getElementById('starfield');
+    if (canvas) canvas.style.visibility = 'hidden';
+    renderMonitorModal();
+}
+
+function closeMonitorModal() {
+    document.getElementById('monitor-overlay').classList.remove('show');
+    document.body.style.overflow = '';
+    const canvas = document.getElementById('starfield');
+    if (canvas) canvas.style.visibility = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMonitorModal(); });
+
+function mBarClass(pct) {
+    if (pct > 80) return 'danger';
+    if (pct > 50) return 'warning';
+    return 'normal';
+}
+
+function renderMonitorModal() {
+    const d = window._monitorData;
+    if (!d || !d.servers) {
+        document.getElementById('modal-summary').textContent = '数据加载中...';
+        document.getElementById('modal-servers').innerHTML = '<p class="text-gray-600 text-sm text-center py-8">请稍候</p>';
+        return;
+    }
+
+    let summaryText = d.online + '/' + d.total + ' 在线';
+    if (d.containers_count > 0) summaryText += ' · ' + d.containers_count + ' 个容器';
+    document.getElementById('modal-summary').textContent = summaryText;
+
+    let html = '';
+    d.servers.forEach(s => {
+        const offlineCls = s.online ? '' : ' offline';
+        html += '<div class="m-srv-card' + offlineCls + '">';
+        // 标题行
+        html += '<div class="flex items-center justify-between mb-3">';
+        html += '<div class="flex items-center gap-2.5">';
+        html += '<span class="status-dot ' + (s.online ? 'online' : 'offline') + '"></span>';
+        html += '<span class="text-base font-bold text-white tracking-wide">' + s.name + '</span>';
+        if (s.online) html += '<span class="text-xs text-gray-600 font-mono opacity-60">' + s.platform + '/' + s.arch + '</span>';
+        html += '</div>';
+        if (s.online && s.collected_at) {
+            const t = new Date(s.collected_at);
+            const hm = String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
+            html += '<span class="m-uptime">⏱ ' + hm + '</span>';
+        }
+        html += '</div>';
+
+        if (!s.online) {
+            html += '<p class="text-gray-600 text-sm text-center py-6">' + (s.error || '无法连接') + '</p>';
+            html += '</div>';
+            return;
+        }
+
+        // 运行时间
+        html += '<div class="mb-4"><span class="m-uptime">🕐 运行 ' + s.uptime + '</span></div>';
+
+        // 指标区域
+        html += '<div class="space-y-3 mb-3">';
+
+        // CPU
+        html += '<div><div class="flex justify-between items-center mb-1.5">';
+        html += '<span class="text-xs text-gray-500">CPU</span>';
+        html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + s.cpu_percent + '%</span></div>';
+        html += '<div class="m-metric-bar"><div class="m-metric-fill ' + mBarClass(s.cpu_percent) + '" style="width:' + s.cpu_percent + '%"></div></div>';
+        html += '<div class="flex justify-between mt-1.5"><span class="text-xs text-gray-700">' + s.cpu_count + ' 核</span><span class="text-xs text-gray-700 font-mono">负载 ' + s.load_avg.join(' / ') + '</span></div></div>';
+
+        // 内存
+        html += '<div><div class="flex justify-between items-center mb-1.5">';
+        html += '<span class="text-xs text-gray-500">内存</span>';
+        html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + s.mem_used + '<span class="text-gray-600 font-normal"> / </span>' + s.mem_total + ' GB</span></div>';
+        html += '<div class="m-metric-bar"><div class="m-metric-fill ' + mBarClass(s.mem_percent) + '" style="width:' + s.mem_percent + '%"></div></div></div>';
+
+        // 磁盘
+        html += '<div><div class="flex justify-between items-center mb-1.5">';
+        html += '<span class="text-xs text-gray-500">磁盘</span>';
+        html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + s.disk_used + '<span class="text-gray-600 font-normal"> / </span>' + s.disk_total + ' GB</span></div>';
+        html += '<div class="m-metric-bar"><div class="m-metric-fill ' + mBarClass(s.disk_percent) + '" style="width:' + s.disk_percent + '%"></div></div></div>';
+
+        // 电池
+        if (s.battery) {
+            let batVal = s.battery.percent + '%';
+            if (s.battery.plugged) batVal += ' ⚡';
+            const batClass = s.battery.percent < 20 ? 'danger' : s.battery.percent < 40 ? 'warning' : 'normal';
+            html += '<div><div class="flex justify-between items-center mb-1.5">';
+            html += '<span class="text-xs text-gray-500">🔋 电池</span>';
+            html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + batVal + '</span></div>';
+            html += '<div class="m-metric-bar"><div class="m-metric-fill ' + batClass + '" style="width:' + s.battery.percent + '%"></div></div></div>';
+        }
+
+        html += '</div>'; // space-y-3
+
+        // Docker
+        if (s.containers && s.containers.length > 0) {
+            html += '<div class="pt-3 mt-1 border-t border-white/5">';
+            html += '<div class="flex justify-between items-center mb-2.5">';
+            html += '<span class="text-xs text-gray-500">🐳 容器</span>';
+            html += '<span class="text-xs text-gray-600 font-mono">' + s.containers_running + '/' + s.containers_total + '</span></div>';
+            html += '<div class="flex flex-wrap gap-1.5">';
+            s.containers.forEach(c => {
+                const isUp = c.status.startsWith('Up');
+                html += '<span class="m-chip' + (isUp ? ' on' : '') + '"><span class="m-chip-dot ' + (isUp ? 'on' : 'off') + '"></span>' + c.name + '</span>';
+            });
+            html += '</div></div>';
+        }
+
+        html += '</div>';
+    });
+
+    document.getElementById('modal-servers').innerHTML = html;
+}
 </script>
 {% endblock %}

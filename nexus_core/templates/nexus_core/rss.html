@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RSS · Nexus{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rss-header { text-align: center; margin-bottom: 2rem; }
+    .rss-header h1 { font-size: 0.7rem; font-weight: 500; color: rgba(99,102,241,0.7); text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 0.5rem; }
+    .rss-header h2 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+    .rss-header .line { width: 4rem; height: 1px; background: linear-gradient(90deg, transparent, rgba(99,102,241,0.4), transparent); margin: 1rem auto 0; }
+
+    /* 源筛选 */
+    .source-bar {
+        display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+        margin-bottom: 1.5rem; -webkit-overflow-scrolling: touch;
+    }
+    .source-bar::-webkit-scrollbar { display: none; }
+    .source-pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 5px 14px; border-radius: 10px; white-space: nowrap;
+        font-size: 0.78rem; font-weight: 500; cursor: pointer;
+        background: rgba(30,37,56,0.5); border: 1px solid rgba(75,85,99,0.2);
+        color: rgba(156,163,175,0.8); transition: all 0.2s;
+        user-select: none;
+    }
+    .source-pill:hover { border-color: rgba(99,102,241,0.3); color: #c4b5fd; }
+    .source-pill.active { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.4); color: #a5b4fc; }
+    .source-pill .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* 文章卡片 */
+    .rss-card {
+        background: rgba(30,37,56,0.4); border: 1px solid rgba(75,85,99,0.15);
+        border-radius: 14px; padding: 18px 20px; margin-bottom: 10px;
+        transition: all 0.25s ease; cursor: pointer; display: block;
+        text-decoration: none; color: inherit;
+        opacity: 0; transform: translateY(12px);
+        animation: rssCardIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    @keyframes rssCardIn { to { opacity: 1; transform: translateY(0); } }
+    .rss-card:hover {
+        border-color: rgba(99,102,241,0.3);
+        background: rgba(30,37,56,0.6);
+        transform: translateY(-1px);
+    }
+    .rss-card:active { transform: scale(0.995); }
+    .rss-card .card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .rss-card .card-source {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 1px 7px; border-radius: 5px;
+        font-size: 0.65rem; font-weight: 600; letter-spacing: 0.02em;
+        background: rgba(99,102,241,0.08); color: rgba(165,180,252,0.8);
+    }
+    .rss-card .card-time { font-size: 0.65rem; color: rgba(107,114,128,0.6); font-family: 'JetBrains Mono', monospace; }
+    .rss-card .card-title {
+        font-size: 0.95rem; font-weight: 600; color: #e5e7eb;
+        line-height: 1.5; margin-bottom: 6px;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .rss-card:hover .card-title { color: #fff; }
+    .rss-card .card-summary {
+        font-size: 0.78rem; color: rgba(156,163,175,0.6); line-height: 1.6;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* 骨架屏 */
+    .skeleton-card {
+        background: rgba(30,37,56,0.4); border: 1px solid rgba(75,85,99,0.15);
+        border-radius: 14px; padding: 18px 20px; margin-bottom: 10px;
+    }
+    .skeleton-line {
+        height: 12px; border-radius: 6px;
+        background: linear-gradient(90deg, rgba(55,65,81,0.3) 25%, rgba(75,85,99,0.3) 50%, rgba(55,65,81,0.3) 75%);
+        background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* 空状态 */
+    .rss-empty { text-align: center; padding: 4rem 1rem; }
+    .rss-empty .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .rss-empty p { color: rgba(107,114,128,0.5); font-size: 0.85rem; }
+
+    /* 计数 */
+    .rss-count {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 1.3rem; height: 1.3rem; padding: 0 5px;
+        border-radius: 9999px; font-size: 0.65rem; font-weight: 600;
+        background: rgba(99,102,241,0.15); color: #a5b4fc;
+        border: 1px solid rgba(99,102,241,0.2);
+        margin-left: 6px; vertical-align: middle;
+    }
+
+    /* 刷新按钮 */
+    .refresh-btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 5px 12px; border-radius: 8px;
+        background: rgba(30,37,56,0.5); border: 1px solid rgba(75,85,99,0.2);
+        color: rgba(156,163,175,0.7); font-size: 0.72rem;
+        cursor: pointer; transition: all 0.15s;
+    }
+    .refresh-btn:hover { border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+    .refresh-btn.loading { opacity: 0.5; pointer-events: none; }
+    .refresh-btn svg { transition: transform 0.3s; }
+    .refresh-btn.loading svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto px-3 md:px-10 pt-6 pb-8 max-w-full md:max-w-[82vw]">
+    <!-- 标题 -->
+    <div class="rss-header">
+        <h1>RSS Reader</h1>
+        <h2>订阅阅读</h2>
+        <div class="line"></div>
+    </div>
+
+    <!-- 操作栏 -->
+    <div class="flex items-center justify-between mb-4">
+        <div class="source-bar flex-1" id="source-bar">
+            <div class="source-pill active" data-source="" onclick="filterSource(this, '')">
+                <span>全部</span>
+                <span class="rss-count" id="count-all" style="display:none;">0</span>
+            </div>
+            {% for feed in feeds %}
+            <div class="source-pill" data-source="{{ feed.name }}" onclick="filterSource(this, '{{ feed.name }}')">
+                <span class="pill-dot" style="background: {{ feed.color }};"></span>
+                <span>{{ feed.icon }} {{ feed.name }}</span>
+                <span class="rss-count" id="count-{{ forloop.counter0 }}" style="display:none;">0</span>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="refresh-btn ml-3 flex-shrink-0" id="refresh-btn" onclick="loadRSS()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                <polyline points="21 3 21 9 15 9"/>
+            </svg>
+            刷新
+        </button>
+    </div>
+
+    <!-- 文章列表 -->
+    <div id="rss-list">
+        <!-- 骨架屏 -->
+        <div class="skeleton-card"><div class="skeleton-line w-1/3 mb-3" style="height:8px;"></div><div class="skeleton-line w-full mb-2"></div><div class="skeleton-line w-4/5 mb-3"></div><div class="skeleton-line w-full" style="height:10px; opacity:0.5;"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line w-1/4 mb-3" style="height:8px;"></div><div class="skeleton-line w-full mb-2"></div><div class="skeleton-line w-3/5 mb-3"></div><div class="skeleton-line w-full" style="height:10px; opacity:0.5;"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line w-1/3 mb-3" style="height:8px;"></div><div class="skeleton-line w-full mb-2"></div><div class="skeleton-line w-2/3 mb-3"></div><div class="skeleton-line w-full" style="height:10px; opacity:0.5;"></div></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let rssData = null;
+let currentSource = '';
+
+function timeAgo(isoStr) {
+    if (!isoStr) return '';
+    const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' 天前';
+    const d = new Date(isoStr);
+    return (d.getMonth() + 1) + '/' + d.getDate();
+}
+
+function renderList() {
+    if (!rssData) return;
+    const list = document.getElementById('rss-list');
+    const entries = currentSource
+        ? rssData.all.filter(e => e.source === currentSource)
+        : rssData.all;
+
+    if (entries.length === 0) {
+        list.innerHTML = '<div class="rss-empty"><div class="icon">📭</div><p>暂无文章</p></div>';
+        return;
+    }
+
+    let html = '';
+    entries.forEach((e, i) => {
+        const delay = Math.min(i * 0.03, 0.3);
+        html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-card" style="animation-delay:' + delay + 's">';
+        html += '<div class="card-top">';
+        html += '<span class="card-source" style="background:' + e.source_color + '15; color:' + e.source_color + ';">' + e.source_icon + ' ' + e.source + '</span>';
+        html += '<span class="card-time">' + timeAgo(e.published) + '</span>';
+        html += '</div>';
+        html += '<div class="card-title">' + e.title + '</div>';
+        if (e.summary) html += '<div class="card-summary">' + e.summary + '</div>';
+        html += '</a>';
+    });
+    list.innerHTML = html;
+}
+
+function filterSource(el, source) {
+    currentSource = source;
+    document.querySelectorAll('.source-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    renderList();
+}
+
+function updateCounts() {
+    if (!rssData) return;
+    const allCount = rssData.all.length;
+    const allEl = document.getElementById('count-all');
+    if (allEl) { allEl.textContent = allCount; allEl.style.display = allCount ? '' : 'none'; }
+
+    rssData.feeds.forEach((f, i) => {
+        const el = document.getElementById('count-' + i);
+        if (el) { el.textContent = f.entries.length; el.style.display = f.entries.length ? '' : 'none'; }
+    });
+}
+
+function loadRSS() {
+    const btn = document.getElementById('refresh-btn');
+    btn.classList.add('loading');
+
+    fetch('/api/rss/data/')
+        .then(r => r.json())
+        .then(d => {
+            rssData = d;
+            updateCounts();
+            renderList();
+        })
+        .catch(() => {
+            document.getElementById('rss-list').innerHTML = '<div class="rss-empty"><div class="icon">⚠️</div><p>加载失败，请稍后重试</p></div>';
+        })
+        .finally(() => {
+            btn.classList.remove('loading');
+        });
+}
+
+// 启动
+loadRSS();
+</script>
+{% endblock %}
