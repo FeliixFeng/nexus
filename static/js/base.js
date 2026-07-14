@@ -30,9 +30,11 @@
         // 移动端顶部栏背景
         if (mobileTopbar) {
             if (scrollY > 20) {
-                mobileTopbar.style.background = 'rgba(6, 6, 14, 0.85)';
+                mobileTopbar.classList.add('nav-solid');
+                mobileTopbar.classList.remove('nav-transparent');
             } else {
-                mobileTopbar.style.background = 'transparent';
+                mobileTopbar.classList.remove('nav-solid');
+                mobileTopbar.classList.add('nav-transparent');
             }
         }
         lastScroll = scrollY;
