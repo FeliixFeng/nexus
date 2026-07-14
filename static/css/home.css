@@ -1,5 +1,5 @@
 /* ========== 首页全局 ========== */
-body { background: #06060e; min-height: 100vh; display: flex; flex-direction: column; }
+body { background: #0A0A0B; min-height: 100vh; display: flex; flex-direction: column; }
 main.pt-14 { flex: 1; }
 
 /* ========== 星空背景 ========== */
@@ -50,8 +50,31 @@ main.pt-14 { flex: 1; }
 body:hover #spotlight { opacity: 1; }
 
 /* ========== 顶部语录 ========== */
+.hero-area {
+    padding-top: 5rem;
+    padding-bottom: 1.5rem;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+.hero-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #EDEDEF 0%, #818cf8 50%, #0070F3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+}
+.hero-subtitle {
+    font-size: 0.95rem;
+    color: rgba(156, 163, 175, 0.5);
+    letter-spacing: 0.05em;
+}
 .top-area {
-    padding-top: 4.5rem;
+    padding-top: 0.5rem;
     padding-bottom: 1rem;
     text-align: center;
     position: relative;
@@ -92,16 +115,17 @@ body:hover #spotlight { opacity: 1; }
 
 /* ========== 卡片 ========== */
 .card {
-    background: rgba(15, 23, 42, 0.4);
-    border: 1px solid rgba(55, 65, 81, 0.35);
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
     padding: 18px 22px;
-    transition: border-color 0.35s, box-shadow 0.35s, transform 0.35s;
+    transition: border-color 0.4s, box-shadow 0.4s, transform 0.4s;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    /* 入场动画 */
     opacity: 0;
     transform: translateY(12px);
     animation: card-in 0.5s ease forwards;
@@ -116,15 +140,15 @@ body:hover #spotlight { opacity: 1; }
 #activity-card { animation-delay: 0.25s; }
 #services-card { animation-delay: 0.3s; }
 .card:hover {
-    border-color: rgba(99, 102, 241, 0.2);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-color: rgba(94, 106, 210, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(94, 106, 210, 0.1);
 }
 .card::before {
     content: '';
     position: absolute; inset: 0;
     border-radius: inherit; padding: 1px;
-    background: linear-gradient(135deg, transparent 40%, rgba(99, 102, 241, 0.25), transparent 60%);
+    background: linear-gradient(135deg, transparent 30%, rgba(94, 106, 210, 0.3), rgba(0, 112, 243, 0.2), transparent 70%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -289,6 +313,17 @@ body:hover #spotlight { opacity: 1; }
 /* ---- 首页特殊覆盖 ---- */
 #back-to-top { display: none !important; }
 
+/* ---- 滚动动画 ---- */
+.fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* ---- 粒子 ---- */
 .particle {
     position: fixed; border-radius: 50%;
@@ -303,7 +338,11 @@ body:hover #spotlight { opacity: 1; }
 
 /* ========== 移动端 ========== */
 @media (max-width: 768px) {
-    .top-area { padding-top: 1rem; padding-bottom: 0.8rem; }
+    main.pt-14 { padding-top: 2.75rem; }
+    .hero-area { padding-top: 0.3rem; padding-bottom: 0.2rem; }
+    .hero-name { font-size: 1.3rem; margin-bottom: 0.15rem; }
+    .hero-subtitle { font-size: 0.8rem; }
+    .top-area { padding-top: 0.1rem; padding-bottom: 0.3rem; }
     .bento {
         grid-template-columns: 1fr;
         gap: 12px;

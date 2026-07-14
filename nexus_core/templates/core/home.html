@@ -185,6 +185,12 @@
 <div class="aurora-blob aurora-2"></div>
 <div id="spotlight"></div>
 
+<!-- Hero区域 -->
+<div class="hero-area relative z-10">
+    <h1 class="hero-name">FelixFeng</h1>
+    <p class="hero-subtitle">Developer · Student</p>
+</div>
+
 <!-- 语录 -->
 <div class="top-area relative z-10">
     <p class="top-quote" id="quote"></p>
@@ -193,7 +199,7 @@
 <div class="bento relative z-10">
 
     <!-- 时间 -->
-    <div class="card" id="time-card">
+    <div class="card fade-up" id="time-card">
         <div class="flex-1 flex flex-col items-center justify-center text-center">
             <div class="time-big" id="clock">--:--</div>
             <div class="time-sub" id="clock-date"></div>
@@ -201,7 +207,7 @@
     </div>
 
     <!-- 音乐 -->
-    <div class="card" id="music-card">
+    <div class="card fade-up" id="music-card">
         <div class="flex-1 flex flex-col justify-between items-center text-center">
             <div class="flex items-start gap-2 justify-center">
                 <span style="font-size:0.8rem; opacity:0.25; line-height:1.4; margin-top:1px;">🎵</span>
@@ -241,7 +247,7 @@
     </div>
 
     <!-- 服务器 -->
-    <div class="card" id="monitor-card" onclick="openMonitorModal()">
+    <div class="card fade-up" id="monitor-card" onclick="openMonitorModal()">
         <div class="flex items-center justify-between mb-1">
             <span class="card-label">Servers</span>
             <span class="text-xs text-indigo-400/60" id="monitor-summary"></span>
@@ -277,7 +283,7 @@
 </div>
 
     <!-- 笔记 -->
-    <div class="card" id="notes-card">
+    <div class="card fade-up" id="notes-card">
         <div class="flex items-center justify-between mb-1">
             <span class="card-label">Notes</span>
             <a href="{% url 'blog:post_list' %}" class="view-all">全部 →</a>
@@ -299,7 +305,7 @@
     </div>
 
     <!-- 动态 -->
-    <div class="card" id="activity-card">
+    <div class="card fade-up" id="activity-card">
         <div class="flex items-center justify-between mb-1">
             <span class="card-label">Activity</span>
             <a href="{% url 'nexus_core:now_page' %}" class="view-all">全部 →</a>
@@ -339,7 +345,7 @@
     </div>
 
     <!-- 服务 -->
-    <div class="card" id="services-card">
+    <div class="card fade-up" id="services-card">
         <div class="services-row">
             {% for link in all_links|slice:":6" %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-pill">
