@@ -68,6 +68,22 @@
         border: 1px solid rgba(255,255,255,0.04);
         text-decoration: none; color: inherit;
         transition: all 0.15s;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: fadeInUp 0.4s ease forwards;
+    }
+    .note-card:nth-child(1) { animation-delay: 0.05s; }
+    .note-card:nth-child(2) { animation-delay: 0.1s; }
+    .note-card:nth-child(3) { animation-delay: 0.15s; }
+    .note-card:nth-child(4) { animation-delay: 0.2s; }
+    .note-card:nth-child(5) { animation-delay: 0.25s; }
+    .note-card:nth-child(6) { animation-delay: 0.3s; }
+    .note-card:nth-child(7) { animation-delay: 0.35s; }
+    .note-card:nth-child(8) { animation-delay: 0.4s; }
+    .note-card:nth-child(9) { animation-delay: 0.45s; }
+    .note-card:nth-child(10) { animation-delay: 0.5s; }
+    @keyframes fadeInUp {
+        to { opacity: 1; transform: translateY(0); }
     }
     .note-card:hover {
         background: rgba(255,255,255,0.04);
@@ -239,7 +255,7 @@
     <!-- 标题 -->
     <div class="text-center mb-4 md:mb-10">
         <h1 class="hidden md:block text-xs font-medium text-blue-400/70 uppercase tracking-[0.3em] mb-2">Read</h1>
-        <h2 class="text-xl md:text-3xl font-bold text-white">阅读</h2>
+        <h2 class="text-xl md:text-3xl font-bold text-white">阅读{% if posts %}<span class="count-badge">{{ posts|length }}</span>{% endif %}</h2>
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mx-auto mt-3 md:mt-4"></div>
     </div>
 
@@ -255,15 +271,20 @@
         <div class="tag-bar">
             <a href="{% url 'nexus_core:read_page' %}" class="tag-pill {% if not current_tag %}active{% endif %}">全部</a>
             {% for tag in tags %}
+            {% if tag.post_count > 0 %}
             <a href="{% url 'nexus_core:read_page' %}?tag={{ tag.name }}" class="tag-pill {% if current_tag == tag.name %}active{% endif %}">
                 {{ tag.name }} <span class="tag-count">{{ tag.post_count }}</span>
             </a>
+            {% endif %}
             {% endfor %}
         </div>
         {% endif %}
         <div class="search-wrap">
-            <form hx-get="{% url 'nexus_core:read_page' %}" hx-target="#notes-list" hx-swap="innerHTML" hx-trigger="submit, keyup delay:300" hx-indicator="#search-spinner">
-                <input type="text" name="q" class="search-input" placeholder="搜索笔记..." value="{{ search }}" id="note-search">
+            <form hx-get="{% url 'nexus_core:read_page' %}" hx-target="#notes-list" hx-swap="innerHTML" hx-trigger="submit, keyup delay:300" hx-indicator="#search-spinner" class="relative w-full max-w-sm">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" name="q" class="search-input pl-10" placeholder="搜索笔记..." value="{{ search }}" id="note-search">
             </form>
         </div>
         <div id="notes-list">

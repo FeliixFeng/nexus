@@ -1,0 +1,16 @@
+[Unit]
+Description=Nexus Django Application
+After=network.target
+
+[Service]
+Type=notify
+User=user
+Group=user
+WorkingDirectory=/home/user/projects/nexus
+ExecStart=/home/user/projects/nexus/.venv/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --reload
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

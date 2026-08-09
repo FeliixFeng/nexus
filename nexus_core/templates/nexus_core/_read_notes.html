@@ -6,9 +6,11 @@
     <div class="note-card-body">
         <div class="note-card-meta">
             {% for tag in post.tags.all %}
-            <span class="note-tag" style="--tag-hue: {{ forloop.counter0|add:"0" }};">{{ tag.name }}</span>
+            <span class="note-tag" style="--tag-hue: {{ forloop.counter0|add:'0' }};">{{ tag.name }}</span>
             {% endfor %}
+            {% if post.published_at %}
             <span class="note-date">{{ post.published_at|date:"m/d" }}</span>
+            {% endif %}
             <span class="note-read-time">{{ post.content|reading_time }} min</span>
         </div>
         <h3 class="note-card-title">
