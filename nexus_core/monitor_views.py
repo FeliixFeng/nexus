@@ -84,7 +84,7 @@ def _fetch_server(server_cfg):
 def monitor(request):
     """监控页面 — 先渲染骨架，数据异步加载"""
     server_names = [s["name"] for s in settings.MONITOR_SERVERS]
-    return render(request, "core/monitor.html", {
+    return render(request, "nexus_core/monitor.html", {
         "server_names": server_names,
     })
 

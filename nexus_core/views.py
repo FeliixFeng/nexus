@@ -26,12 +26,12 @@ def home(request):
         'now_items': now_items,
         'is_editor': is_pin_verified(request),
     }
-    return render(request, 'core/home.html', context)
+    return render(request, 'nexus_core/home.html', context)
 
 
 def now_page(request):
     """动态页 — 纯展示，完成按钮需要 API Key"""
-    return render(request, 'core/now.html', {
+    return render(request, 'nexus_core/now.html', {
         'now_items': NowItem.objects.all(),
         'activities': Activity.objects.filter(is_visible=True).order_by('sort_order'),
         'NEXUS_API_KEY': settings.NEXUS_API_KEY,
