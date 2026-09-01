@@ -85,8 +85,4 @@
     t(); setInterval(t,1000);
 })();
 
-// ========== 入场动画 ==========
-(function() {
-    const obs = new IntersectionObserver(e => e.forEach(i => { if(i.isIntersecting) i.target.classList.add('visible'); }), {threshold:0.1});
-    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-})();
+

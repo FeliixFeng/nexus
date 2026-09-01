@@ -4,22 +4,6 @@
 
 {% block extra_css %}
 <style>
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(16px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .fade-in-up {
-        opacity: 0;
-        animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
     .link-card-2 {
         position: relative;
         overflow: hidden;
@@ -86,8 +70,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {% for link in services %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card-2 fade-in-up group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4"
-               style="animation-delay: {{ forloop.counter0 }}00ms">
+               class="link-card-2 nexus-animate nexus-animate-delay-{{ forloop.counter }} group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4">
                 <div class="relative z-10 flex items-start gap-3">
                     <span class="link-icon text-2xl flex-shrink-0">{{ link.icon|default:"🔗" }}</span>
                     <div class="min-w-0">
@@ -112,8 +95,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {% for link in projects %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card-2 fade-in-up group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4"
-               style="animation-delay: {{ forloop.counter0 }}00ms">
+               class="link-card-2 nexus-animate nexus-animate-delay-{{ forloop.counter }} group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4">
                 <div class="relative z-10 flex items-start gap-3">
                     <span class="link-icon text-2xl flex-shrink-0">{{ link.icon|default:"📦" }}</span>
                     <div class="min-w-0">
@@ -138,8 +120,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {% for link in external %}
             <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-               class="link-card-2 fade-in-up group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4"
-               style="animation-delay: {{ forloop.counter0 }}00ms">
+               class="link-card-2 nexus-animate nexus-animate-delay-{{ forloop.counter }} group block bg-gray-900/40 backdrop-blur-sm border border-gray-800/50 rounded-xl p-4">
                 <div class="relative z-10 flex items-start gap-3">
                     <span class="link-icon text-2xl flex-shrink-0">{{ link.icon|default:"🌐" }}</span>
                     <div class="min-w-0">
@@ -154,7 +135,7 @@
     {% endif %}
     
     {% if not services and not projects and not external %}
-    <div class="text-center py-20 fade-in-up">
+    <div class="text-center py-20 nexus-animate">
         <div class="text-5xl mb-4">🔗</div>
         <p class="text-gray-500 text-sm">暂无链接</p>
         <p class="text-gray-700 text-xs mt-1">还没有添加任何链接</p>

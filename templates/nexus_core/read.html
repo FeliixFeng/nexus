@@ -68,22 +68,6 @@
         border: 1px solid rgba(255,255,255,0.04);
         text-decoration: none; color: inherit;
         transition: all 0.15s;
-        opacity: 0;
-        transform: translateY(12px);
-        animation: fadeInUp 0.4s ease forwards;
-    }
-    .note-card:nth-child(1) { animation-delay: 0.05s; }
-    .note-card:nth-child(2) { animation-delay: 0.1s; }
-    .note-card:nth-child(3) { animation-delay: 0.15s; }
-    .note-card:nth-child(4) { animation-delay: 0.2s; }
-    .note-card:nth-child(5) { animation-delay: 0.25s; }
-    .note-card:nth-child(6) { animation-delay: 0.3s; }
-    .note-card:nth-child(7) { animation-delay: 0.35s; }
-    .note-card:nth-child(8) { animation-delay: 0.4s; }
-    .note-card:nth-child(9) { animation-delay: 0.45s; }
-    .note-card:nth-child(10) { animation-delay: 0.5s; }
-    @keyframes fadeInUp {
-        to { opacity: 1; transform: translateY(0); }
     }
     .note-card:hover {
         background: rgba(255,255,255,0.04);
@@ -217,9 +201,8 @@
     .skeleton-line {
         height: 12px; border-radius: 4px;
         background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
-        background-size: 200% 100%; animation: shimmer 1.5s infinite;
+        background-size: 200% 100%; animation: nexusShimmer 1.5s infinite;
     }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     /* ===== 空状态 & 刷新 ===== */
     .rss-empty { text-align: center; padding: 3rem 1rem; }
@@ -235,8 +218,7 @@
     }
     .refresh-btn:hover { border-color: rgba(255,255,255,0.12); color: #e5e7eb; }
     .refresh-btn.loading { opacity: 0.5; pointer-events: none; }
-    .refresh-btn.loading svg { animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .refresh-btn.loading svg { animation: nexusSpin 0.8s linear infinite; }
 
     /* ===== 视图容器 ===== */
     .view-panel { display: none; }
@@ -359,8 +341,9 @@ function renderRSSList(containerId, entries) {
 
     let html = '';
     if (currentRSSView === 'card') {
-        entries.forEach(e => {
-            html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-card">';
+        entries.forEach((e, i) => {
+            const delayClass = 'nexus-animate-delay-' + Math.min(i + 1, 10);
+            html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-card nexus-animate ' + delayClass + '">';
             html += '<div class="card-top">';
             html += '<span class="card-source" style="background:' + e.source_color + '12; color:' + e.source_color + ';">' + e.source_icon + ' ' + e.source + '</span>';
             html += '<span class="card-time">' + timeAgo(e.published) + '</span>';
@@ -370,8 +353,9 @@ function renderRSSList(containerId, entries) {
             html += '</a>';
         });
     } else {
-        entries.forEach(e => {
-            html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-list-item">';
+        entries.forEach((e, i) => {
+            const delayClass = 'nexus-animate-delay-' + Math.min(i + 1, 10);
+            html += '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer" class="rss-list-item nexus-animate ' + delayClass + '">';
             html += '<div class="rss-list-left">';
             html += '<span class="rss-list-dot" style="background:' + e.source_color + ';"></span>';
             html += '<span class="rss-list-title">' + e.title + '</span>';

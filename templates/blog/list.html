@@ -4,23 +4,6 @@
 
 {% block extra_css %}
 <style>
-    /* fade-in-up animation with staggered delays */
-    .blog-card {
-        opacity: 0;
-        transform: translateY(12px);
-        animation: fadeInUp 0.4s ease forwards;
-    }
-    .blog-card:nth-child(1) { animation-delay: 0.05s; }
-    .blog-card:nth-child(2) { animation-delay: 0.1s; }
-    .blog-card:nth-child(3) { animation-delay: 0.15s; }
-    .blog-card:nth-child(4) { animation-delay: 0.2s; }
-    .blog-card:nth-child(5) { animation-delay: 0.25s; }
-    .blog-card:nth-child(6) { animation-delay: 0.3s; }
-    .blog-card:nth-child(7) { animation-delay: 0.35s; }
-    .blog-card:nth-child(8) { animation-delay: 0.4s; }
-    .blog-card:nth-child(9) { animation-delay: 0.45s; }
-    .blog-card:nth-child(10) { animation-delay: 0.5s; }
-
     /* hover glow */
     .blog-card:hover {
         border-color: rgba(99, 102, 241, 0.2);
@@ -67,10 +50,6 @@
         .blog-card h2 { font-size: 1rem; }
         .tag-pill { padding: 2px 8px; font-size: 0.75rem; }
         .notes-title-area { margin-bottom: 1.5rem; }
-    }
-
-    @keyframes fadeInUp {
-        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 {% endblock %}
@@ -138,7 +117,7 @@
         <div id="notes-list" class="space-y-3">
             {% if posts %}
             {% for post in posts %}
-            <div class="blog-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
+            <div class="blog-card nexus-animate nexus-animate-delay-{{ forloop.counter }} bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
                 <a href="{% url 'blog:post_detail' post.slug %}" class="block">
                     <h2 class="text-lg font-semibold text-white mb-2">
                         {% if post.is_pinned %}<span class="text-yellow-500 mr-1">📌</span>{% endif %}

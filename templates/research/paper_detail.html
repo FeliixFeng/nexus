@@ -5,14 +5,15 @@
 
 {% block extra_css %}
 <style>
-    .detail-field { opacity: 0; animation: fadeIn 0.3s ease forwards; }
+    .detail-field {
+        opacity: 0;
+        animation: nexusFadeIn 0.3s ease forwards;
+    }
     .detail-field:nth-child(1) { animation-delay: 0.05s; }
     .detail-field:nth-child(2) { animation-delay: 0.1s; }
     .detail-field:nth-child(3) { animation-delay: 0.15s; }
     .detail-field:nth-child(4) { animation-delay: 0.2s; }
     .detail-field:nth-child(5) { animation-delay: 0.25s; }
-
-    @keyframes fadeIn { to { opacity: 1; } }
 </style>
 {% endblock %}
 

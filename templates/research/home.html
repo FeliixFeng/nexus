@@ -5,16 +5,6 @@
 
 {% block extra_css %}
 <style>
-    .research-card {
-        opacity: 0;
-        transform: translateY(12px);
-        animation: fadeInUp 0.4s ease forwards;
-    }
-    .research-card:nth-child(1) { animation-delay: 0.05s; }
-    .research-card:nth-child(2) { animation-delay: 0.1s; }
-    .research-card:nth-child(3) { animation-delay: 0.15s; }
-    .research-card:nth-child(4) { animation-delay: 0.2s; }
-
     .research-card:hover {
         border-color: rgba(139, 92, 246, 0.35);
         box-shadow: 0 0 16px -4px rgba(139, 92, 246, 0.15);
@@ -28,10 +18,6 @@
         background: linear-gradient(135deg, #8b5cf6, #3b82f6);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-    }
-
-    @keyframes fadeInUp {
-        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 {% endblock %}
@@ -48,19 +34,19 @@
 
         <!-- 统计卡片 -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-            <div class="research-card bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
+            <div class="research-card nexus-animate nexus-animate-delay-1 bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
                 <div class="stat-number">{{ papers_count }}</div>
                 <div class="text-xs text-gray-400 mt-1">论文总数</div>
             </div>
-            <div class="research-card bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
+            <div class="research-card nexus-animate nexus-animate-delay-2 bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
                 <div class="stat-number">{{ reading_count }}</div>
                 <div class="text-xs text-gray-400 mt-1">在读</div>
             </div>
-            <div class="research-card bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
+            <div class="research-card nexus-animate nexus-animate-delay-3 bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
                 <div class="stat-number">{{ finished_count }}</div>
                 <div class="text-xs text-gray-400 mt-1">已读</div>
             </div>
-            <div class="research-card bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
+            <div class="research-card nexus-animate nexus-animate-delay-4 bg-white/5 border border-white/10 rounded-xl p-4 text-center transition-all">
                 <div class="stat-number">{{ experiments_count }}</div>
                 <div class="text-xs text-gray-400 mt-1">实验记录</div>
             </div>
@@ -69,7 +55,7 @@
         <!-- 快捷入口 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
             <a href="{% url 'research:paper_list' %}" 
-               class="research-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all flex items-center gap-4">
+               class="research-card nexus-animate nexus-animate-delay-5 bg-white/5 border border-white/10 rounded-xl p-5 transition-all flex items-center gap-4">
                 <div class="text-3xl">📄</div>
                 <div>
                     <div class="text-white font-medium">论文管理</div>
@@ -78,7 +64,7 @@
                 <div class="ml-auto text-gray-500">→</div>
             </a>
             <a href="{% url 'research:experiment_list' %}" 
-               class="research-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all flex items-center gap-4">
+               class="research-card nexus-animate nexus-animate-delay-6 bg-white/5 border border-white/10 rounded-xl p-5 transition-all flex items-center gap-4">
                 <div class="text-3xl">🧪</div>
                 <div>
                     <div class="text-white font-medium">实验日志</div>
@@ -98,7 +84,7 @@
             <div class="space-y-2">
                 {% for paper in recent_papers %}
                 <a href="{% url 'research:paper_detail' paper.pk %}" 
-                   class="research-card bg-white/5 border border-white/10 rounded-lg p-4 transition-all flex items-center gap-3 block">
+                   class="research-card nexus-animate nexus-animate-delay-{{ forloop.counter }} bg-white/5 border border-white/10 rounded-lg p-4 transition-all flex items-center gap-3 block">
                     <span class="text-sm
                         {% if paper.status == 'reading' %}text-yellow-500
                         {% elif paper.status == 'finished' %}text-green-500
@@ -133,7 +119,7 @@
             </div>
             <div class="space-y-2">
                 {% for exp in recent_experiments %}
-                <div class="research-card bg-white/5 border border-white/10 rounded-lg p-4 transition-all">
+                <div class="research-card nexus-animate nexus-animate-delay-{{ forloop.counter }} bg-white/5 border border-white/10 rounded-lg p-4 transition-all">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm text-white font-medium">{{ exp.name }}</span>
                         <span class="text-xs text-gray-500">{{ exp.created_at|date:"m-d H:i" }}</span>

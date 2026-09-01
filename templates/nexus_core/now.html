@@ -70,15 +70,7 @@
         border: 1px solid rgba(75, 85, 99, 0.2);
         margin-bottom: 8px;
         transition: all 0.25s;
-        opacity: 0;
-        transform: translateY(10px);
-        animation: fadeInUp 0.4s ease forwards;
     }
-    .now-item:nth-child(1) { animation-delay: 0.05s; }
-    .now-item:nth-child(2) { animation-delay: 0.12s; }
-    .now-item:nth-child(3) { animation-delay: 0.19s; }
-    .now-item:nth-child(4) { animation-delay: 0.26s; }
-    .now-item:nth-child(5) { animation-delay: 0.33s; }
     .now-item:hover {
         border-color: rgba(99, 102, 241, 0.25);
         background: rgba(99, 102, 241, 0.04);
@@ -90,7 +82,7 @@
     .now-item:first-child {
         border-color: rgba(99, 102, 241, 0.15);
         box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
-        animation: fadeInUp 0.4s ease forwards, pulse-border 3s ease-in-out 1s infinite;
+        animation: nexusFadeIn 0.4s ease forwards, nexusPulseBorder 3s ease-in-out 1s infinite;
     }
 
     .check-btn {
@@ -131,8 +123,7 @@
         position: relative;
         padding: 6px 0 16px;
         opacity: 0;
-        transform: translateX(-8px);
-        animation: fadeInLeft 0.4s ease forwards;
+        animation: nexusFadeInLeft 0.4s ease forwards;
     }
     .tl-item:nth-child(1) { animation-delay: 0.1s; }
     .tl-item:nth-child(2) { animation-delay: 0.2s; }
@@ -168,17 +159,7 @@
     .empty-state-icon { font-size: 1.5rem; margin-bottom: 6px; }
     .empty-state-text { font-size: 0.75rem; color: #6b7280; }
 
-    /* 动画 */
-    @keyframes fadeInUp {
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInLeft {
-        to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes pulse-border {
-        0%, 100% { border-color: rgba(99, 102, 241, 0.15); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-        50% { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 0 12px -2px rgba(99, 102, 241, 0.1); }
-    }
+    /* 动画引用 base.css 中的 nexusFadeIn, nexusFadeInLeft, nexusPulseBorder */
 
     /* 移动端 */
     @media (max-width: 767px) {
@@ -211,7 +192,7 @@
             <div class="box-label">当前在做{% if now_items %}<span class="box-count">{{ now_items|length }}</span>{% endif %}</div>
             <div class="box-scroll" id="now-list">
                 {% for item in now_items %}
-                <div class="now-item" id="now-{{ item.id }}">
+                <div class="now-item nexus-animate nexus-animate-delay-{{ forloop.counter }}" id="now-{{ item.id }}">
                     <span class="now-icon">{{ item.icon }}</span>
                     <span class="now-text">{{ item.text }}</span>
                     {% if is_editor %}<button class="check-btn" onclick="completeNow({{ item.id }})" title="完成">✓</button>{% endif %}
@@ -231,7 +212,7 @@
             <div class="box-scroll">
                 <div class="timeline">
                     {% for act in activities %}
-                    <div class="tl-item">
+                    <div class="tl-item nexus-animate nexus-animate-delay-{{ forloop.counter }}">
                         <p class="tl-date">{{ act.date_label }}</p>
                         <p class="tl-text"><span class="tl-icon">{{ act.icon }}</span>{{ act.text }}</p>
                     </div>

@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 from . import api_views
 from . import monitor_views
-from . import music_views
 from . import rss_views
 from . import read_views
 from links import api_views as link_api
@@ -27,10 +26,6 @@ urlpatterns = [
     path('api/activity/create/', api_views.activity_create, name='activity_create'),
     path('api/activity/<int:pk>/update/', api_views.activity_update, name='activity_update'),
     path('api/activity/<int:pk>/delete/', api_views.activity_delete, name='activity_delete'),
-
-    path('api/music/status/', music_views.music_status, name='music_status'),
-    path('api/music/control/', music_views.music_control, name='music_control'),
-    path('api/music/lyrics/', music_views.music_lyrics, name='music_lyrics'),
 
     path('api/links/', link_api.link_list, name='link_list'),
     path('api/links/create/', link_api.link_create, name='link_create'),

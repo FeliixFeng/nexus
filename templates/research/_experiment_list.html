@@ -6,7 +6,7 @@
 
 {% if experiments %}
 {% for exp in experiments %}
-<div class="exp-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
+<div class="exp-card nexus-animate nexus-animate-delay-{{ forloop.counter }} bg-white/5 border border-white/10 rounded-xl p-5 transition-all">
     <div class="flex items-start justify-between mb-3">
         <div>
             <h3 class="text-base font-medium text-white">{{ exp.name }}</h3>

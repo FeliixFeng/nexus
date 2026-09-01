@@ -7,7 +7,7 @@
 {% if papers %}
 {% for paper in papers %}
 <a href="{% url 'research:paper_detail' paper.pk %}" 
-   class="paper-card bg-white/5 border border-white/10 rounded-xl p-5 transition-all flex items-start gap-4 block">
+   class="paper-card nexus-animate nexus-animate-delay-{{ forloop.counter }} bg-white/5 border border-white/10 rounded-xl p-5 transition-all flex items-start gap-4 block">
     <span class="text-xl mt-0.5
         {% if paper.status == 'reading' %}text-yellow-500
         {% elif paper.status == 'finished' %}text-green-500

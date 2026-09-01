@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-Nexus 是一个个人模块化门户平台，聚合笔记、链接、动态、学术研究等内容。
+Nexus 是一个个人模块化门户平台，聚合笔记、链接、动态、学术研究、RSS 等内容。
 视觉风格：暗色高级感，首页有星空粒子动画。
 
 ## 技术栈
@@ -23,12 +23,11 @@ nexus/
 │   ├── settings.py            ← 配置（敏感值从 .env 读取）
 │   ├── urls.py                ← 主路由
 │   └── wsgi.py
-├── nexus_core/                ← 核心模块（首页、动态、监控、音乐、RSS）
+├── nexus_core/                ← 核心模块（首页、动态、监控、RSS、阅读）
 │   ├── models.py              ← NowItem, Activity
 │   ├── views.py               ← 首页、动态页
 │   ├── api_views.py           ← NowItem, Activity CRUD API
 │   ├── monitor_views.py       ← 服务器监控
-│   ├── music_views.py         ← MPD 音乐控制
 │   ├── rss_views.py           ← RSS 阅读器
 │   ├── read_views.py          ← 阅读聚合页
 │   └── pin_utils.py           ← PIN 认证工具
@@ -75,7 +74,7 @@ nexus/
 
 | App | 职责 | 模型 | 主要视图 |
 |-----|------|------|----------|
-| nexus_core | 首页、动态、监控、音乐、RSS、阅读 | NowItem, Activity | home, now_page, monitor, rss, read |
+| nexus_core | 首页、动态、监控、RSS、阅读 | NowItem, Activity | home, now_page, monitor, rss, read |
 | blog | 博客/笔记 | Post, Tag | post_list, post_detail, CRUD |
 | links | 链接聚合 | Link | link_list |
 | research | 学术研究 | Paper, Experiment | paper CRUD, experiment CRUD |
@@ -170,14 +169,13 @@ rsync -avz --exclude '.env' --exclude 'db.sqlite3' --exclude '.venv' --exclude '
 
 ## 当前功能清单
 
-- 首页：Bento Grid（时间、笔记、服务、动态四张卡片）
+- 首页：Bento Grid（时间、服务器、笔记、服务、动态五张卡片）
 - 笔记页：Markdown 渲染 + 代码高亮 + 标签筛选 + 搜索
 - 链接页：3列卡片 + hover 发光
 - 动态页：NowItem + Activity 里程碑
 - 学术模块：论文管理 + 实验日志
 - 服务器监控：CPU/内存/磁盘/Docker 容器状态
 - RSS 阅读器：多源聚合 + 代理支持
-- 音乐控制：MPD 播放控制（服务器端）
 - PIN 码编辑权限
 - 星空粒子动画 + 鼠标视差
 - 导航栏滚动隐藏/毛玻璃

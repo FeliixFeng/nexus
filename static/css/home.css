@@ -103,10 +103,9 @@ body:hover #spotlight { opacity: 1; }
     min-height: 400px;
 }
 
-/* 第一行：时间 + 音乐 + 服务器 */
+/* 第一行：时间 + 服务器 */
 #time-card      { grid-column: 1; grid-row: 1; }
-#music-card     { grid-column: 2; grid-row: 1; }
-#monitor-card   { grid-column: 3; grid-row: 1; }
+#monitor-card   { grid-column: 2 / 4; grid-row: 1; }
 
 /* 第二行：笔记 + 动态 */
 #notes-card     { grid-column: 1 / 3; grid-row: 2; min-height: 0; }
@@ -128,20 +127,14 @@ body:hover #spotlight { opacity: 1; }
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    /* 入场动画 */
     opacity: 0;
-    transform: translateY(12px);
-    animation: card-in 0.5s ease forwards;
-}
-@keyframes card-in {
-    to { opacity: 1; transform: translateY(0); }
+    animation: nexusFadeIn 0.5s ease forwards;
 }
 #time-card     { animation-delay: 0.05s; }
-#music-card    { animation-delay: 0.1s; }
-#monitor-card  { animation-delay: 0.15s; }
-#notes-card    { animation-delay: 0.2s; }
-#activity-card { animation-delay: 0.25s; }
-#services-card { animation-delay: 0.3s; }
+#monitor-card  { animation-delay: 0.1s; }
+#notes-card    { animation-delay: 0.15s; }
+#activity-card { animation-delay: 0.2s; }
+#services-card { animation-delay: 0.25s; }
 .card:hover {
     border-color: rgba(94, 106, 210, 0.25);
     transform: translateY(-2px);
@@ -346,132 +339,11 @@ body:hover #spotlight { opacity: 1; }
     .card-scroll { overflow-y: visible; }
     .time-big { font-size: 1.5rem; }
     #time-card { order: 1; }
-    #music-card { order: 2; }
-    #monitor-card { order: 3; }
-    #notes-card { order: 4; }
-    #activity-card { order: 5; }
-    #services-card { order: 6; }
+    #monitor-card { order: 2; }
+    #notes-card { order: 3; }
+    #activity-card { order: 4; }
+    #services-card { order: 5; }
 }
-
-/* ========== 歌词 ========== */
-.lyrics-container {
-    width: 100%;
-    max-height: 120px;
-    overflow: hidden;
-    position: relative;
-    margin-top: 4px;
-}
-.lyrics-scroll {
-    max-height: 120px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    text-align: center;
-    padding: 0 var(--space-2, 8px);
-}
-.lyrics-scroll::-webkit-scrollbar { width: 2px; }
-.lyrics-scroll::-webkit-scrollbar-thumb { background: var(--color-gray-700); border-radius: 2px; }
-.lyric-line {
-    font-size: 0.72rem;
-    color: var(--color-text-muted);
-    line-height: 1.8;
-    transition: all var(--transition-normal);
-    cursor: pointer;
-}
-.lyric-line:hover { color: var(--color-gray-500); }
-.lyric-line.active {
-    color: var(--color-gray-200);
-    font-size: 0.78rem;
-    font-weight: 500;
-    text-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
-}
-.music-title { cursor: pointer; }
-.music-title:hover { opacity: 0.8; }
-
-/* ========== 音量 ========== */
-.volume-wrap { position: relative; }
-.volume-popup {
-    display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 6px;
-    background: rgba(17, 24, 39, 0.95);
-    border: 1px solid var(--color-gray-700);
-    border-radius: var(--radius-md);
-    padding: 6px 10px;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    z-index: 10;
-}
-.volume-popup.show { display: flex; }
-.volume-slider {
-    width: 80px;
-    height: 3px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--color-gray-700);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-}
-.volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
-    border-radius: var(--radius-full);
-    background: var(--color-primary-400);
-    cursor: pointer;
-}
-.volume-val {
-    font-size: 0.65rem;
-    color: var(--color-text-secondary);
-    min-width: 1.5em;
-    text-align: right;
-}
-
-/* ========== 音乐卡片按钮 ========== */
-.music-title {
-    color: var(--color-gray-200); font-size: 0.92rem; font-weight: 500;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.music-artist {
-    color: var(--color-text-muted); font-size: 0.75rem; margin-top: 2px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.music-ctrl {
-    width: 36px; height: 36px; border-radius: var(--radius-md);
-    border: 1px solid rgba(75, 85, 99, 0.25);
-    background: rgba(30, 41, 59, 0.3);
-    color: var(--color-gray-400); font-size: 0.9rem;
-    cursor: pointer; transition: all var(--transition-fast);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    -webkit-appearance: none; appearance: none;
-    font-family: 'JetBrains Mono', monospace;
-    user-select: none; -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
-.music-ctrl:hover {
-    border-color: rgba(99, 102, 241, 0.4); color: var(--color-primary-300);
-    background: rgba(99, 102, 241, 0.1);
-}
-.music-ctrl:active {
-    transform: scale(0.9);
-    background: rgba(99, 102, 241, 0.18);
-    border-color: rgba(99, 102, 241, 0.5);
-}
-.music-ctrl.active {
-    border-color: rgba(99, 102, 241, 0.4);
-    color: var(--color-primary-400);
-    background: rgba(99, 102, 241, 0.12);
-}
-.music-ctrl.play-btn {
-    width: 40px; height: 40px; font-size: 1rem;
-    border-color: rgba(99, 102, 241, 0.3);
-}
-.music-nothing { color: var(--color-text-muted); font-size: 0.82rem; }
 
 /* ========== 服务器卡片 ========== */
 .srv-item {
@@ -537,15 +409,12 @@ body:hover #spotlight { opacity: 1; }
     border: 1px solid var(--color-gray-700);
     border-radius: var(--radius-xl); padding: var(--space-5, 20px); margin-bottom: 14px;
     position: relative; overflow: hidden;
-    opacity: 0; transform: translateY(16px);
-    animation: mCardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    opacity: 0;
+    animation: nexusFadeIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
 }
 .m-srv-card:nth-child(1) { animation-delay: 0.08s; }
 .m-srv-card:nth-child(2) { animation-delay: 0.18s; }
 .m-srv-card:nth-child(3) { animation-delay: 0.28s; }
-@keyframes mCardIn {
-    to { opacity: 1; transform: translateY(0); }
-}
 .m-srv-card::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, transparent, var(--color-primary-glow), rgba(129,140,248,0.2), transparent);
