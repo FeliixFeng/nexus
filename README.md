@@ -17,7 +17,7 @@
 - **后端**: Django 5 + Python 3.11
 - **数据库**: SQLite（零配置）
 - **前端**: Django模板 + HTMX + Tailwind CSS
-- **部署**: Docker + Docker Compose
+- **部署**: Docker @ ivory（飞牛数据盘）+ ali1 FRP/nginx 入口
 
 ## 🚀 快速开始
 
@@ -43,21 +43,16 @@ uv run python manage.py runserver
 
 访问 http://localhost:8000
 
-### Docker部署
+### 生产部署（简述）
 
-```bash
-# 复制环境变量
-cp .env.example .env
+生产不在本机。当前形态：
 
-# 修改.env中的配置
-# DJANGO_SECRET_KEY=你的密钥
-# NEXUS_PIN=你的PIN码
+- **运行时**：`ssh ivory` → `/vol1/apps/nexus`，Docker 容器 `nexus`，宿主机端口 **18000**
+- **入口**：`https://felixfeng.online`（ali1 nginx → frp `127.0.0.1:18000`）
+- **数据**：生产库/配置在 ivory `data/db.sqlite3`、`data/nexus.env`（与本地测试库隔离）
+- **同步代码**：rsync 排除 `data/`、`.env`、`db.sqlite3` 后 `docker compose up -d --build`
 
-# 启动服务
-docker compose up -d
-```
-
-访问 http://your-server:8080
+详见 `AGENTS.md`。
 
 ## 📁 项目结构
 
