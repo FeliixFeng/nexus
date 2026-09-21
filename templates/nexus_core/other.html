@@ -4,38 +4,45 @@
 
 {% block content %}
 <div class="page-shell">
-    <header class="page-header">
+    <header class="page-header nx-enter">
         <p class="page-kicker">Other</p>
         <h1>其他</h1>
         <div class="page-rule"></div>
     </header>
 
     <div class="grid gap-4 md:grid-cols-2">
-        <section class="nx-card">
+        <section class="nx-card nx-enter">
             <h2 class="nx-section-label">关于</h2>
+            <div class="flex items-start gap-3 mb-3">
+                <span class="nx-icon lg">👋</span>
+                <div>
+                    <div class="nx-card-title">FelixFeng</div>
+                    <div class="nx-card-desc">个人聚合门户</div>
+                </div>
+            </div>
             <p class="text-sm text-gray-300 leading-relaxed">
-                FelixFeng 的个人聚合门户：常用服务入口、当前状态与站点说明。
+                常用服务入口、当前状态与站点说明。
             </p>
             <p class="text-xs text-gray-500 mt-3">
                 域名 <span class="font-mono text-gray-400">felixfeng.online</span>
                 · 自建部署
             </p>
             <div class="flex flex-wrap gap-2 mt-4">
-                <a class="nx-chip hover:border-indigo-400/40 transition-colors" href="https://github.com/FeliixFeng" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a class="nx-chip hover:border-indigo-300/40 transition-colors" href="https://github.com/FeliixFeng" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>
         </section>
 
-        <section class="nx-card">
+        <section class="nx-card nx-enter nx-delay-2">
             <h2 class="nx-section-label">使用说明</h2>
-            <ul class="text-sm text-gray-300 space-y-2 leading-relaxed">
-                <li>浏览无需登录。</li>
-                <li>点右上角锁图标，输入 PIN 可解锁编辑权限。</li>
-                <li>编辑权限用于维护链接与状态等内容。</li>
-                <li>数据与配置保存在服务器数据盘，与本地开发库隔离。</li>
-            </ul>
+            <div class="nx-stack">
+                <div class="nx-item"><span class="nx-icon">👀</span><p class="nx-row-title flex-1">浏览无需登录</p></div>
+                <div class="nx-item"><span class="nx-icon">🔒</span><p class="nx-row-title flex-1">右上角锁图标输入 PIN 可解锁编辑</p></div>
+                <div class="nx-item"><span class="nx-icon">✏️</span><p class="nx-row-title flex-1">编辑用于维护链接与状态</p></div>
+                <div class="nx-item"><span class="nx-icon">💾</span><p class="nx-row-title flex-1">生产数据与本地开发库隔离</p></div>
+            </div>
         </section>
 
-        <section class="nx-card">
+        <section class="nx-card nx-enter nx-delay-3">
             <h2 class="nx-section-label">个性化</h2>
             <div class="nx-toggle-row">
                 <div>
@@ -53,25 +60,34 @@
             </div>
         </section>
 
-        <section class="nx-card">
+        <section class="nx-card nx-enter nx-delay-4">
             <h2 class="nx-section-label">基础设施</h2>
-            <p class="text-sm text-gray-300 leading-relaxed">
-                站点运行于自建环境（Docker），通过云主机反向代理与 FRP 提供公网访问。数据库使用 SQLite，存放在应用数据目录。
-            </p>
+            <div class="flex items-start gap-3">
+                <span class="nx-icon lg">🧩</span>
+                <p class="text-sm text-gray-300 leading-relaxed">
+                    站点运行于自建环境（Docker），通过云主机反向代理与 FRP 提供公网访问。数据库使用 SQLite，存放在应用数据目录。
+                </p>
+            </div>
         </section>
 
-        <section class="nx-card md:col-span-2">
+        <section class="nx-card md:col-span-2 nx-enter nx-delay-5">
             <h2 class="nx-section-label">扩展位</h2>
             <div class="grid gap-3 sm:grid-cols-2">
-                <div class="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-                    <div class="nx-card-title">应用聚合</div>
-                    <div class="nx-card-desc mt-1">计划接入本机 Docker 服务入口</div>
-                    <span class="nx-chip mt-3">未启用</span>
+                <div class="nx-item">
+                    <span class="nx-icon">📦</span>
+                    <div class="flex-1">
+                        <div class="nx-card-title">应用聚合</div>
+                        <div class="nx-card-desc mt-1">计划接入本机 Docker 服务入口</div>
+                        <span class="nx-chip mt-3">未启用</span>
+                    </div>
                 </div>
-                <div class="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-                    <div class="nx-card-title">小工具</div>
-                    <div class="nx-card-desc mt-1">后续按需增加个人小工具</div>
-                    <span class="nx-chip mt-3">未启用</span>
+                <div class="nx-item">
+                    <span class="nx-icon">🛠️</span>
+                    <div class="flex-1">
+                        <div class="nx-card-title">小工具</div>
+                        <div class="nx-card-desc mt-1">后续按需增加个人小工具</div>
+                        <span class="nx-chip mt-3">未启用</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -93,6 +109,7 @@
         if (quoteBtn) quoteBtn.classList.toggle('on', !quoteOff);
         if (motionBtn) motionBtn.classList.toggle('on', reduced);
         document.body.classList.toggle('nexus-reduced-motion', reduced);
+        document.documentElement.classList.toggle('nexus-reduced-motion', reduced);
     }
 
     if (quoteBtn) {

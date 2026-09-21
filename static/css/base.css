@@ -1,13 +1,12 @@
-/* ========== 设计Token（CSS变量） ========== */
+/* Nexus base.css — token + shell + list system */
+
 :root {
-    /* 颜色：紫色主题 */
     --color-primary-300: #a5b4fc;
     --color-primary-400: #818cf8;
     --color-primary-500: #6366f1;
     --color-primary-glow: rgba(99, 102, 241, 0.25);
     --color-primary-border: rgba(99, 102, 241, 0.12);
 
-    /* 颜色：灰色系 */
     --color-gray-200: #e5e7eb;
     --color-gray-300: #d1d5db;
     --color-gray-400: #9ca3af;
@@ -18,15 +17,13 @@
     --color-gray-900: #111827;
     --color-gray-950: #0a0a0b;
 
-    /* 颜色：语义色 */
     --color-success: #34d399;
     --color-error: #ef4444;
     --color-link: #818cf8;
     --color-text-primary: #e5e7eb;
     --color-text-secondary: #9ca3af;
-    --color-text-muted: rgba(156, 163, 175, 0.4);
+    --color-text-muted: rgba(156, 163, 175, 0.45);
 
-    /* 圆角 */
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
@@ -34,7 +31,6 @@
     --radius-pill: 9999px;
     --radius-full: 50%;
 
-    /* 间距 */
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
@@ -43,55 +39,47 @@
     --space-6: 24px;
     --space-8: 32px;
 
-    /* 阴影 */
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
 
-    /* 模糊 */
     --blur-sm: 12px;
     --blur-lg: 20px;
 
-    /* 过渡 */
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease;
-    --transition-slow: 0.4s ease;
+    --transition-fast: 0.18s ease;
+    --transition-normal: 0.28s ease;
+    --transition-slow: 0.38s ease;
+
+    --content-max: 1080px;
+    --list-divider: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.04) 8%,
+        rgba(129, 140, 248, 0.22) 50%,
+        rgba(255, 255, 255, 0.04) 92%,
+        transparent 100%
+    );
 }
 
-/* ========== 全局 ========== */
 html {
     scrollbar-width: none;
+    -webkit-text-size-adjust: 100%;
 }
-html::-webkit-scrollbar {
-    display: none;
-}
+html::-webkit-scrollbar { display: none; }
 
-/* ========== 导航栏 ========== */
+/* ========== Nav ========== */
 .nav-wrapper {
-    transition: transform var(--transition-normal),
-                background-color var(--transition-normal),
-                border-color var(--transition-normal),
-                box-shadow var(--transition-normal);
-    will-change: transform;
+    transition: transform var(--transition-normal), background-color var(--transition-normal);
     border-bottom-color: var(--color-primary-glow) !important;
 }
-.nav-wrapper.nav-hidden {
-    transform: translateY(-100%);
-    box-shadow: none;
-}
+.nav-wrapper.nav-hidden { transform: translateY(-100%); }
 .nav-wrapper.nav-solid {
-    background-color: rgba(10, 10, 11, 0.85);
+    background-color: rgba(10, 10, 11, 0.88);
     border-color: var(--color-primary-border);
-    box-shadow: var(--shadow-md);
 }
-.nav-wrapper.nav-transparent {
-    background-color: transparent;
-    border-color: transparent;
-}
+.nav-wrapper.nav-transparent { background-color: transparent; }
 
-.nav-link {
-    position: relative;
-}
+.nav-link { position: relative; }
 .nav-link::after {
     content: '';
     position: absolute;
@@ -105,49 +93,23 @@ html::-webkit-scrollbar {
     transition: width var(--transition-fast);
 }
 .nav-link:hover::after,
-.nav-link.active::after {
-    width: 60%;
-}
-.nav-link.active {
-    color: var(--color-primary-400) !important;
-}
+.nav-link.active::after { width: 56%; }
+.nav-link.active { color: var(--color-primary-400) !important; }
 
-/* ========== Markdown（统一prose） ========== */
-.prose {
-    color: var(--color-gray-300);
-    line-height: 1.75;
-    word-wrap: break-word;
-}
+/* ========== Prose ========== */
+.prose { color: var(--color-gray-300); line-height: 1.75; word-wrap: break-word; }
 .prose h1, .prose h2, .prose h3, .prose h4 {
     color: var(--color-gray-200);
     font-weight: 600;
-    margin-top: 1.5em;
+    margin-top: 1.4em;
     margin-bottom: 0.5em;
 }
-.prose h1 { font-size: 1.875rem; }
-.prose h2 {
-    font-size: 1.5rem;
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid var(--color-gray-700);
-}
-.prose h3 { font-size: 1.25rem; }
-.prose h4 { font-size: 1.1rem; }
-.prose p { margin-bottom: 1em; }
-.prose a {
-    color: var(--color-link);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--transition-fast);
-}
-.prose a:hover {
-    border-bottom-color: var(--color-link);
-}
+.prose a { color: var(--color-link); text-decoration: none; }
 .prose code {
     background: var(--color-gray-800);
-    padding: 0.2em 0.4em;
+    padding: 0.15em 0.35em;
     border-radius: var(--radius-sm);
     font-size: 0.875em;
-    font-family: 'JetBrains Mono', monospace;
 }
 .prose pre {
     background: var(--color-gray-800);
@@ -155,59 +117,27 @@ html::-webkit-scrollbar {
     border-radius: var(--radius-md);
     padding: var(--space-4);
     overflow-x: auto;
-    margin: 1em 0;
 }
-.prose pre code {
-    background: none;
-    padding: 0;
-    font-size: 0.85em;
-}
+.prose pre code { background: none; padding: 0; }
 .prose blockquote {
     border-left: 3px solid var(--color-primary-400);
     padding-left: var(--space-4);
     color: var(--color-gray-400);
-    margin: 1em 0;
-}
-.prose ul, .prose ol {
-    margin: 0.5em 0;
-    padding-left: 1.5em;
-}
-.prose li { margin-bottom: 0.25em; }
-.prose img {
-    max-width: 100%;
-    border-radius: var(--radius-md);
-    margin: 1em 0;
-}
-.prose table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1em 0;
-}
-.prose th, .prose td {
-    border: 1px solid var(--color-gray-700);
-    padding: var(--space-2) var(--space-3);
-    text-align: left;
-}
-.prose th {
-    background: var(--color-gray-800);
-    font-weight: 600;
 }
 
-/* ========== PIN码弹窗 ========== */
+/* ========== PIN ========== */
 .pin-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    z-index: var(--z-modal, 100);
+    z-index: 100;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(var(--blur-sm));
     align-items: center;
     justify-content: center;
     padding: var(--space-4);
 }
-.pin-overlay.show {
-    display: flex;
-}
+.pin-overlay.show { display: flex; }
 .pin-box {
     background: var(--color-gray-900);
     border: 1px solid var(--color-gray-700);
@@ -226,145 +156,186 @@ html::-webkit-scrollbar {
     color: var(--color-gray-200);
     font-size: 1.1rem;
     text-align: center;
-    letter-spacing: 0.5em;
+    letter-spacing: 0.45em;
     outline: none;
-    transition: border-color var(--transition-fast);
 }
-.pin-box input:focus {
-    border-color: var(--color-primary-400);
-}
+.pin-box input:focus { border-color: var(--color-primary-400); }
 .pin-box input.error {
     border-color: var(--color-error);
-    animation: shake 0.3s ease;
+    animation: nxShake 0.3s ease;
 }
-@keyframes shake {
+@keyframes nxShake {
     0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
 }
 .pin-box button {
     margin-top: var(--space-3);
     padding: var(--space-2) var(--space-5);
     background: var(--color-primary-500);
-    color: white;
+    color: #fff;
     border: none;
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background var(--transition-fast);
-}
-.pin-box button:hover {
-    background: var(--color-primary-400);
+    min-height: 40px;
 }
 
-/* ========== 回到顶部 ========== */
+/* ========== Back to top ========== */
 #back-to-top {
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-normal);
 }
-#back-to-top.show {
+#back-to-top.show,
+#back-to-top.visible {
     opacity: 1;
     pointer-events: auto;
 }
 
-/* ========== 淡入动画（统一） ========== */
+/* ========== Enter animation ========== */
+@keyframes nxEnter {
+    from { opacity: 0; transform: translate3d(0, 10px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.nx-enter,
+.nexus-animate,
 .fade-in {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    animation-name: nxEnter;
+    animation-duration: 0.38s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: forwards;
 }
-.fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+.fade-in.visible { opacity: 1; transform: none; }
+.nx-delay-1, .nexus-animate-delay-1 { animation-delay: 0.04s; }
+.nx-delay-2, .nexus-animate-delay-2 { animation-delay: 0.08s; }
+.nx-delay-3, .nexus-animate-delay-3 { animation-delay: 0.12s; }
+.nx-delay-4, .nexus-animate-delay-4 { animation-delay: 0.16s; }
+.nx-delay-5, .nexus-animate-delay-5 { animation-delay: 0.20s; }
+.nx-delay-6, .nexus-animate-delay-6 { animation-delay: 0.24s; }
 
-/* 统一入场动画 */
-@keyframes nexusFadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes nexusFadeInLeft {
-    from { opacity: 0; transform: translateX(-8px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-@keyframes nexusPulseBorder {
-    0%, 100% { border-color: rgba(99, 102, 241, 0.15); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-    50% { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 0 12px -2px rgba(99, 102, 241, 0.1); }
-}
-@keyframes nexusSpin {
-    to { transform: rotate(360deg); }
-}
-@keyframes nexusShimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* 统一动画类 */
-.nexus-animate {
-    opacity: 0;
-    animation: nexusFadeIn 0.4s ease forwards;
-}
-
-/* ========== 基线页面壳（统一内页） ========== */
+/* ========== Page shell ========== */
 .page-shell {
-    width: 100%;
-    max-width: 82vw;
+    width: min(var(--content-max), calc(100% - 2rem));
     margin: 0 auto;
-    padding: var(--space-8) var(--space-4) var(--space-8);
+    padding:
+        clamp(1.5rem, 4vh, 2.5rem)
+        0
+        calc(3.5rem + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width: 768px) {
     .page-shell {
-        padding: var(--space-8) var(--space-6) var(--space-8);
+        width: min(var(--content-max), calc(100% - 3.5rem));
+        padding-bottom: 3rem;
     }
 }
 
 .page-header {
     text-align: center;
-    margin-bottom: var(--space-8);
+    margin-bottom: clamp(1.5rem, 4vh, 2.25rem);
 }
 .page-header .page-kicker {
     font-size: 0.7rem;
     font-weight: 500;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: rgba(129, 140, 248, 0.7);
     margin-bottom: var(--space-2);
 }
 .page-header h1 {
-    font-size: 1.5rem;
+    font-size: clamp(1.4rem, 2.5vw, 1.85rem);
     font-weight: 700;
     color: #fff;
-}
-@media (min-width: 768px) {
-    .page-header h1 { font-size: 1.875rem; }
+    letter-spacing: -0.02em;
 }
 .page-header .page-rule {
-    width: 4rem;
+    width: 3.5rem;
     height: 1px;
     margin: var(--space-4) auto 0;
     background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.45), transparent);
 }
 
+/* ========== Large card — liquid glass (deeper, less white) ========== */
 .nx-card {
-    background: rgba(17, 24, 39, 0.45);
+    position: relative;
+    background:
+        linear-gradient(
+            160deg,
+            rgba(255, 255, 255, 0.045) 0%,
+            rgba(255, 255, 255, 0.012) 40%,
+            rgba(99, 102, 241, 0.05) 100%
+        ),
+        rgba(10, 12, 24, 0.62);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: var(--radius-lg);
+    border-radius: 16px;
     padding: var(--space-4);
-    transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+    overflow: hidden;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.035) inset,
+        0 -1px 0 rgba(0, 0, 0, 0.2) inset,
+        0 8px 24px rgba(0, 0, 0, 0.28),
+        0 2px 8px rgba(0, 0, 0, 0.16);
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-normal),
+        transform var(--transition-normal);
+}
+/* 描边：暗底上的淡靛蓝折射，避免白边 */
+.nx-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+        145deg,
+        rgba(165, 180, 252, 0.22) 0%,
+        rgba(255, 255, 255, 0.03) 32%,
+        transparent 58%,
+        rgba(99, 102, 241, 0.12) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+/* 右上柔光：更暗、更紫，不发白 */
+.nx-card::after {
+    content: '';
+    position: absolute;
+    top: -35%;
+    right: -15%;
+    width: 48%;
+    height: 68%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
 }
 .nx-card:hover {
-    border-color: rgba(99, 102, 241, 0.28);
-    background: rgba(99, 102, 241, 0.04);
+    border-color: rgba(165, 180, 252, 0.14);
+    transform: translateY(-1px);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 12px 28px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(99, 102, 241, 0.06);
 }
+.nx-card:hover::after { opacity: 0.75; }
+
 .nx-card-title {
     color: #fff;
     font-weight: 600;
     font-size: 0.9rem;
+    line-height: 1.35;
 }
 .nx-card-desc {
     color: var(--color-gray-500);
     font-size: 0.75rem;
     margin-top: 2px;
+    line-height: 1.4;
 }
 
 .nx-section-label {
@@ -376,7 +347,7 @@ html::-webkit-scrollbar {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-gray-400);
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-3);
 }
 .nx-section-label::before {
     content: '';
@@ -384,27 +355,173 @@ html::-webkit-scrollbar {
     height: 6px;
     border-radius: var(--radius-full);
     background: rgba(99, 102, 241, 0.65);
+    flex-shrink: 0;
 }
 
 .nx-chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 10px;
-    border-radius: var(--radius-md);
-    font-size: 0.72rem;
-    background: rgba(30, 37, 56, 0.65);
-    border: 1px solid rgba(75, 85, 99, 0.25);
-    color: var(--color-gray-300);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 0.7rem;
+    line-height: 1.2;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(129, 140, 248, 0.16);
+    color: var(--color-primary-300);
 }
 
 .nx-empty {
     text-align: center;
     color: var(--color-gray-500);
     font-size: 0.85rem;
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-6) var(--space-4);
 }
 
+.view-all {
+    font-size: 0.75rem;
+    color: rgba(129, 140, 248, 0.7);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+}
+.view-all:hover { color: var(--color-primary-300); }
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ========== Icon ========== */
+.nx-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    flex-shrink: 0;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    line-height: 1;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+        rgba(99, 102, 241, 0.12);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.nx-row:hover .nx-icon,
+.nx-item:hover .nx-icon {
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+        rgba(99, 102, 241, 0.18);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.05) inset,
+        0 4px 10px rgba(99, 102, 241, 0.1);
+}
+.nx-icon.lg {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+    border-radius: 12px;
+}
+
+/* ========== List rows ========== */
+.nx-row,
+.nx-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 46px;
+    padding: 11px 12px;
+    margin: 0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    background: transparent;
+    border: 1px solid transparent;
+    box-shadow: none;
+    position: relative;
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+.nx-item { align-items: flex-start; }
+
+/* hover：深色玻璃浮起，避免白雾 */
+.nx-row:hover,
+.nx-item:hover {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.01) 100%),
+        rgba(99, 102, 241, 0.07);
+    border-color: rgba(129, 140, 248, 0.12);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.03) inset,
+        0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 条目底部浅渐变分隔 */
+.home-list > .nx-row:not(:last-child)::before,
+.home-list > .nx-item:not(:last-child)::before,
+.nx-stack > .nx-row:not(:last-child)::before,
+.nx-stack > .nx-item:not(:last-child)::before,
+.home-milestones > .nx-item::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    height: 1px;
+    pointer-events: none;
+    background: var(--list-divider);
+    z-index: 1;
+}
+.home-milestones > .nx-item::before {
+    left: 6px;
+    right: 6px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(129, 140, 248, 0.2),
+        transparent
+    );
+}
+
+.nx-row-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-gray-200);
+    line-height: 1.4;
+}
+.nx-row-desc {
+    font-size: 0.72rem;
+    color: var(--color-gray-500);
+    margin-top: 3px;
+    line-height: 1.35;
+}
+
+.home-list,
+.nx-stack,
+.home-milestones {
+    position: relative;
+    z-index: 1;
+    gap: 0;
+}
+.home-list,
+.nx-stack { display: flex; flex-direction: column; }
+.home-milestones { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 640px) {
+    .home-milestones {
+        grid-template-columns: 1fr 1fr;
+        column-gap: 8px;
+    }
+}
+
+/* ========== Toggles ========== */
 .nx-toggle-row {
     display: flex;
     align-items: center;
@@ -421,8 +538,9 @@ html::-webkit-scrollbar {
     height: 24px;
     flex-shrink: 0;
     border-radius: var(--radius-pill);
-    background: var(--color-gray-700);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
     cursor: pointer;
     transition: background var(--transition-fast);
 }
@@ -434,18 +552,25 @@ html::-webkit-scrollbar {
     width: 18px;
     height: 18px;
     border-radius: var(--radius-full);
-    background: var(--color-gray-300);
+    background: linear-gradient(180deg, #e5e7eb, #9ca3af);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     transition: transform var(--transition-fast), background var(--transition-fast);
 }
 .nx-switch.on {
-    background: rgba(99, 102, 241, 0.45);
-    border-color: rgba(99, 102, 241, 0.45);
+    background: rgba(99, 102, 241, 0.4);
+    border-color: rgba(129, 140, 248, 0.35);
 }
 .nx-switch.on::after {
     transform: translateX(20px);
-    background: #fff;
+    background: linear-gradient(180deg, #f9fafb, #d1d5db);
 }
 
+@media (pointer: coarse) {
+    .nx-toggle-row { min-height: 44px; }
+    .nx-row, .nx-item { min-height: 48px; }
+}
+
+/* ========== Reduced motion / perf ========== */
 body.nexus-reduced-motion *,
 body.nexus-reduced-motion *::before,
 body.nexus-reduced-motion *::after,
@@ -457,13 +582,17 @@ html.nexus-reduced-motion *::after {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
 }
-.nexus-animate-delay-1 { animation-delay: 0.05s; }
-.nexus-animate-delay-2 { animation-delay: 0.1s; }
-.nexus-animate-delay-3 { animation-delay: 0.15s; }
-.nexus-animate-delay-4 { animation-delay: 0.2s; }
-.nexus-animate-delay-5 { animation-delay: 0.25s; }
-.nexus-animate-delay-6 { animation-delay: 0.3s; }
-.nexus-animate-delay-7 { animation-delay: 0.35s; }
-.nexus-animate-delay-8 { animation-delay: 0.4s; }
-.nexus-animate-delay-9 { animation-delay: 0.45s; }
-.nexus-animate-delay-10 { animation-delay: 0.5s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .nx-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+}
+
+/* 用户开了减弱动效：去掉玻璃模糊，保底可读 */
+body.nexus-reduced-motion .nx-card,
+html.nexus-reduced-motion .nx-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}

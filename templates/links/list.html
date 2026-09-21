@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="page-shell">
-    <header class="page-header">
+    <header class="page-header nx-enter">
         <p class="page-kicker">Links</p>
         <h1>链接</h1>
         <div class="page-rule"></div>
@@ -15,9 +15,10 @@
         <h2 class="nx-section-label">服务</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {% for link in services %}
-            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="nx-card block group">
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="nx-card block group nx-enter nx-delay-{{ forloop.counter }}">
                 <div class="flex items-start gap-3">
-                    <span class="text-2xl">{{ link.icon|default:"🔗" }}</span>
+                    <span class="nx-icon lg">{{ link.icon|default:"🔗" }}</span>
                     <div class="min-w-0">
                         <div class="nx-card-title group-hover:text-indigo-300 transition-colors truncate">{{ link.name }}</div>
                         {% if link.description %}
@@ -36,9 +37,10 @@
         <h2 class="nx-section-label">项目</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {% for link in projects %}
-            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="nx-card block group">
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="nx-card block group nx-enter nx-delay-{{ forloop.counter }}">
                 <div class="flex items-start gap-3">
-                    <span class="text-2xl">{{ link.icon|default:"📁" }}</span>
+                    <span class="nx-icon lg">{{ link.icon|default:"📁" }}</span>
                     <div class="min-w-0">
                         <div class="nx-card-title group-hover:text-indigo-300 transition-colors truncate">{{ link.name }}</div>
                         {% if link.description %}
@@ -57,9 +59,10 @@
         <h2 class="nx-section-label">外链</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {% for link in external %}
-            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="nx-card block group">
+            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+               class="nx-card block group nx-enter nx-delay-{{ forloop.counter }}">
                 <div class="flex items-start gap-3">
-                    <span class="text-2xl">{{ link.icon|default:"🌐" }}</span>
+                    <span class="nx-icon lg">{{ link.icon|default:"🌐" }}</span>
                     <div class="min-w-0">
                         <div class="nx-card-title group-hover:text-indigo-300 transition-colors truncate">{{ link.name }}</div>
                         {% if link.description %}

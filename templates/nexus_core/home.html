@@ -4,7 +4,7 @@
 {% block title %}Nexus · FelixFeng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}?v=10">
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=19">
 {% endblock %}
 
 {% block content %}
@@ -13,77 +13,73 @@
 <div class="aurora-blob aurora-1"></div>
 <div class="aurora-blob aurora-2"></div>
 
-<div class="hero-area relative z-10">
-    <h1 class="hero-name">FelixFeng</h1>
+<div class="hero-area">
+    <h1 class="hero-name">Felix<span class="hero-name-accent">Feng</span></h1>
     <p class="hero-subtitle">Developer · Student</p>
 </div>
 
-<div class="top-area relative z-10" id="home-quote-area">
+<div class="top-area" id="home-quote-area">
     <p class="top-quote" id="quote"></p>
 </div>
 
-<div class="page-shell relative z-10" style="max-width:min(920px,82vw);padding-top:0;">
-    <div class="grid gap-4 md:grid-cols-2">
-        <!-- 链接 -->
-        <section class="nx-card nexus-animate">
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="nx-section-label mb-0">链接</h2>
-                <a href="{% url 'links:link_list' %}" class="text-xs text-indigo-400/80 hover:text-indigo-300">全部 →</a>
+<div class="home-main">
+    <div class="home-grid">
+        <section class="home-card nx-card nx-enter">
+            <div class="home-card-head">
+                <h2 class="nx-section-label">链接</h2>
+                <a href="{% url 'links:link_list' %}" class="view-all">全部 →</a>
             </div>
-            <div class="flex flex-col gap-2">
+            <div class="home-list">
                 {% for link in all_links %}
-                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
-                   class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                    <span class="text-lg">{{ link.icon|default:"🔗" }}</span>
+                <a class="nx-row" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                    <span class="nx-icon">{{ link.icon|default:"🔗" }}</span>
                     <div class="min-w-0 flex-1">
-                        <div class="nx-card-title truncate">{{ link.name }}</div>
+                        <div class="nx-row-title truncate">{{ link.name }}</div>
                         {% if link.description %}
-                        <div class="nx-card-desc truncate">{{ link.description }}</div>
+                        <div class="nx-row-desc truncate">{{ link.description }}</div>
                         {% endif %}
                     </div>
-                    <span class="nx-chip">{{ link.get_category_display }}</span>
+                    <span class="home-row-meta nx-chip hidden sm:inline-flex">{{ link.get_category_display }}</span>
                 </a>
                 {% empty %}
-                <p class="nx-empty">暂无链接</p>
+                <p class="home-empty">暂无链接</p>
                 {% endfor %}
             </div>
         </section>
 
-        <!-- 进行中 -->
-        <section class="nx-card nexus-animate nexus-animate-delay-2">
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="nx-section-label mb-0">进行中</h2>
-                <a href="{% url 'nexus_core:status_page' %}" class="text-xs text-indigo-400/80 hover:text-indigo-300">状态 →</a>
+        <section class="home-card nx-card nx-enter nx-delay-2">
+            <div class="home-card-head">
+                <h2 class="nx-section-label">进行中</h2>
+                <a href="{% url 'nexus_core:status_page' %}" class="view-all">状态 →</a>
             </div>
-            <div class="flex flex-col gap-2">
+            <div class="home-list">
                 {% for item in now_items %}
-                <div class="flex items-center gap-2 px-2 py-2">
-                    <span>{{ item.icon }}</span>
-                    <p class="text-sm text-gray-300 flex-1">{{ item.text }}</p>
+                <div class="nx-row">
+                    <span class="nx-icon">{{ item.icon }}</span>
+                    <p class="nx-row-title flex-1">{{ item.text }}</p>
                 </div>
                 {% empty %}
-                <p class="nx-empty">暂无记录</p>
+                <p class="home-empty">暂无记录</p>
                 {% endfor %}
             </div>
         </section>
 
-        <!-- 里程碑摘要 -->
-        <section class="nx-card nexus-animate nexus-animate-delay-3 md:col-span-2">
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="nx-section-label mb-0">里程碑</h2>
-                <a href="{% url 'nexus_core:status_page' %}" class="text-xs text-indigo-400/80 hover:text-indigo-300">全部 →</a>
+        <section class="home-card nx-card home-span-2 nx-enter nx-delay-3">
+            <div class="home-card-head">
+                <h2 class="nx-section-label">里程碑</h2>
+                <a href="{% url 'nexus_core:status_page' %}" class="view-all">全部 →</a>
             </div>
-            <div class="grid gap-2 sm:grid-cols-2">
+            <div class="home-milestones">
                 {% for act in activities %}
-                <div class="flex items-start gap-2 px-2 py-2">
-                    <span class="mt-0.5">{{ act.icon|default:"📌" }}</span>
+                <div class="nx-item">
+                    <span class="nx-icon">{{ act.icon|default:"📌" }}</span>
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm text-gray-300">{{ act.text }}</p>
-                        <p class="text-xs text-gray-500 font-mono mt-0.5">{{ act.date_label }}</p>
+                        <div class="nx-row-title">{{ act.text }}</div>
+                        <div class="nx-row-desc font-mono">{{ act.date_label }}</div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="nx-empty sm:col-span-2">暂无里程碑</p>
+                <p class="home-empty col-span-full">暂无里程碑</p>
                 {% endfor %}
             </div>
         </section>
@@ -92,5 +88,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/home.js' %}?v=7"></script>
+<script src="{% static 'js/home.js' %}?v=8"></script>
 {% endblock %}
