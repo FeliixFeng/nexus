@@ -13,6 +13,13 @@ class Link(models.Model):
     description = models.CharField('说明', max_length=200, blank=True)
     url = models.URLField('链接地址')
     icon = models.CharField('图标', max_length=50, blank=True, help_text='图标类名或emoji')
+    icon_file = models.CharField(
+        '本地图标文件',
+        max_length=120,
+        blank=True,
+        default='',
+        help_text='放在 static/icons/links/ 下的文件名，如 github.svg；优先于 emoji',
+    )
     category = models.CharField('分类', max_length=20, choices=CATEGORY_CHOICES, default='external')
     sort_order = models.IntegerField('排序', default=0)
     is_visible = models.BooleanField('是否显示', default=True)
