@@ -1,15 +1,16 @@
 services:
   nexus:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.ivory
     container_name: nexus
     restart: unless-stopped
     ports:
-      - "8080:8000"
+      - "18000:8000"
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
-      - ./media:/app/media
-    environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-your-secret-key-change-in-production}
-      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
-      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-*}
-      - NEXUS_PIN=${NEXUS_PIN:-123456}
+      - ./data/db.sqlite3:/app/db.sqlite3
+      - ./data/media:/app/media
+      - ./data/nexus.env:/app/.env:ro
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --access-logfile -"
