@@ -1,3 +1,12 @@
+// ========== 个性化：减弱动效（全局） ==========
+(function() {
+    try {
+        if (localStorage.getItem('nexus_reduced_motion') === '1') {
+            document.body.classList.add('nexus-reduced-motion');
+        }
+    } catch (e) {}
+})();
+
 // ========== 导航栏：滚动隐藏 + 透明变色 ==========
 (function() {
     const nav = document.getElementById('navbar');

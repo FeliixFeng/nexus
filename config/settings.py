@@ -106,20 +106,4 @@ NEXUS_PIN = os.environ.get('NEXUS_PIN', '123456')
 # Nexus API Key (用于程序化管理内容)
 NEXUS_API_KEY = os.environ.get('NEXUS_API_KEY', '')
 
-# 监控 Agent 配置
-MONITOR_SERVERS = [
-    {"name": "solar", "url": "http://localhost:9100/metrics", "role": "远程开发服务器"},
-    {"name": "ivory", "url": "http://100.67.174.27:9100/metrics", "role": "Docker 容器服务器"},
-]
-
-# RSS 订阅源
-RSS_FEEDS = [
-    {"name": "爱范儿", "url": "https://www.ifanr.com/feed", "icon": "📱", "color": "#f97316"},
-    {"name": "GitHub Blog", "url": "https://github.blog/feed/", "icon": "🐙", "color": "#8b5cf6"},
-    {"name": "少数派", "url": "https://sspai.com/feed", "icon": "🎯", "color": "#ef4444"},
-    {"name": "36氪", "url": "https://36kr.com/feed", "icon": "📰", "color": "#06b6d4"},
-    {"name": "InfoQ", "url": "https://www.infoq.cn/feed", "icon": "💡", "color": "#10b981"},
-]
-
-# RSS 代理服务器（海外，解决国内抓取超时问题）
-RSS_PROXY_URL = os.getenv("RSS_PROXY_URL", "")
+# 基线 v1：产品面不使用监控 / RSS；相关 app 休眠，配置不再注入。

@@ -16,6 +16,11 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('{% static "sw.js" %}');
         }
+        try {
+            if (localStorage.getItem('nexus_reduced_motion') === '1') {
+                document.documentElement.classList.add('nexus-reduced-motion');
+            }
+        } catch (e) {}
     </script>
     
     <!-- Tailwind CSS CDN -->

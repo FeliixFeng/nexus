@@ -10,27 +10,23 @@
             </span>
         </a>
         <div class="flex items-center gap-1">
-            <a href="{% url 'nexus_core:home' %}" 
+            <a href="{% url 'nexus_core:home' %}"
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                 首页
             </a>
-            <a href="{% url 'nexus_core:read_page' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'read_page' %}active{% endif %}">
-                阅读
-            </a>
-            <a href="{% url 'links:link_list' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'links' in request.resolver_match.app_name %}active{% endif %}">
+            <a href="{% url 'links:link_list' %}"
+               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'links' in request.resolver_match.app_name|default:'' %}active{% endif %}">
                 链接
             </a>
-            <a href="{% url 'nexus_core:now_page' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'now_page' %}active{% endif %}">
-                动态
+            <a href="{% url 'nexus_core:status_page' %}"
+               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'status_page' %}active{% endif %}">
+                状态
             </a>
-            <a href="{% url 'nexus_core:monitor' %}" 
-               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'monitor' %}active{% endif %}">
-                更多
+            <a href="{% url 'nexus_core:other_page' %}"
+               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'other_page' %}active{% endif %}">
+                其他
             </a>
-            
+
             <div class="w-px h-4 bg-gray-700/50 mx-2"></div>
             <span id="nav-clock" class="text-xs text-gray-500 font-mono tabular-nums"></span>
             <button id="pin-toggle" class="ml-2 text-gray-500 hover:text-gray-300 transition-colors text-base w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5" onclick="togglePin()">
@@ -40,7 +36,7 @@
     </div>
 </nav>
 
-<!-- 移动端顶部栏（简化版） -->
+<!-- 移动端顶部栏 -->
 <nav id="mobile-topbar" class="md:hidden fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b" style="border-bottom-color: rgba(99, 102, 241, 0.25);">
     <div class="h-11 flex items-center justify-between px-4">
         <a href="{% url 'nexus_core:home' %}" class="flex items-center gap-1.5">
@@ -59,40 +55,33 @@
 <!-- 移动端底部导航栏 -->
 <nav id="mobile-tabbar" class="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t safe-area-bottom" style="border-top-color: rgba(99, 102, 241, 0.15); background: rgba(10, 10, 20, 0.85);">
     <div class="flex items-center justify-around h-14 px-2">
-        <a href="{% url 'nexus_core:home' %}" 
+        <a href="{% url 'nexus_core:home' %}"
            class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'home' %}text-purple-400{% else %}text-gray-500{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
             </svg>
             <span class="text-[10px]">首页</span>
         </a>
-        <a href="{% url 'nexus_core:read_page' %}" 
-           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'read_page' %}text-purple-400{% else %}text-gray-500{% endif %}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <span class="text-[10px]">阅读</span>
-        </a>
-        <a href="{% url 'links:link_list' %}" 
-           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'links' in request.resolver_match.app_name %}text-purple-400{% else %}text-gray-500{% endif %}">
+        <a href="{% url 'links:link_list' %}"
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'links' in request.resolver_match.app_name|default:'' %}text-purple-400{% else %}text-gray-500{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
             </svg>
             <span class="text-[10px]">链接</span>
         </a>
-        <a href="{% url 'nexus_core:now_page' %}" 
-           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'now_page' %}text-purple-400{% else %}text-gray-500{% endif %}">
+        <a href="{% url 'nexus_core:status_page' %}"
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'status_page' %}text-purple-400{% else %}text-gray-500{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
-            <span class="text-[10px]">动态</span>
+            <span class="text-[10px]">状态</span>
         </a>
-        <a href="{% url 'nexus_core:monitor' %}" 
-           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'monitor' %}text-purple-400{% else %}text-gray-500{% endif %}">
+        <a href="{% url 'nexus_core:other_page' %}"
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if request.resolver_match.url_name == 'other_page' %}text-purple-400{% else %}text-gray-500{% endif %}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
             </svg>
-            <span class="text-[10px]">更多</span>
+            <span class="text-[10px]">其他</span>
         </a>
     </div>
 </nav>

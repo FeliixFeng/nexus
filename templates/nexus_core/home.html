@@ -4,119 +4,7 @@
 {% block title %}Nexus · FelixFeng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}?v=9">
-<style>
-    .srv-item {
-        display: flex; align-items: center; gap: 10px;
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(55, 65, 81, 0.25);
-    }
-    .srv-item:last-child { border-bottom: none; }
-    .srv-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .srv-dot.on { background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.4); animation: pulse-dot 2s ease-in-out infinite; }
-    .srv-dot.off { background: #ef4444; }
-    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .srv-name { font-size: 0.88rem; color: #d1d5db; font-weight: 500; min-width: 44px; }
-    .srv-metric {
-        font-family: monospace; font-size: 0.72rem;
-        color: rgba(156, 163, 175, 0.6); min-width: 42px; flex-shrink: 0;
-    }
-    .srv-bar-wrap {
-        flex: 1; height: 5px; background: rgba(55, 65, 81, 0.4); border-radius: 3px; overflow: hidden;
-    }
-    .srv-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-    .srv-bar.low { background: #34d399; }
-    .srv-bar.mid { background: #fbbf24; }
-    .srv-bar.high { background: #ef4444; }
-
-    /* 监控弹窗 */
-    .monitor-overlay {
-        display: none; position: fixed; inset: 0; z-index: 100;
-        background: rgba(0,0,0,0.72);
-        align-items: center; justify-content: center;
-        padding: 16px;
-    }
-    .monitor-overlay.show { display: flex; }
-    .monitor-panel {
-        background: rgba(15,20,35,0.98);
-        border: 1px solid rgba(99,102,241,0.12);
-        border-radius: 20px; padding: 24px;
-        max-width: 680px; width: 100%; max-height: 85vh;
-        overflow-y: auto; position: relative;
-        animation: nexusFadeIn 0.3s cubic-bezier(0.16,1,0.3,1);
-        will-change: transform;
-        -webkit-overflow-scrolling: touch;
-    }
-    .monitor-panel::-webkit-scrollbar { width: 4px; }
-    .monitor-panel::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 2px; }
-    .modal-close {
-        position: absolute; top: 14px; right: 14px;
-        width: 30px; height: 30px; border-radius: 8px;
-        background: rgba(55, 65, 81, 0.3); border: 1px solid rgba(75,85,99,0.2);
-        color: rgba(156,163,175,0.6); font-size: 0.9rem; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.15s;
-    }
-    .modal-close:hover { background: rgba(99,102,241,0.12); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
-
-    /* 服务器卡片 */
-    .m-srv-card::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-        background: linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(129,140,248,0.2), transparent);
-        opacity: 0; transition: opacity 0.3s;
-    }
-    .m-srv-card:hover::before { opacity: 1; }
-    .m-srv-card:hover { border-color: rgba(99,102,241,0.25); }
-    .m-srv-card:last-child { margin-bottom: 0; }
-    .m-srv-card.offline { border-color: rgba(220,38,38,0.18); }
-    .m-srv-card.offline::before { background: linear-gradient(90deg, transparent, rgba(220,38,38,0.3), transparent); }
-
-    /* 指标条 */
-    .m-metric-bar {
-        height: 6px; border-radius: 3px;
-        background: rgba(55, 65, 81, 0.4); overflow: hidden;
-    }
-    .m-metric-fill {
-        height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
-    }
-    .m-metric-fill.normal { background: linear-gradient(90deg, #6366f1, #818cf8); box-shadow: 0 0 8px rgba(99,102,241,0.2); }
-    .m-metric-fill.warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 8px rgba(245,158,11,0.2); }
-    .m-metric-fill.danger { background: linear-gradient(90deg, #ef4444, #f87171); box-shadow: 0 0 8px rgba(239,68,68,0.2); }
-
-    /* 运行时间标签 */
-    .m-uptime {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 2px 8px; border-radius: 6px;
-        background: rgba(55,65,81,0.3); border: 1px solid rgba(75,85,99,0.15);
-        font-size: 0.68rem; color: rgba(156,163,175,0.7);
-        font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* 容器胶囊 */
-    .m-chip {
-        display: inline-flex; align-items: center; gap: 5px;
-        padding: 3px 9px; border-radius: 8px;
-        font-size: 0.68rem; font-weight: 500;
-        background: rgba(30,37,56,0.6);
-        border: 1px solid rgba(75,85,99,0.2); color: rgba(156,163,175,0.8);
-        transition: all 0.15s;
-    }
-    .m-chip:hover { border-color: rgba(75,85,99,0.35); }
-    .m-chip.on { border-color: rgba(52,211,153,0.2); color: rgba(52,211,153,0.85); }
-    .m-chip-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-    .m-chip-dot.on { background: #34d399; box-shadow: 0 0 4px rgba(52,211,153,0.4); }
-    .m-chip-dot.off { background: #f87171; }
-
-    /* 首页小卡片 hover */
-    #monitor-card { cursor: pointer; }
-    #monitor-card:hover { border-color: rgba(99, 102, 241, 0.4); }
-
-    /* 状态圆点 */
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .status-dot.online { background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.5); animation: statusPulse 2.5s ease-in-out infinite; }
-    .status-dot.offline { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.5); }
-    @keyframes statusPulse { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
-</style>
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=10">
 {% endblock %}
 
 {% block content %}
@@ -124,306 +12,85 @@
 <div id="particles" class="fixed inset-0 pointer-events-none z-[2]"></div>
 <div class="aurora-blob aurora-1"></div>
 <div class="aurora-blob aurora-2"></div>
-<div id="spotlight"></div>
 
-<!-- Hero区域 -->
 <div class="hero-area relative z-10">
     <h1 class="hero-name">FelixFeng</h1>
     <p class="hero-subtitle">Developer · Student</p>
 </div>
 
-<!-- 语录 -->
-<div class="top-area relative z-10">
+<div class="top-area relative z-10" id="home-quote-area">
     <p class="top-quote" id="quote"></p>
 </div>
 
-<div class="bento relative z-10">
-
-    <!-- 时间 -->
-    <div class="card fade-up" id="time-card">
-        <div class="flex-1 flex flex-col items-center justify-center text-center">
-            <div class="time-big" id="clock">--:--</div>
-            <div class="time-sub" id="clock-date"></div>
-        </div>
-    </div>
-
-    <!-- 服务器 -->
-    <div class="card fade-up" id="monitor-card" onclick="openMonitorModal()">
-        <div class="flex items-center justify-between mb-1">
-            <span class="card-label">Servers</span>
-            <span class="text-xs text-indigo-400/60" id="monitor-summary"></span>
-        </div>
-        <div class="flex-1 flex flex-col justify-center">
-            <div class="srv-item" id="srv-solar">
-                <span class="srv-dot" id="srv-solar-dot"></span>
-                <span class="srv-name">solar</span>
-                <div class="srv-bar-wrap"><div class="srv-bar" id="srv-solar-bar" style="width:0%"></div></div>
-                <span class="srv-metric" id="srv-solar-mem">--</span>
-                <span class="srv-metric" id="srv-solar-cpu">--</span>
+<div class="page-shell relative z-10" style="max-width:min(920px,82vw);padding-top:0;">
+    <div class="grid gap-4 md:grid-cols-2">
+        <!-- 链接 -->
+        <section class="nx-card nexus-animate">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="nx-section-label mb-0">链接</h2>
+                <a href="{% url 'links:link_list' %}" class="text-xs text-indigo-400/80 hover:text-indigo-300">全部 →</a>
             </div>
-            <div class="srv-item" id="srv-ivory">
-                <span class="srv-dot" id="srv-ivory-dot"></span>
-                <span class="srv-name">ivory</span>
-                <div class="srv-bar-wrap"><div class="srv-bar" id="srv-ivory-bar" style="width:0%"></div></div>
-                <span class="srv-metric" id="srv-ivory-mem">--</span>
-                <span class="srv-metric" id="srv-ivory-cpu">--</span>
-            </div>
-        </div>
-    </div>
-
-<!-- 监控弹窗 -->
-<div class="monitor-overlay" id="monitor-overlay" onclick="if(event.target===this)closeMonitorModal()">
-    <div class="monitor-panel">
-        <button class="modal-close" onclick="closeMonitorModal()">✕</button>
-        <div class="mb-5">
-            <h2 class="text-lg font-bold text-white mb-1 tracking-wide">服务器监控</h2>
-            <p class="text-xs text-gray-500 font-mono" id="modal-summary">加载中...</p>
-        </div>
-        <div id="modal-servers"></div>
-    </div>
-</div>
-
-    <!-- 笔记 -->
-    <div class="card fade-up" id="notes-card">
-        <div class="flex items-center justify-between mb-1">
-            <span class="card-label">Notes</span>
-            <a href="{% url 'blog:post_list' %}" class="view-all">全部 →</a>
-        </div>
-        <div class="card-scroll">
-            {% for post in recent_posts|slice:":6" %}
-            <a href="{% url 'blog:post_detail' post.slug %}" class="note-item">
-                <span class="note-dot"></span>
-                <span class="note-title flex-1">{{ post.title }}</span>
-                {% for tag in post.tags.all|slice:":1" %}
-                <span class="note-tag">{{ tag.name }}</span>
+            <div class="flex flex-col gap-2">
+                {% for link in all_links %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+                   class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                    <span class="text-lg">{{ link.icon|default:"🔗" }}</span>
+                    <div class="min-w-0 flex-1">
+                        <div class="nx-card-title truncate">{{ link.name }}</div>
+                        {% if link.description %}
+                        <div class="nx-card-desc truncate">{{ link.description }}</div>
+                        {% endif %}
+                    </div>
+                    <span class="nx-chip">{{ link.get_category_display }}</span>
+                </a>
+                {% empty %}
+                <p class="nx-empty">暂无链接</p>
                 {% endfor %}
-                <span class="note-date">{{ post.published_at|date:"m/d" }}</span>
-            </a>
-            {% empty %}
-            <p class="text-gray-600 text-sm">暂无笔记</p>
-            {% endfor %}
-        </div>
+            </div>
+        </section>
+
+        <!-- 进行中 -->
+        <section class="nx-card nexus-animate nexus-animate-delay-2">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="nx-section-label mb-0">进行中</h2>
+                <a href="{% url 'nexus_core:status_page' %}" class="text-xs text-indigo-400/80 hover:text-indigo-300">状态 →</a>
+            </div>
+            <div class="flex flex-col gap-2">
+                {% for item in now_items %}
+                <div class="flex items-center gap-2 px-2 py-2">
+                    <span>{{ item.icon }}</span>
+                    <p class="text-sm text-gray-300 flex-1">{{ item.text }}</p>
+                </div>
+                {% empty %}
+                <p class="nx-empty">暂无记录</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- 里程碑摘要 -->
+        <section class="nx-card nexus-animate nexus-animate-delay-3 md:col-span-2">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="nx-section-label mb-0">里程碑</h2>
+                <a href="{% url 'nexus_core:status_page' %}" class="text-xs text-indigo-400/80 hover:text-indigo-300">全部 →</a>
+            </div>
+            <div class="grid gap-2 sm:grid-cols-2">
+                {% for act in activities %}
+                <div class="flex items-start gap-2 px-2 py-2">
+                    <span class="mt-0.5">{{ act.icon|default:"📌" }}</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm text-gray-300">{{ act.text }}</p>
+                        <p class="text-xs text-gray-500 font-mono mt-0.5">{{ act.date_label }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="nx-empty sm:col-span-2">暂无里程碑</p>
+                {% endfor %}
+            </div>
+        </section>
     </div>
-
-    <!-- 动态 -->
-    <div class="card fade-up" id="activity-card">
-        <div class="flex items-center justify-between mb-1">
-            <span class="card-label">Activity</span>
-            <a href="{% url 'nexus_core:now_page' %}" class="view-all">全部 →</a>
-        </div>
-        <div class="card-scroll">
-            {% if now_items %}
-            <div class="act-section-label">
-                <span class="act-section-dot doing"></span>
-                <span>进行中</span>
-            </div>
-            {% for item in now_items %}
-            <div class="act-item doing">
-                <span class="act-icon">{{ item.icon }}</span>
-                <p class="act-text flex-1">{{ item.text }}</p>
-            </div>
-            {% endfor %}
-            {% endif %}
-
-            {% if activities %}
-            <div class="act-section-label">
-                <span class="act-section-dot done"></span>
-                <span>已完成</span>
-            </div>
-            {% for act in activities|slice:":4" %}
-            <div class="act-item done">
-                <span class="act-icon">{{ act.icon|default:"📌" }}</span>
-                <p class="act-text flex-1">{{ act.text|truncatewords:10 }}</p>
-                <span class="act-date">{{ act.date_label }}</span>
-            </div>
-            {% endfor %}
-            {% endif %}
-
-            {% if not now_items and not activities %}
-            <p class="text-gray-600 text-sm">暂无动态</p>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- 服务 -->
-    <div class="card fade-up" id="services-card">
-        <div class="services-row">
-            {% for link in all_links|slice:":6" %}
-            <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="service-pill">
-                {% if 'github' in link.url %}
-                <svg class="service-icon-svg" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-                {% else %}
-                <span class="service-icon-emoji">{{ link.icon|default:"🔗" }}</span>
-                {% endif %}
-                <span class="service-name">{{ link.name }}</span>
-            </a>
-            {% endfor %}
-            <div class="flex-1"></div>
-            <a href="{% url 'links:link_list' %}" class="view-all" style="font-size:0.75rem;">全部 →</a>
-        </div>
-    </div>
-
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/home.js' %}?v=6"></script>
-<script>
-function fetchMonitor() {
-    fetch('/api/monitor/data/').then(r => r.json()).then(d => {
-        if (!d.servers) return;
-        // 更新首页小卡片
-        d.servers.forEach(s => {
-            const dot = document.getElementById('srv-' + s.name + '-dot');
-            const bar = document.getElementById('srv-' + s.name + '-bar');
-            const cpuEl = document.getElementById('srv-' + s.name + '-cpu');
-            const memEl = document.getElementById('srv-' + s.name + '-mem');
-            if (!dot) return;
-
-            if (s.online) {
-                dot.className = 'srv-dot on';
-                const cpu = Math.round(s.cpu_percent || 0);
-                const mem = Math.round(s.mem_percent || 0);
-                bar.style.width = mem + '%';
-                bar.className = 'srv-bar ' + (mem > 80 ? 'high' : mem > 50 ? 'mid' : 'low');
-                memEl.textContent = 'Mem ' + mem + '%';
-                cpuEl.textContent = 'CPU ' + cpu + '%';
-            } else {
-                dot.className = 'srv-dot off';
-                bar.style.width = '0%';
-                memEl.textContent = '--';
-                cpuEl.textContent = '离线';
-            }
-        });
-        // 更新摘要
-        const summaryEl = document.getElementById('monitor-summary');
-        if (summaryEl) summaryEl.textContent = d.online + '/' + d.total + ' 在线';
-        // 缓存数据给弹窗用
-        window._monitorData = d;
-    }).catch(() => {});
-}
-
-fetchMonitor();
-setInterval(fetchMonitor, 30000);
-
-// ========== 监控弹窗 ==========
-function openMonitorModal() {
-    document.getElementById('monitor-overlay').classList.add('show');
-    document.body.style.overflow = 'hidden';
-    // 暂停星空 canvas 动画
-    const canvas = document.getElementById('starfield');
-    if (canvas) canvas.style.visibility = 'hidden';
-    renderMonitorModal();
-}
-
-function closeMonitorModal() {
-    document.getElementById('monitor-overlay').classList.remove('show');
-    document.body.style.overflow = '';
-    const canvas = document.getElementById('starfield');
-    if (canvas) canvas.style.visibility = '';
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMonitorModal(); });
-
-function mBarClass(pct) {
-    if (pct > 80) return 'danger';
-    if (pct > 50) return 'warning';
-    return 'normal';
-}
-
-function renderMonitorModal() {
-    const d = window._monitorData;
-    if (!d || !d.servers) {
-        document.getElementById('modal-summary').textContent = '数据加载中...';
-        document.getElementById('modal-servers').innerHTML = '<p class="text-gray-600 text-sm text-center py-8">请稍候</p>';
-        return;
-    }
-
-    let summaryText = d.online + '/' + d.total + ' 在线';
-    if (d.containers_count > 0) summaryText += ' · ' + d.containers_count + ' 个容器';
-    document.getElementById('modal-summary').textContent = summaryText;
-
-    let html = '';
-    d.servers.forEach(s => {
-        const offlineCls = s.online ? '' : ' offline';
-        html += '<div class="m-srv-card' + offlineCls + '">';
-        // 标题行
-        html += '<div class="flex items-center justify-between mb-3">';
-        html += '<div class="flex items-center gap-2.5">';
-        html += '<span class="status-dot ' + (s.online ? 'online' : 'offline') + '"></span>';
-        html += '<span class="text-base font-bold text-white tracking-wide">' + s.name + '</span>';
-        if (s.online) html += '<span class="text-xs text-gray-600 font-mono opacity-60">' + s.platform + '/' + s.arch + '</span>';
-        html += '</div>';
-        if (s.online && s.collected_at) {
-            const t = new Date(s.collected_at);
-            const hm = String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
-            html += '<span class="m-uptime">⏱ ' + hm + '</span>';
-        }
-        html += '</div>';
-
-        if (!s.online) {
-            html += '<p class="text-gray-600 text-sm text-center py-6">' + (s.error || '无法连接') + '</p>';
-            html += '</div>';
-            return;
-        }
-
-        // 运行时间
-        html += '<div class="mb-4"><span class="m-uptime">🕐 运行 ' + s.uptime + '</span></div>';
-
-        // 指标区域
-        html += '<div class="space-y-3 mb-3">';
-
-        // CPU
-        html += '<div><div class="flex justify-between items-center mb-1.5">';
-        html += '<span class="text-xs text-gray-500">CPU</span>';
-        html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + s.cpu_percent + '%</span></div>';
-        html += '<div class="m-metric-bar"><div class="m-metric-fill ' + mBarClass(s.cpu_percent) + '" style="width:' + s.cpu_percent + '%"></div></div>';
-        html += '<div class="flex justify-between mt-1.5"><span class="text-xs text-gray-700">' + s.cpu_count + ' 核</span><span class="text-xs text-gray-700 font-mono">负载 ' + s.load_avg.join(' / ') + '</span></div></div>';
-
-        // 内存
-        html += '<div><div class="flex justify-between items-center mb-1.5">';
-        html += '<span class="text-xs text-gray-500">内存</span>';
-        html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + s.mem_used + '<span class="text-gray-600 font-normal"> / </span>' + s.mem_total + ' GB</span></div>';
-        html += '<div class="m-metric-bar"><div class="m-metric-fill ' + mBarClass(s.mem_percent) + '" style="width:' + s.mem_percent + '%"></div></div></div>';
-
-        // 磁盘
-        html += '<div><div class="flex justify-between items-center mb-1.5">';
-        html += '<span class="text-xs text-gray-500">磁盘</span>';
-        html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + s.disk_used + '<span class="text-gray-600 font-normal"> / </span>' + s.disk_total + ' GB</span></div>';
-        html += '<div class="m-metric-bar"><div class="m-metric-fill ' + mBarClass(s.disk_percent) + '" style="width:' + s.disk_percent + '%"></div></div></div>';
-
-        // 电池
-        if (s.battery) {
-            let batVal = s.battery.percent + '%';
-            if (s.battery.plugged) batVal += ' ⚡';
-            const batClass = s.battery.percent < 20 ? 'danger' : s.battery.percent < 40 ? 'warning' : 'normal';
-            html += '<div><div class="flex justify-between items-center mb-1.5">';
-            html += '<span class="text-xs text-gray-500">🔋 电池</span>';
-            html += '<span class="text-sm text-gray-200 font-semibold font-mono">' + batVal + '</span></div>';
-            html += '<div class="m-metric-bar"><div class="m-metric-fill ' + batClass + '" style="width:' + s.battery.percent + '%"></div></div></div>';
-        }
-
-        html += '</div>'; // space-y-3
-
-        // Docker
-        if (s.containers && s.containers.length > 0) {
-            html += '<div class="pt-3 mt-1 border-t border-white/5">';
-            html += '<div class="flex justify-between items-center mb-2.5">';
-            html += '<span class="text-xs text-gray-500">🐳 容器</span>';
-            html += '<span class="text-xs text-gray-600 font-mono">' + s.containers_running + '/' + s.containers_total + '</span></div>';
-            html += '<div class="flex flex-wrap gap-1.5">';
-            s.containers.forEach(c => {
-                const isUp = c.status.startsWith('Up');
-                html += '<span class="m-chip' + (isUp ? ' on' : '') + '"><span class="m-chip-dot ' + (isUp ? 'on' : 'off') + '"></span>' + c.name + '</span>';
-            });
-            html += '</div></div>';
-        }
-
-        html += '</div>';
-    });
-
-    document.getElementById('modal-servers').innerHTML = html;
-}
-</script>
+<script src="{% static 'js/home.js' %}?v=7"></script>
 {% endblock %}

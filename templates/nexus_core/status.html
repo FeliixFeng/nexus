@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}状态 · Nexus{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <header class="page-header">
+        <p class="page-kicker">Status</p>
+        <h1>状态</h1>
+        <div class="page-rule"></div>
+    </header>
+
+    <div class="grid gap-4 md:grid-cols-2">
+        <section class="nx-card">
+            <h2 class="nx-section-label">进行中</h2>
+            <div class="flex flex-col gap-2">
+                {% for item in now_items %}
+                <div class="flex items-center gap-3 px-2 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                    <span class="text-lg">{{ item.icon }}</span>
+                    <p class="text-sm text-gray-200 flex-1">{{ item.text }}</p>
+                </div>
+                {% empty %}
+                <p class="nx-empty">暂无进行中的事项</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="nx-card">
+            <h2 class="nx-section-label">里程碑</h2>
+            <div class="flex flex-col gap-2">
+                {% for act in activities %}
+                <div class="flex items-start gap-3 px-2 py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                    <span class="text-lg mt-0.5">{{ act.icon|default:"📌" }}</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm text-gray-200">{{ act.text }}</p>
+                        <p class="text-xs text-gray-500 font-mono mt-1">{{ act.date_label }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="nx-empty">暂无里程碑</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

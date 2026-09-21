@@ -1,6 +1,9 @@
 // ========== 星空+星座 ==========
 (function() {
-    const c = document.getElementById('starfield'), ctx = c.getContext('2d');
+    const c = document.getElementById('starfield');
+    if (!c || !c.getContext) return;
+    const ctx = c.getContext('2d');
+    if (localStorage.getItem('nexus_reduced_motion') === '1') return;
     let W, H;
     function resize() { W = c.width = innerWidth; H = c.height = innerHeight; stars.forEach(s => { s.x = Math.random()*W; s.y = Math.random()*H; }); }
     const stars = Array.from({length: 50}, () => ({
@@ -32,12 +35,16 @@
 // ========== 粒子 ==========
 (function() {
     const c = document.getElementById('particles');
+    if (!c) return;
+    if (localStorage.getItem('nexus_reduced_motion') === '1') return;
     for (let i=0;i<6;i++) { const p=document.createElement('div'); p.className='particle'; const sz=Math.random()*2.5+1; p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:rgba(150,180,255,${Math.random()*0.18+0.08});animation-duration:${Math.random()*18+14}s;animation-delay:-${Math.random()*14}s;`; c.appendChild(p); }
 })();
 
 // ========== 鼠标光球 ==========
 (function() {
     const s = document.getElementById('spotlight');
+    if (!s) return;
+    if (localStorage.getItem('nexus_reduced_motion') === '1') return;
     let mx=0,my=0,sx=0,sy=0;
     addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
     (function r() { sx+=(mx-sx)*0.35; sy+=(my-sy)*0.35; s.style.transform=`translate(${sx-190}px,${sy-190}px)`; requestAnimationFrame(r); })();
@@ -56,7 +63,12 @@
         '我不是在写 bug，我是在制造就业机会',
     ];
     const el = document.getElementById('quote');
+    const area = document.getElementById('home-quote-area');
     if (!el) return;
+    if (localStorage.getItem('nexus_quote_off') === '1') {
+        if (area) area.style.display = 'none';
+        return;
+    }
     let idx = Math.floor(Math.random() * quotes.length);
     el.textContent = quotes[idx];
     el.style.transition = 'opacity 0.5s ease';
@@ -73,14 +85,13 @@
 // ========== 时钟 ==========
 (function() {
     const el=document.getElementById('clock'), d=document.getElementById('clock-date');
-    const el2=document.getElementById('clock-mobile'), d2=document.getElementById('clock-date-mobile');
+    if (!el || !d) return;
     const w=['日','一','二','三','四','五','六'];
     function t() {
         const n=new Date();
         const time=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
         const date=(n.getMonth()+1)+'/'+n.getDate()+' 周'+w[n.getDay()];
         el.textContent=time; d.textContent=date;
-        if(el2){ el2.textContent=time; d2.textContent=date; }
     }
     t(); setInterval(t,1000);
 })();
