@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from . import api_views
+from . import icon_views
 from links import api_views as link_api
 
 app_name = 'nexus_core'
@@ -10,6 +11,7 @@ urlpatterns = [
     path('status/', views.status_page, name='status_page'),
     path('now/', views.now_page, name='now_page'),
     path('other/', views.other_page, name='other_page'),
+    path('icon/', icon_views.site_icon, name='site_icon'),
 
     path('api/now/create/', api_views.now_create, name='now_create'),
     path('api/now/<int:pk>/update/', api_views.now_update, name='now_update'),

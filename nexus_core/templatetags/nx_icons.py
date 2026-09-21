@@ -14,8 +14,11 @@ def host_of(url):
 
 @register.filter
 def favicon_url(url):
-    """按域名取站点图标；失败时前端回退 emoji。"""
-    host = (url or '').split('//')[-1].split('/')[0]
+    """走本站 /icon/ 代理；取不到时前端回退 emoji。"""
+    try:
+        host = urlparse(url or '').netloc
+    except Exception:
+        host = ''
     if not host:
         return ''
-    return f'https://icons.duckduckgo.com/ip3/{host}.ico'
+    return f'/icon/?host={host}'
