@@ -4,7 +4,7 @@
 {% block title %}Nexus · FelixFeng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/home.css' %}?v=19">
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=20">
 {% endblock %}
 
 {% block content %}
@@ -32,7 +32,7 @@
             <div class="home-list">
                 {% for link in all_links %}
                 <a class="nx-row" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
-                    <span class="nx-icon">{{ link.icon|default:"🔗" }}</span>
+                    {% include 'components/link_icon.html' with link=link %}
                     <div class="min-w-0 flex-1">
                         <div class="nx-row-title truncate">{{ link.name }}</div>
                         {% if link.description %}

@@ -1,0 +1,15 @@
+{% load static %}
+{% load nx_icons %}
+{% comment %} 通用链接图标：优先站点 favicon，失败回退 emoji {% endcomment %}
+<span class="nx-icon {% if large %}lg{% endif %}" data-link-icon>
+    <img
+        class="nx-favicon"
+        src="{{ link.url|favicon_url }}"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        referrerpolicy="no-referrer"
+        onerror="this.remove(); this.parentNode.classList.add('is-fallback');"
+    />
+    <span class="nx-emoji-fallback">{{ link.icon|default:"🔗" }}</span>
+</span>
