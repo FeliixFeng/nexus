@@ -437,11 +437,10 @@ html::-webkit-scrollbar { display: none; }
 .nx-favicon {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    padding: 2px;
+    object-fit: cover;
     display: block;
-    background: transparent;
     border-radius: inherit;
+    background: transparent;
 }
 .nx-emoji-fallback {
     display: none;
