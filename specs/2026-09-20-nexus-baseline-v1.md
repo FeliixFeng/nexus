@@ -38,6 +38,7 @@
 - 可选后续：ali1 MySQL；**基线不实现**。
 - 表结构可改；旧数据不挡设计。核心模型：`Link`、`NowItem`、`Activity`。
 - 关于/说明/扩展位：模板静态；个性化：localStorage。
+- 链接图标：`Link.icon_file` → `static/icons/links/` 本地文件；无文件时 `icon` emoji 回退。不运行时拉 favicon。
 
 ## [S5] 样式基线
 

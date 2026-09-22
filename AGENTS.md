@@ -73,6 +73,7 @@ nexus/
 - 配置：本地 `.env`；生产 `data/nexus.env`（挂载为容器 `/app/.env`）
 - 可选后续：ali1 MySQL 新建库；基线不做
 - 核心表：`Link`、`NowItem`、`Activity`；表结构可改
+- **链接图标**：`Link.icon_file` 存 `static/icons/links/` 下文件名（如 `github.svg`）；优先本地图标，空则用 `icon` 字符 emoji。新增服务：把图标放进该目录并写 `icon_file`，**不要**运行时外网拉取
 
 ## 权限
 
