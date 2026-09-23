@@ -24,7 +24,11 @@
     <div class="feed-meta nx-enter nx-delay-1">
         <span class="nx-chip feed-chip-meta">{{ today_label }}</span>
         <span class="nx-chip feed-chip-meta">新增约 {{ new_count }}</span>
+        {% if using_live %}
+        <span class="nx-chip feed-chip-muted">已接 hub</span>
+        {% else %}
         <span class="nx-chip feed-chip-muted">占位 · 未接 hub</span>
+        {% endif %}
     </div>
 
     {% block feed_body %}{% endblock %}

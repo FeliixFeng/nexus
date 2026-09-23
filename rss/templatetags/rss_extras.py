@@ -1,3 +1,5 @@
+import re
+
 from django import template
 
 register = template.Library()
@@ -7,4 +9,10 @@ register = template.Library()
 def split_body(value: str):
     if not value:
         return []
-    return [p.strip() for p in value.split("\n\n") if p.strip()]
+    parts = re.split(r"\n\s*\n|\n", value)
+    return [p.strip() for p in parts if p.strip()]
+
+
+@register.filter
+def is_caption(value: str) -> bool:
+    return bool(value) and ("（来源：" in value or "(来源：" in value)

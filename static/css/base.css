@@ -323,14 +323,14 @@ html::-webkit-scrollbar-thumb:hover {
     mask-composite: exclude;
     pointer-events: none;
 }
-/* 右上柔光：更暗、更紫，不发白 */
+/* 右上柔光：固定像素，避免超高卡片整右侧糊出色带 */
 .nx-card::after {
     content: '';
     position: absolute;
-    top: -35%;
-    right: -15%;
-    width: 48%;
-    height: 68%;
+    top: -48px;
+    right: -36px;
+    width: 260px;
+    height: 220px;
     background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
     opacity: 0.5;
     pointer-events: none;

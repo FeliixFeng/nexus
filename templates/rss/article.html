@@ -4,7 +4,7 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923b">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923c">
 {% endblock %}
 
 {% block content %}
@@ -44,13 +44,13 @@
         <div class="nx-card mt-5">
             <div class="prose feed-article-body">
                 {% for para in item.body|split_body %}
-                <p>{{ para }}</p>
+                <p{% if para|is_caption %} class="feed-caption"{% endif %}>{{ para }}</p>
                 {% endfor %}
             </div>
         </div>
 
         <p class="feed-article-foot">
-            id: {{ item.id }} · fetched {{ item.fetched_at }} · 正文为占位数据（接 hub 后为全文）
+            id: {{ item.id }} · fetched {{ item.fetched_at }}{% if not using_live %} · 正文为占位数据（接 hub 后为全文）{% endif %}
         </p>
     </article>
 </div>

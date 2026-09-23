@@ -353,7 +353,10 @@
 .feed-article-body {
     position: relative;
     z-index: 1;
-    max-width: none;
+    max-width: 72ch;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-gray-200);
 }
 
 .feed-article-body p {
@@ -362,6 +365,14 @@
 
 .feed-article-body p:first-child { margin-top: 0; }
 .feed-article-body p:last-child { margin-bottom: 0; }
+
+.feed-article-body p.feed-caption {
+    margin: 0.75em 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--color-gray-500);
+    text-align: center;
+}
 
 .feed-article-foot {
     margin-top: var(--space-5);
