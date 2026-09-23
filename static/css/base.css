@@ -62,10 +62,31 @@
 }
 
 html {
-    scrollbar-width: none;
+    scrollbar-width: thin;
     -webkit-text-size-adjust: 100%;
+    overflow-y: scroll;
 }
-html::-webkit-scrollbar { display: none; }
+
+html::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.35);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.55);
+    background-clip: padding-box;
+}
 
 /* ========== Nav ========== */
 .nav-wrapper {

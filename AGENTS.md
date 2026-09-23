@@ -62,25 +62,30 @@ lunar 上 RSS 服务（**上游 Phase 1 已定稿 `0.4.1`，先只更文档、�
 
 ## 信息架构（基线）
 
-一级导航仅：**首页 · 链接 · 状态 · 其他**
+一级导航仅：**首页 · 资讯 · 链接 · 状态 · 其他**（桌面顶栏 + 移动底栏同序）
 
 | 页面 | 路由 | 模板 |
 |------|------|------|
 | 首页 | `/` | `nexus_core/home.html` |
+| 资讯 | `/rss/` | `rss/today.html` 等 |
 | 链接 | `/links/` | `links/list.html` |
 | 状态 | `/status/` | `nexus_core/status.html` |
 | 其他 | `/other/` | `nexus_core/other.html` |
 
-**产品面不暴露：** 笔记/阅读/RSS、监控、科研。相关 app 可休眠。
+资讯（Feed）：Tab **精选 · 待读 · 全部**；子路由 `/rss/` 精选 · `/rss/unread/` 待读 · `/rss/stream/` 全部 · `/rss/brief/` 日报 · `/rss/article/<id>/` 文章。  
+精选=日报卡+重点；待读=未读置顶、今日已读灰显沉底（`sessionStorage` `nexus_rss_read`）；全部=时间序。
+
+**产品面不暴露：** 笔记/阅读、监控、科研。相关 app 可休眠。
 
 ## 项目结构
 
 ```text
 nexus/
-├── specs/                     # 需求/设计（基线 v1）
+├── specs/                     # 需求/设计（基线 v1 + RSS 架构）
 ├── config/                    # settings / urls
 ├── nexus_core/                # 壳 + Home + Status + Other
 ├── links/                     # 入口链接
+├── rss/                       # 资讯：mock UI 阶段，未接 hub
 ├── blog/                      # 休眠：可分享详情能力，不进导航
 ├── research/                  # 休眠
 ├── monitor/                   # agent 脚本，无产品 UI
@@ -88,8 +93,10 @@ nexus/
 │   ├── base.html
 │   ├── components/navbar.html
 │   ├── nexus_core/            # home, status, other
+│   ├── rss/                   # today, unread, stream, brief, article, _shell
 │   └── links/
 ├── static/css/base.css        # 设计 token + 全局
+├── static/css/rss.css         # 资讯页局部样式
 └── specs/2026-09-20-nexus-baseline-v1.md
 ```
 
@@ -153,8 +160,9 @@ ali1 nginx 改回 `127.0.0.1:8000` 并 `systemctl start nexus.service`（旧目�
 | 事项 | 规则 |
 |------|------|
 | 工作区 | 仅主工作区 |
-| 导航 | 四项，改 IA 必须改本文件 + spec |
+| 导航 | 五项（含资讯），改 IA 必须改本文件 + spec |
 | 数据库 | 基线 SQLite |
 | 笔记 | 基线无产品入口 |
-| 监控/RSS/科研 | 基线无 UI |
+| 资讯 | 本地 mock UI 已验收（精选/待读/全部+日报）；下一步接 hub + LLM（计划另出，未开工） |
+| 监控/科研 | 基线无 UI |
 | push | 用户明确要求或验收通过后的代码批次 |

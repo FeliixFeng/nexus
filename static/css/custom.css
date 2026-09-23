@@ -1,8 +1,7 @@
 /* Nexus Custom Styles */
 
-/* 平滑滚动 */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
 }
 
 /* 渐变文字 */

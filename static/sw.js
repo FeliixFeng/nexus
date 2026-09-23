@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nexus-v1';
+const CACHE_NAME = 'nexus-v3';
 const STATIC_ASSETS = [
     '/',
     '/static/favicon.svg',

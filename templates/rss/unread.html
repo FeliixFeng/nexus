@@ -1,0 +1,126 @@
+{% extends 'rss/_shell.html' %}
+
+{% block feed_body %}
+<section class="mt-5 nx-enter nx-delay-2">
+    <h2 class="nx-section-label">待读 · {{ items|length }} 条</h2>
+    <div class="nx-card">
+        <div class="nx-stack">
+            {% for item in items %}
+            <div class="nx-item feed-unread-row"
+                 data-feed-item
+                 data-id="{{ item.id }}"
+                 data-day="{{ item.published_at|slice:':10' }}"
+                 {% if not item.unread %}data-already-read="1"{% endif %}>
+                <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="feed-card-meta mb-1">
+                        <span class="nx-chip feed-chip-src">{{ item.source }}</span>
+                        <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
+                        <span class="feed-score">{{ item.score }}</span>
+                    </div>
+                    <a class="nx-row-title hover:text-indigo-300" href="{% url 'rss:article' item.id %}">{{ item.title }}</a>
+                    <div class="nx-row-desc">{{ item.reason }}</div>
+                </div>
+                <button type="button" class="feed-btn" data-mark-read>标已读</button>
+            </div>
+            {% empty %}
+            <p class="nx-empty">没有待读</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var KEY = 'nexus_rss_read';
+    var todayEl = document.getElementById('feed-meta');
+    var today = todayEl ? todayEl.getAttribute('data-today') : '';
+    var stack = document.querySelector('.nx-stack');
+    var read = {};
+    try {
+        read = JSON.parse(sessionStorage.getItem(KEY) || '{}') || {};
+    } catch (e) {
+        read = {};
+    }
+
+    function isRead(id) {
+        return Object.prototype.hasOwnProperty.call(read, id);
+    }
+
+    function markRead(id) {
+        read[id] = new Date().toISOString();
+        try {
+            sessionStorage.setItem(KEY, JSON.stringify(read));
+        } catch (e) {}
+    }
+
+    function applyRow(row) {
+        var id = row.getAttribute('data-id');
+        var day = row.getAttribute('data-day');
+        var already = row.getAttribute('data-already-read') === '1';
+        var readNow = already || isRead(id);
+
+        if (!readNow) {
+            row.classList.remove('feed-read-today', 'hidden');
+            var btn0 = row.querySelector('[data-mark-read]');
+            if (btn0) {
+                btn0.textContent = '标已读';
+                btn0.disabled = false;
+                btn0.classList.remove('is-done');
+            }
+            return false;
+        }
+
+        if (day === today) {
+            row.classList.add('feed-read-today');
+            row.classList.remove('hidden');
+            var btn = row.querySelector('[data-mark-read]');
+            if (btn) {
+                btn.textContent = '已读✓';
+                btn.disabled = true;
+                btn.classList.add('is-done');
+            }
+            return true;
+        }
+
+        row.classList.add('hidden');
+        return true;
+    }
+
+    function resort() {
+        if (!stack) return;
+        var rows = Array.prototype.slice.call(stack.querySelectorAll('[data-feed-item]'));
+        rows.sort(function (a, b) {
+            function rank(row) {
+                if (row.classList.contains('hidden')) return 2;
+                if (row.classList.contains('feed-read-today')) return 1;
+                return 0;
+            }
+            var ra = rank(a);
+            var rb = rank(b);
+            if (ra !== rb) return ra - rb;
+            var da = a.getAttribute('data-day') || '';
+            var db = b.getAttribute('data-day') || '';
+            if (da !== db) return da < db ? 1 : -1;
+            return 0;
+        });
+        rows.forEach(function (row) { stack.appendChild(row); });
+    }
+
+    document.querySelectorAll('[data-feed-item]').forEach(applyRow);
+    resort();
+
+    document.querySelectorAll('[data-mark-read]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var row = btn.closest('[data-feed-item]');
+            if (!row) return;
+            markRead(row.getAttribute('data-id'));
+            applyRow(row);
+            resort();
+        });
+    });
+})();
+</script>
+{% endblock %}

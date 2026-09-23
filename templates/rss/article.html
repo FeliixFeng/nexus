@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static rss_extras %}
+
+{% block title %}{{ page_title }} · Nexus{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923b">
+{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <header class="page-header nx-enter">
+        <p class="page-kicker">Feed</p>
+        <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
+        <div class="page-rule"></div>
+    </header>
+
+    <nav class="feed-seg nx-enter" aria-label="资讯视图">
+        <a href="{% url 'rss:today' %}" class="feed-seg-btn {% if view == 'today' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>精选</a>
+        <a href="{% url 'rss:unread' %}" class="feed-seg-btn {% if view == 'unread' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>待读</a>
+        <a href="{% url 'rss:stream' %}" class="feed-seg-btn {% if view == 'stream' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>全部</a>
+    </nav>
+
+    <article class="feed-article nx-enter nx-delay-2" id="feed-article-item" data-id="{{ item.id }}">
+        <div class="feed-card-meta mb-3">
+            <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
+            <span class="nx-chip feed-chip-src">{{ item.source }}</span>
+            <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
+            <span class="feed-time">{{ item.published_at|truncatechars:16 }}</span>
+            <span class="feed-score">{{ item.score }}</span>
+        </div>
+
+        <h2 class="feed-article-title">{{ item.title }}</h2>
+
+        {% if item.reason %}
+        <p class="feed-article-reason">{{ item.reason }}</p>
+        {% endif %}
+
+        <div class="feed-article-actions">
+            <a class="view-all" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">原文链接 ↗</a>
+            <a class="view-all" href="{% url 'rss:unread' %}">返回待读</a>
+        </div>
+
+        <div class="nx-card mt-5">
+            <div class="prose feed-article-body">
+                {% for para in item.body|split_body %}
+                <p>{{ para }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="feed-article-foot">
+            id: {{ item.id }} · fetched {{ item.fetched_at }} · 正文为占位数据（接 hub 后为全文）
+        </p>
+    </article>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var key = 'nexus_rss_read';
+    var el = document.getElementById('feed-article-item');
+    var id = el ? el.getAttribute('data-id') : '';
+    if (!id) return;
+    try {
+        var map = JSON.parse(sessionStorage.getItem(key) || '{}');
+        map[id] = new Date().toISOString();
+        sessionStorage.setItem(key, JSON.stringify(map));
+    } catch (e) {}
+})();
+</script>
+{% endblock %}

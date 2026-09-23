@@ -14,6 +14,10 @@
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                 首页
             </a>
+            <a href="{% url 'rss:today' %}"
+               class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'rss' in request.resolver_match.app_name|default:'' %}active{% endif %}">
+                资讯
+            </a>
             <a href="{% url 'links:link_list' %}"
                class="nav-link px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-white/5 {% if 'links' in request.resolver_match.app_name|default:'' %}active{% endif %}">
                 链接
@@ -61,6 +65,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
             </svg>
             <span class="text-[10px]">首页</span>
+        </a>
+        <a href="{% url 'rss:today' %}"
+           class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'rss' in request.resolver_match.app_name|default:'' %}text-purple-400{% else %}text-gray-500{% endif %}">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 20V5a2 2 0 00-2-2H7a2 2 0 00-2 2v15m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <span class="text-[10px]">资讯</span>
         </a>
         <a href="{% url 'links:link_list' %}"
            class="tab-item flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all {% if 'links' in request.resolver_match.app_name|default:'' %}text-purple-400{% else %}text-gray-500{% endif %}">

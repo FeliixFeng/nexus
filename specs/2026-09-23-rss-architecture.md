@@ -1,12 +1,25 @@
 # Nexus RSS 阅读器 — 架构方向草案
 
-> 日期：2026-09-23
-> 状态：**讨论阶段，未实现**
+> 日期：2026-09-23  
+> 状态：**🟡 本地 mock UI 已验收（2026-09-23）；未接 hub / 未调 LLM。接入 + AI 分步计划待用户放行后执行**  
 > 关联：`specs/2026-09-20-nexus-baseline-v1.md`
+
+## 〇、当前实现（本地 UI 已验收）
+
+- 一级导航：**首页 · 资讯 · 链接 · 状态 · 其他**（桌面顶栏 + 移动底栏）
+- Tab：**精选 · 待读 · 全部**
+- 路由：`/rss/` 精选 · `/rss/unread/` 待读 · `/rss/stream/` 全部 · `/rss/brief/` 日报 · `/rss/article/<id>/` 文章
+- 行为：精选=日报卡+重点+次要；待读=未读置顶、今日已读灰显沉底、更早已读隐藏（整行可点进文章，标已读不跳转）；全部=时间序、不标已读态；出站原文只在文章页
+- 已读：`sessionStorage` key `nexus_rss_read`（`{id: isoTimestamp}`）
+- 代码：`rss/`（views + mock_data）、`templates/rss/`、`static/css/rss.css`
+- 配置占位：`.env` `RSS_HUB_URL` / `RSS_API_KEY` / `LLM_*`（见 `.env.example`）
+- 边界：**不请求 lunar、不调模型**（下一步）
+- 已删除旧实现：`nexus_core/rss_views.py`、`read_views.py` 及对应模板
+- 样式：滚动 `scroll-behavior: auto` + 可见 WebKit 滚动条；静态资源版本号 + SW `nexus-v3`
 
 ## 一、定位
 
-Nexus 新增独立 Tab：`/rss/`，作为信息聚合入口。
+Nexus 新增独立 Tab：`/rss/`，作为信息聚合入口（展示名：**资讯**）。
 
 - **不是**博客、不是笔记仓库（笔记继续用 Obsidian）
 - **是**信息聚合 + 智能过滤 + 每日要闻

@@ -7,6 +7,16 @@
     } catch (e) {}
 })();
 
+(function() {
+    function ensureRootScrollable() {
+        var de = document.documentElement;
+        var ov = getComputedStyle(de).overflowY;
+        if (ov === 'hidden') de.style.overflowY = 'auto';
+    }
+    ensureRootScrollable();
+    window.addEventListener('load', ensureRootScrollable);
+})();
+
 // ========== 导航栏：滚动隐藏 + 透明变色 ==========
 (function() {
     const nav = document.getElementById('navbar');

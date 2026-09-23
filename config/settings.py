@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'blog',
     'links',
     'research',
+    'rss',
 ]
 
 MIDDLEWARE = [
@@ -106,4 +107,8 @@ NEXUS_PIN = os.environ.get('NEXUS_PIN', '123456')
 # Nexus API Key (用于程序化管理内容)
 NEXUS_API_KEY = os.environ.get('NEXUS_API_KEY', '')
 
-# 基线 v1：产品面不使用监控 / RSS；相关 app 休眠，配置不再注入。
+RSS_HUB_URL = os.environ.get('RSS_HUB_URL', 'http://104.208.64.31:8080').rstrip('/')
+RSS_API_KEY = os.environ.get('RSS_API_KEY', '')
+LLM_API_KEY = os.environ.get('LLM_API_KEY', '')
+LLM_BASE_URL = os.environ.get('LLM_BASE_URL', '')
+LLM_MODEL = os.environ.get('LLM_MODEL', '')

@@ -1,0 +1,73 @@
+{% extends 'rss/_shell.html' %}
+
+{% block feed_body %}
+{% if brief %}
+<section class="mt-5 nx-enter nx-delay-1">
+    <a class="nx-card feed-brief-pin" href="{% url 'rss:brief' %}">
+        <div class="feed-card-top">
+            <span class="nx-icon" aria-hidden="true">📰</span>
+            <div class="min-w-0 flex-1">
+                <div class="feed-card-meta">
+                    <span class="nx-chip feed-chip-type">日报</span>
+                    <span class="nx-chip feed-chip-muted">{{ brief.date }}</span>
+                    <span class="feed-score">{{ brief.items|length }}</span>
+                </div>
+                <h3 class="nx-card-title mt-2">{{ brief.title }}</h3>
+            </div>
+        </div>
+        <p class="nx-card-desc mt-2 line-clamp-2">{{ brief.lead }}</p>
+        <div class="feed-card-actions">
+            <span class="view-all">查看精选重点 →</span>
+        </div>
+    </a>
+</section>
+{% endif %}
+
+<section class="mt-5 nx-enter nx-delay-2">
+    <h2 class="nx-section-label">重点 · {{ featured|length }}</h2>
+    <div class="grid gap-3 md:grid-cols-2">
+        {% for item in featured %}
+        <a class="nx-card feed-card" href="{% url 'rss:article' item.id %}">
+            <div class="feed-card-top">
+                <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="feed-card-meta">
+                        <span class="nx-chip feed-chip-src">{{ item.source }}</span>
+                        <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
+                        <span class="feed-score">{{ item.score }}</span>
+                    </div>
+                    <h3 class="nx-card-title mt-2 line-clamp-2">{{ item.title }}</h3>
+                </div>
+            </div>
+            <p class="nx-card-desc mt-2">{{ item.reason }}</p>
+            <div class="feed-card-actions">
+                <span class="view-all">阅读全文 →</span>
+                <span class="feed-ext" onclick="event.preventDefault(); window.open('{{ item.url }}', '_blank', 'noopener')">原文 ↗</span>
+            </div>
+        </a>
+        {% empty %}
+        <p class="nx-empty md:col-span-2">暂无重点</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="mt-6 nx-enter nx-delay-3">
+    <h2 class="nx-section-label">稍后翻翻 · {{ secondary|length }}</h2>
+    <div class="nx-card">
+        <div class="nx-stack">
+            {% for item in secondary %}
+            <a class="nx-row" href="{% url 'rss:article' item.id %}">
+                <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="nx-row-title line-clamp-2">{{ item.title }}</div>
+                    <div class="nx-row-desc">{{ item.source }} · {{ item.domain }} · {{ item.reason }}</div>
+                </div>
+                <span class="feed-score shrink-0">{{ item.score }}</span>
+            </a>
+            {% empty %}
+            <p class="nx-empty">暂无</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
