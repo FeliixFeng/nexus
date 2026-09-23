@@ -72,9 +72,10 @@ lunar 上 RSS 服务（**上游 Phase 1 已定稿 `0.4.1`，先只更文档、�
 | 状态 | `/status/` | `nexus_core/status.html` |
 | 其他 | `/other/` | `nexus_core/other.html` |
 
-资讯（Feed）：Tab **精选 · 待读 · 全部**；子路由 `/rss/` 精选 · `/rss/unread/` 待读 · `/rss/stream/` 全部 · `/rss/brief/` 日报 · `/rss/article/<id>/` 文章。  
-精选=日报卡+重点；待读=未读置顶、今日已读灰显沉底（`sessionStorage` `nexus_rss_read`）；全部=时间序。
-
+资讯（Feed）：Tab **精选 · 待读 · 全部**；子路由 `/rss/` 精选 · `/rss/unread/` 待读 · `/rss/stream/` 全部 · `/rss/brief/` 日报 · `/rss/article/<id>/` 文章 · `/rss/lab/` 打开方式试验台（仅 PIN 解锁可见）。  
+精选=日报卡+重点+次要；待读=未读置顶、今日已读灰显沉底（`sessionStorage` `nexus_rss_read`）；全部=时间序。  
+**列表阅读策略（已定）**：列表标题与「阅读原文 ↗」均 `target="_blank"` 新标签读原文；站内详情 `/rss/article/` 仅作兜底入口（重点卡片保留「站内详情」）。  
+数据链路：lunar rss-hub（Phase 1 冻结 `0.4.1`）`since` 增量 → `FeedItem` 幂等入库 → 智谱 `glm-4-flash` L1 打分 + L2 日报；正文 `render_body` 智能分段/Markdown 渲染。  
 **产品面不暴露：** 笔记/阅读、监控、科研。相关 app 可休眠。
 
 ## 项目结构
@@ -85,7 +86,7 @@ nexus/
 ├── config/                    # settings / urls
 ├── nexus_core/                # 壳 + Home + Status + Other
 ├── links/                     # 入口链接
-├── rss/                       # 资讯：mock UI 阶段，未接 hub
+├── rss/                       # 资讯：hub+LLM 已接入，列表新标签读原文
 ├── blog/                      # 休眠：可分享详情能力，不进导航
 ├── research/                  # 休眠
 ├── monitor/                   # agent 脚本，无产品 UI
@@ -93,7 +94,7 @@ nexus/
 │   ├── base.html
 │   ├── components/navbar.html
 │   ├── nexus_core/            # home, status, other
-│   ├── rss/                   # today, unread, stream, brief, article, _shell
+│   ├── rss/                   # today, unread, stream, brief, article, lab, _shell
 │   └── links/
 ├── static/css/base.css        # 设计 token + 全局
 ├── static/css/rss.css         # 资讯页局部样式
@@ -163,6 +164,6 @@ ali1 nginx 改回 `127.0.0.1:8000` 并 `systemctl start nexus.service`（旧目�
 | 导航 | 五项（含资讯），改 IA 必须改本文件 + spec |
 | 数据库 | 基线 SQLite |
 | 笔记 | 基线无产品入口 |
-| 资讯 | 本地 mock UI 已验收（精选/待读/全部+日报）；下一步接 hub + LLM（计划另出，未开工） |
+| 资讯 | 已接 hub + LLM（打分/日报）；列表新标签读原文 + 站内详情兜底；卡片响应式布局已验收 |
 | 监控/科研 | 基线无 UI |
 | push | 用户明确要求或验收通过后的代码批次 |

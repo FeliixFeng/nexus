@@ -1,21 +1,24 @@
 # Nexus RSS 阅读器 — 架构方向草案
 
 > 日期：2026-09-23  
-> 状态：**🟡 本地 mock UI 已验收（2026-09-23）；未接 hub / 未调 LLM。接入 + AI 分步计划待用户放行后执行**  
+> 状态：**🟢 hub + LLM 已接入并本地验收（2026-09-23）；列表新标签读原文；已部署 ivory**  
 > 关联：`specs/2026-09-20-nexus-baseline-v1.md`
 
-## 〇、当前实现（本地 UI 已验收）
+## 〇、当前实现（本地已验收）
 
 - 一级导航：**首页 · 资讯 · 链接 · 状态 · 其他**（桌面顶栏 + 移动底栏）
 - Tab：**精选 · 待读 · 全部**
-- 路由：`/rss/` 精选 · `/rss/unread/` 待读 · `/rss/stream/` 全部 · `/rss/brief/` 日报 · `/rss/article/<id>/` 文章
-- 行为：精选=日报卡+重点+次要；待读=未读置顶、今日已读灰显沉底、更早已读隐藏（整行可点进文章，标已读不跳转）；全部=时间序、不标已读态；出站原文只在文章页
+- 路由：`/rss/` 精选 · `/rss/unread/` 待读 · `/rss/stream/` 全部 · `/rss/brief/` 日报 · `/rss/article/<id>/` 文章 · `/rss/lab/` 打开方式试验台（仅编辑态）
+- 行为：精选=日报卡+重点+次要；待读=未读置顶、今日已读灰显沉底、更早已读隐藏；全部=时间序、不标已读态
+- **列表阅读策略**：列表标题与「阅读原文 ↗」新标签打开原文；站内 `/rss/article/` 仅兜底（重点卡保留「站内详情」）；**不做** AI 全文转 MD（费 token 且过度摘要，已否决）
 - 已读：`sessionStorage` key `nexus_rss_read`（`{id: isoTimestamp}`）
-- 代码：`rss/`（views + mock_data）、`templates/rss/`、`static/css/rss.css`
-- 配置占位：`.env` `RSS_HUB_URL` / `RSS_API_KEY` / `LLM_*`（见 `.env.example`）
-- 边界：**不请求 lunar、不调模型**（下一步）
+- 数据：lunar rss-hub `0.4.1` `since` 增量 → `FeedItem`/`DailyBrief`/`PullCursor` 幂等入库；智谱 `glm-4-flash` L1 打分 + L2 日报
+- 正文：`render_body` 单/双换行分段 + Markdown 识别（bleach 消毒）+「来源」图注
+- 布局：卡片响应式网格（1/2/3 列）、日报横幅紧凑、按钮吸底
+- 配置：`.env` `RSS_HUB_URL` / `RSS_API_KEY` / `LLM_*`（见 `.env.example`）
+- 边界：**不改 lunar / rss-hub**（Phase 1 冻结）
 - 已删除旧实现：`nexus_core/rss_views.py`、`read_views.py` 及对应模板
-- 样式：滚动 `scroll-behavior: auto` + 可见 WebKit 滚动条；静态资源版本号 + SW `nexus-v3`
+- 样式：滚动 `scroll-behavior: auto` + 可见 WebKit 滚动条；rss.css 版本号 + SW `nexus-v3`
 
 ## 一、定位
 
