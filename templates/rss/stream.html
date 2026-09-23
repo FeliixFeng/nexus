@@ -19,22 +19,25 @@
     <div class="nx-card">
         <div class="nx-stack" id="feed-stream">
             {% for item in items %}
-            <a class="nx-row feed-stream-row"
-               href="{% url 'rss:article' item.id %}"
-               data-source="{{ item.source }}"
-               data-domain="{{ item.domain }}"
-               data-title="{{ item.title }}">
+            <div class="nx-item nx-row feed-stream-row"
+                 data-source="{{ item.source }}"
+                 data-domain="{{ item.domain }}"
+                 data-title="{{ item.title }}">
                 <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
                 <div class="min-w-0 flex-1">
                     <div class="feed-card-meta mb-1">
                         <span class="nx-chip feed-chip-src">{{ item.source }}</span>
                         <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
                         <span class="feed-time">{{ item.fetched_at|slice:":10" }}</span>
+                        <span class="feed-score">{{ item.score }}</span>
                     </div>
-                    <div class="nx-row-title line-clamp-2">{{ item.title }}</div>
+                    <a class="nx-row-title line-clamp-2 hover:text-indigo-300" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+                    {% if item.reason %}
+                    <div class="nx-row-desc line-clamp-2">{{ item.reason }}</div>
+                    {% endif %}
                 </div>
-                <span class="feed-score shrink-0">{{ item.score }}</span>
-            </a>
+                <a class="feed-btn feed-go shrink-0" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a>
+            </div>
             {% empty %}
             <p class="nx-empty">暂无内容</p>
             {% endfor %}

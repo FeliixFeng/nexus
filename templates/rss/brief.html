@@ -4,12 +4,12 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923b">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923f">
 {% endblock %}
 
 {% block content %}
 <div class="page-shell">
-    <header class="page-header nx-enter">
+    <header class="page-header feed-header nx-enter">
         <p class="page-kicker">Feed</p>
         <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
         <div class="page-rule"></div>
@@ -41,18 +41,16 @@
 
         <div class="nx-card mt-5">
             <div class="prose feed-article-body">
-                {% for para in brief.body|split_body %}
-                <p>{{ para }}</p>
-                {% endfor %}
+                {{ brief.body|render_body }}
             </div>
         </div>
 
         <section class="mt-5">
-            <h3 class="nx-section-label">今日精选 · 站内跳转</h3>
+            <h3 class="nx-section-label">今日精选 · 新标签读原文</h3>
             <div class="nx-card">
                 <div class="nx-stack">
                     {% for item in brief.items %}
-                    <a class="nx-row feed-brief-row" href="{% url 'rss:article' item.id %}">
+                    <div class="nx-item nx-row feed-brief-row">
                         <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
                         <div class="min-w-0 flex-1">
                             <div class="feed-card-meta mb-1">
@@ -60,11 +58,13 @@
                                 <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
                                 <span class="feed-score">{{ item.score }}</span>
                             </div>
-                            <div class="nx-row-title line-clamp-2">{{ item.title }}</div>
-                            <div class="nx-row-desc">{{ item.reason }}</div>
+                            <a class="nx-row-title line-clamp-2 hover:text-indigo-300" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+                            {% if item.reason %}
+                            <div class="nx-row-desc line-clamp-2">{{ item.reason }}</div>
+                            {% endif %}
                         </div>
-                        <span class="feed-brief-go shrink-0" aria-hidden="true">→</span>
-                    </a>
+                        <a class="feed-btn feed-go shrink-0" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a>
+                    </div>
                     {% empty %}
                     <p class="nx-empty">今日暂无精选</p>
                     {% endfor %}
@@ -73,7 +73,7 @@
         </section>
 
         <p class="feed-article-foot">
-            id: {{ brief.id }} · type: brief · 精选条详情内有全文与原文链接
+            id: {{ brief.id }} · type: brief · 精选条跳转原文新标签
         </p>
     </article>
 </div>

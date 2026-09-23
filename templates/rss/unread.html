@@ -18,10 +18,15 @@
                         <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
                         <span class="feed-score">{{ item.score }}</span>
                     </div>
-                    <a class="nx-row-title hover:text-indigo-300" href="{% url 'rss:article' item.id %}">{{ item.title }}</a>
+                    <a class="nx-row-title hover:text-indigo-300" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+                    {% if item.reason %}
                     <div class="nx-row-desc">{{ item.reason }}</div>
+                    {% endif %}
                 </div>
-                <button type="button" class="feed-btn" data-mark-read>标已读</button>
+                <div class="feed-row-actions">
+                    <a class="feed-btn feed-go" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a>
+                    <button type="button" class="feed-btn" data-mark-read>标已读</button>
+                </div>
             </div>
             {% empty %}
             <p class="nx-empty">没有待读</p>
