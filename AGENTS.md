@@ -27,7 +27,7 @@ Nexus 是**个人聚合门户**：常用链接、个人状态、关于/设置收
 
 lunar 上 RSS 服务：
 
-- 代码仓库：`https://github.com/FeliixFeng/rss-hub`（private，与 nexus 分开）
+- 代码仓库：`https://github.com/FeliixFeng/rss-hub`（**public**，与 nexus 分开；`.env`/`data/` 不入库）
 - 路径 `/home/feng/app/rss-hub`（systemd `rss-hub`，端口 **8080**）
 - 接口：`/health`、`/api/v1/{items,sources,status,refresh,sources/reload}`，统一 `{ok, server_time, ...}` 壳
 - 认证：请求头 `X-API-Key`，key 在远端 `/home/feng/app/rss-hub/.env`（`RSS_API_KEY`，不入库）
