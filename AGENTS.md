@@ -15,6 +15,29 @@ Nexus 是**个人聚合门户**：常用链接、个人状态、关于/设置收
 - 生产：Docker @ ivory（飞牛）` :18000`；ali1 仅 nginx + frps + frp 入口
 - 包管理：uv（本地）；生产镜像见 `Dockerfile.ivory`
 
+## 机器访问（怎么连）
+
+均配置为 SSH 免密（密钥见本机 `~/.ssh/config`）；**具体硬件/系统配置不写入本文档，需要时上机自查**。
+
+| 别名 | 角色 | 连接方式 | 备注 |
+|------|------|----------|------|
+| `ali1` | 公网入口（nginx/frps/证书） | `ssh ali1`（root@47.121.181.198） | 域名 `*.felixfeng.online` 终点 |
+| `ivory` | 生产应用（Nexus/Docker） | `ssh ivory`（admin@Tailscale `100.116.123.86`） | Mac 需在 Tailscale 网内 |
+| `lunar` | 海外抓取端（RSS 相关） | `ssh lunar`（feng@104.208.64.31，密钥 `~/.ssh/lunar.pem`） | 注意别名是 **lunar** 不是 luna |
+
+lunar 上 RSS 服务：
+
+- 路径 `/home/feng/app/rss-hub`（systemd `rss-hub`，端口 **8080**）
+- 接口：`/health`、`/api/v1/{items,sources,status,refresh,sources/reload}`
+- 认证：请求头 `X-API-Key`，key 在远端 `/home/feng/app/rss-hub/.env`（`RSS_API_KEY`，不入库）
+- 调试：`ssh lunar` 后 `systemctl status rss-hub`；改 `feeds.toml` 后 `POST /api/v1/sources/reload` 或 restart
+
+补充：
+
+- 上机查看配置用常规命令即可（`uname -a`、`free -h`、`docker ps`、`systemctl`、`nginx -T` 等），**不把机器规格抄进仓库文档**
+- 遇到其他机器，同样只记录 SSH 别名/用途，规格上机自查
+- frp/nginx 中的 token、密码等**禁止**写入任何仓库文档
+
 ## 生产拓扑
 
 ```text
