@@ -25,13 +25,16 @@ Nexus 是**个人聚合门户**：常用链接、个人状态、关于/设置收
 | `ivory` | 生产应用（Nexus/Docker） | `ssh ivory`（admin@Tailscale `100.116.123.86`） | Mac 需在 Tailscale 网内 |
 | `lunar` | 海外抓取端（RSS 相关） | `ssh lunar`（feng@104.208.64.31，密钥 `~/.ssh/lunar.pem`） | 注意别名是 **lunar** 不是 luna |
 
-lunar 上 RSS 服务：
+lunar 上 RSS 服务（**上游 Phase 1 已定稿 `0.4.1`，先只更文档、不开下游开发**）：
 
-- 代码仓库：`https://github.com/FeliixFeng/rss-hub`（**public**，与 nexus 分开；`.env`/`data/` 不入库）
+- 代码仓库：`https://github.com/FeliixFeng/rss-hub`（**public**；`.env`/`data/` 不入库）
 - 路径 `/home/feng/app/rss-hub`（systemd `rss-hub`，端口 **8080**）
+- 契约/信源/轮询约定：**以仓库 `README.md` 为准**（含 Poller contract、6 源 + `domain`、全文 ≥500、30 天缓冲）
 - 接口：`/health`、`/api/v1/{items,sources,status,refresh,sources/reload}`，统一 `{ok, server_time, ...}` 壳
 - 认证：请求头 `X-API-Key`，key 在远端 `/home/feng/app/rss-hub/.env`（`RSS_API_KEY`，不入库）
-- 信源/接口/存储契约见仓库 `README.md`
+- 已启用 6 源（量子位/HN/InfoQ/少数派/阮一峰/GitHub Blog）；其余 6 源 `enabled=false` 保留在 `feeds.toml`
+- 下游约定（冻结）：每日 1～2 次 `since` 增量、按 `id` 幂等入库、**禁止再抓文章 url**、hub 只留 30 天
+- 日增量尚未用真实多日数据钉死（存量快照约 67）；以消费者 `since` 返回的 `count` 为准
 - 调试：`ssh lunar` 后 `systemctl status rss-hub`；改 `feeds.toml` 后 `POST /api/v1/sources/reload` 或 restart
 
 补充：
