@@ -4,12 +4,12 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923c">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923f">
 {% endblock %}
 
 {% block content %}
 <div class="page-shell">
-    <header class="page-header nx-enter">
+    <header class="page-header feed-header nx-enter">
         <p class="page-kicker">Feed</p>
         <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
         <div class="page-rule"></div>
@@ -43,9 +43,7 @@
 
         <div class="nx-card mt-5">
             <div class="prose feed-article-body">
-                {% for para in item.body|split_body %}
-                <p{% if para|is_caption %} class="feed-caption"{% endif %}>{{ para }}</p>
-                {% endfor %}
+                {{ item.body|render_body }}
             </div>
         </div>
 
