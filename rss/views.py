@@ -63,3 +63,21 @@ def brief(request):
         raise Http404("brief not found")
     ctx.update(brief=brief_data or mock_data.daily_brief())
     return render(request, "rss/brief.html", ctx)
+
+
+_LAB_HUB_IDS = (
+    "68987cf7bfa3a97d",
+    "97cbf345f3b21d9c",
+    "8af43df9c184e8d8",
+)
+
+
+def lab(request):
+    items = []
+    for hid in _LAB_HUB_IDS:
+        row = data.get_item(hid)
+        if row is not None:
+            items.append(row)
+    ctx = _base(request, "lab", "打开方式试验台")
+    ctx.update(items=items)
+    return render(request, "rss/lab.html", ctx)

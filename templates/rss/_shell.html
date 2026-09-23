@@ -4,12 +4,12 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923b">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923f">
 {% endblock %}
 
 {% block content %}
 <div class="page-shell">
-    <header class="page-header nx-enter">
+    <header class="page-header feed-header nx-enter">
         <p class="page-kicker">Feed</p>
         <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
         <div class="page-rule"></div>
@@ -19,6 +19,9 @@
         <a href="{% url 'rss:today' %}" class="feed-seg-btn {% if view == 'today' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>精选</a>
         <a href="{% url 'rss:unread' %}" class="feed-seg-btn {% if view == 'unread' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>待读</a>
         <a href="{% url 'rss:stream' %}" class="feed-seg-btn {% if view == 'stream' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>全部</a>
+        {% if is_editor %}
+        <a href="{% url 'rss:lab' %}" class="feed-seg-btn {% if view == 'lab' %}active{% endif %}" title="临时：三种打开方式对比"><span class="feed-seg-dot" aria-hidden="true"></span>Lab</a>
+        {% endif %}
     </nav>
 
     <div class="feed-meta nx-enter nx-delay-1">

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static rss_extras %}
+
+{% block title %}{{ page_title }} · Nexus{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923f">
+<style>
+.lab-note {
+    max-width: 720px;
+    margin: 0 auto var(--space-3);
+    padding: 14px 16px;
+    border-radius: var(--radius-md, 12px);
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(129, 140, 248, 0.22);
+    color: var(--color-gray-300, #c7cbd4);
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+.lab-note code {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.84em;
+    color: var(--color-primary-300, #a5b4fc);
+}
+.lab-card { margin-bottom: 18px; }
+.lab-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+.lab-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+.lab-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill, 999px);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-gray-300, #c7cbd4);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+.lab-btn:hover {
+    color: #fff;
+    border-color: rgba(129, 140, 248, 0.4);
+    background: rgba(99, 102, 241, 0.12);
+}
+.lab-btn.is-active {
+    color: #fff;
+    background: linear-gradient(180deg, rgba(99, 102, 241, 0.28), rgba(99, 102, 241, 0.14));
+    border-color: rgba(129, 140, 248, 0.55);
+}
+.lab-panel {
+    display: none;
+    margin-top: 14px;
+    border-radius: var(--radius-md, 12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+.lab-panel.is-open { display: block; }
+.lab-panel-bar {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    color: var(--color-gray-400, #9aa0ab);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    word-break: break-all;
+}
+.lab-panel-bar a { color: var(--color-primary-300, #a5b4fc); }
+.lab-frame {
+    display: block;
+    width: 100%;
+    height: min(72vh, 720px);
+    border: 0;
+    background: #fff;
+}
+.lab-body {
+    padding: 18px 20px 24px;
+    max-width: 72ch;
+}
+.lab-hint {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--color-gray-400, #9aa0ab);
+}
+.lab-hint.is-warn { color: #fbbf24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <header class="page-header feed-header nx-enter">
+        <p class="page-kicker">Lab · 临时</p>
+        <h1>打开方式试验台</h1>
+        <div class="page-rule"></div>
+    </header>
+
+    <div class="lab-note nx-enter">
+        同一篇文，三种看法（均不调 LLM）：<strong>① 新标签原文</strong> ·
+        <strong>② iframe 嵌进本站壳</strong> ·
+        <strong>③ 站内 raw body</strong>（库里正文 + 本地分段）。
+        点按钮切换；测完可整页删除，不进主导航。地址：<code>/rss/lab/</code>
+    </div>
+
+    {% for item in items %}
+    <section class="nx-card lab-card nx-enter nx-delay-{{ forloop.counter }}" data-lab-item data-id="{{ item.id }}">
+        <div class="feed-card-meta mb-2">
+            <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
+            <span class="nx-chip feed-chip-src">{{ item.source }}</span>
+            <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
+            <span class="feed-score">{{ item.score }}</span>
+            <span class="feed-time">{{ item.published_at|truncatechars:16 }}</span>
+            <span class="nx-chip feed-chip-muted">body {{ item.body|length }} 字</span>
+        </div>
+
+        <h2 class="lab-title">{{ item.title }}</h2>
+        {% if item.reason %}
+        <p class="nx-row-desc">{{ item.reason|truncatechars:120 }}</p>
+        {% endif %}
+
+        <div class="lab-actions">
+            <a class="lab-btn" data-mode="ext" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">① 新标签原文 ↗</a>
+            <button type="button" class="lab-btn" data-mode="frame">② iframe 嵌入</button>
+            <button type="button" class="lab-btn" data-mode="body">③ 站内 raw body</button>
+            <button type="button" class="lab-btn" data-mode="none" hidden>关闭</button>
+        <div class="lab-panel" data-panel="frame">
+            <div class="lab-panel-bar">
+                iframe → <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.url }}</a>
+            </div>
+            <iframe class="lab-frame" src="{{ item.url }}" loading="lazy" title="{{ item.title }}"></iframe>
+        </div>
+        <p class="lab-hint is-warn" data-hint="frame" hidden>
+            若整块白屏 / 无内容：原站用了 X-Frame-Options 或 CSP，禁止被嵌 —— 这正是该方案的常见翻车点。
+        </p>
+
+        <div class="lab-panel" data-panel="body">
+            <div class="lab-panel-bar">站内 raw body（hub 正文 + render_body，无 AI）</div>
+            <div class="nx-card lab-body" style="border:0;background:transparent;">
+                <div class="prose feed-article-body">
+                    {{ item.body|render_body }}
+                </div>
+            </div>
+        </div>
+        <p class="lab-hint" data-hint="body" hidden>
+            <a class="view-all" href="{% url 'rss:article' item.id %}">也可看独立详情页 →</a>
+        </p>
+    </section>
+    {% empty %}
+    <p class="nx-empty">没有可演示的文章（库里缺这几条）。</p>
+    {% endfor %}
+
+    <p class="lab-hint" style="text-align:center;margin-top:8px;">
+        临时页 · 不在 精选/待读/全部 导航里
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    function closeAll(root) {
+        root.querySelectorAll('.lab-panel').forEach(function (p) { p.classList.remove('is-open'); });
+        root.querySelectorAll('.lab-hint').forEach(function (h) { h.hidden = true; });
+        root.querySelectorAll('.lab-btn[data-mode]').forEach(function (b) {
+            if (b.getAttribute('data-mode') !== 'ext') b.classList.remove('is-active');
+        });
+    }
+
+    document.querySelectorAll('[data-lab-item]').forEach(function (card) {
+        card.querySelectorAll('.lab-btn[data-mode]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                var mode = btn.getAttribute('data-mode');
+                if (mode === 'ext') return;
+                e.preventDefault();
+                var wasActive = btn.classList.contains('is-active');
+                closeAll(card);
+                if (wasActive || mode === 'none') return;
+                btn.classList.add('is-active');
+                var panel = card.querySelector('[data-panel="' + mode + '"]');
+                if (panel) panel.classList.add('is-open');
+                var hint = card.querySelector('[data-hint="' + mode + '"]');
+                if (hint) hint.hidden = false;
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}

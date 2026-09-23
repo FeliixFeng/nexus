@@ -10,4 +10,5 @@ urlpatterns = [
     path("stream/", views.stream, name="stream"),
     path("brief/", views.brief, name="brief"),
     path("article/<str:item_id>/", views.article, name="article"),
+    path("lab/", views.lab, name="lab"),
 ]
