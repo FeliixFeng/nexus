@@ -34,6 +34,7 @@ lunar 上 RSS 服务（**上游 Phase 1 已定稿 `0.4.1`，先只更文档、�
 - 认证：请求头 `X-API-Key`，key 在远端 `/home/feng/app/rss-hub/.env`（`RSS_API_KEY`，不入库）
 - 已启用 6 源（量子位/HN/InfoQ/少数派/阮一峰/GitHub Blog）；其余 6 源 `enabled=false` 保留在 `feeds.toml`
 - 下游约定（冻结）：每日 1～2 次 `since` 增量、按 `id` 幂等入库、**禁止再抓文章 url**、hub 只留 30 天
+- 实际轮询：hub 自轮询 `POLL_INTERVAL=3600s`（约每小时）；ivory **暂未挂定时拉取**（2026-09-23 曾挂 06:10/20:10 root cron，因内容过多已撤）——待内容精简后再挂 `docker exec nexus python manage.py pull_and_process --llm >> data/pull.log`
 - 日增量尚未用真实多日数据钉死（存量快照约 67）；以消费者 `since` 返回的 `count` 为准
 - 调试：`ssh lunar` 后 `systemctl status rss-hub`；改 `feeds.toml` 后 `POST /api/v1/sources/reload` 或 restart
 
