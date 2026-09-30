@@ -7,12 +7,12 @@ from rss.hub_client import HubError
 
 
 class Command(BaseCommand):
-    help = "Pull rss-hub since cursor, upsert FeedItem (idempotent). Optional --llm for score+brief."
+    help = "Daily pipeline: pull hub, trim per-source limits, generate brief (--llm), purge >7d items."
 
     def add_arguments(self, parser):
-        parser.add_argument("--limit", type=int, default=50)
-        parser.add_argument("--llm", action="store_true", help="run L1 score + L2 brief after pull")
-        parser.add_argument("--no-brief", action="store_true", help="skip L2 brief even with --llm")
+        parser.add_argument("--limit", type=int, default=200)
+        parser.add_argument("--llm", action="store_true", help="generate daily brief via LLM")
+        parser.add_argument("--force-brief", action="store_true", help="regenerate today's brief")
         parser.add_argument("--reset-cursor", action="store_true")
 
     def handle(self, *args, **options):
@@ -31,21 +31,22 @@ class Command(BaseCommand):
             )
         )
 
+        trimmed = pull.apply_source_limits()
+        if trimmed:
+            self.stdout.write(self.style.SUCCESS(f"source limits trimmed: {trimmed}"))
+
         if options["llm"]:
             from rss import llm as llm_mod
 
-            score_stats = llm_mod.process_unprocessed()
+            items = pull.items_for_brief()
+            brief_stats = llm_mod.generate_daily_brief(items, force=options["force_brief"])
+            note = " DEGRADED(fallback list)" if brief_stats.get("degraded") else ""
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"llm L1: scored={score_stats['scored']} failed={score_stats['failed']} "
-                    f"skipped={score_stats['skipped']}"
+                    f"brief: date={brief_stats['date']} items={brief_stats['items']} "
+                    f"action={brief_stats['action']}{note}"
                 )
             )
-            if not options["no_brief"]:
-                brief_stats = llm_mod.ensure_daily_brief()
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f"llm L2: brief_date={brief_stats['date']} items={brief_stats['items']} "
-                        f"action={brief_stats['action']}"
-                    )
-                )
+
+        purged = pull.purge_old_items()
+        self.stdout.write(self.style.SUCCESS(f"purged items older than 7d: {purged}"))

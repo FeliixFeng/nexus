@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Any
 
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 
 from . import mock_data
@@ -29,6 +31,15 @@ SOURCE_DOMAINS = {
     "GitHub Blog": "dev",
     "GitHub": "dev",
 }
+
+# 每源每日入库上限（中文源无热度参数，入口限额兜底；未列出的源不限）
+SOURCE_DAILY_LIMITS = {
+    "InfoQ": 3,
+    "量子位": 3,
+    "少数派": 2,
+}
+
+ITEM_RETENTION_DAYS = 7
 
 
 def _icon_for(source: str) -> str:
@@ -108,42 +119,36 @@ def pull_items(limit: int = 50, reset_cursor: bool = False) -> dict[str, Any]:
     }
 
 
+def apply_source_limits(today: Any = None) -> dict[str, int]:
+    if today is None:
+        today = timezone.localdate()
+    trimmed: dict[str, int] = {}
+    for source, cap in SOURCE_DAILY_LIMITS.items():
+        qs = FeedItem.objects.filter(source=source, pulled_at__date=today)
+        keep = list(qs.order_by("-published_at", "-fetched_at").values_list("id", flat=True)[:cap])
+        drop = qs.exclude(id__in=keep)
+        n, _ = drop.delete()
+        if n:
+            trimmed[source] = n
+    return trimmed
+
+
+def purge_old_items(days: int = ITEM_RETENTION_DAYS) -> int:
+    cutoff = timezone.now() - timedelta(days=days)
+    n, _ = FeedItem.objects.filter(pulled_at__lt=cutoff).delete()
+    return n
+
+
+def items_for_brief(hours: int = 24, cap: int = 40) -> list[FeedItem]:
+    since = timezone.now() - timedelta(hours=hours)
+    fresh = FeedItem.objects.filter(
+        Q(published_at__gte=since) | Q(published_at__isnull=True, pulled_at__gte=since)
+    )
+    return list(fresh.order_by("-published_at")[:cap])
+
+
 def has_real_data() -> bool:
     return FeedItem.objects.exists()
-
-
-def featured_items() -> list[dict]:
-    if has_real_data():
-        qs = FeedItem.objects.filter(featured=True).order_by("-published_at")
-        return [o.as_view_dict() for o in qs]
-    return mock_data.featured_items()
-
-
-def secondary_items() -> list[dict]:
-    if has_real_data():
-        qs = (
-            FeedItem.objects.filter(featured=False)
-            .order_by("-published_at")[:40]
-        )
-        return [o.as_view_dict() for o in qs]
-    return mock_data.secondary_items()
-
-
-def pending_items() -> list[dict]:
-    if has_real_data():
-        qs = FeedItem.objects.order_by("-published_at")[:80]
-        rows = [o.as_view_dict() for o in qs]
-        for r in rows:
-            r["unread"] = True
-        return rows
-    return mock_data.pending_items()
-
-
-def all_items_sorted() -> list[dict]:
-    if has_real_data():
-        qs = FeedItem.objects.order_by("-published_at")
-        return [o.as_view_dict() for o in qs]
-    return mock_data.all_items_sorted()
 
 
 def get_item(item_id: str) -> dict | None:
@@ -153,55 +158,37 @@ def get_item(item_id: str) -> dict | None:
     return mock_data.get_item(item_id)
 
 
-def sources() -> list[str]:
-    if has_real_data():
-        seen: list[str] = []
-        for val in FeedItem.objects.values_list("source", flat=True).distinct():
-            if val and val not in seen:
-                seen.append(val)
-        return seen
-    return mock_data.sources()
-
-
-def domains() -> list[str]:
-    if has_real_data():
-        seen: list[str] = []
-        for val in FeedItem.objects.values_list("domain", flat=True).distinct():
-            if val and val not in seen:
-                seen.append(val)
-        return seen
-    return mock_data.domains()
-
-
-def daily_brief() -> dict | None:
-    today = timezone.localdate()
-    obj = DailyBrief.objects.filter(brief_date=today).first()
-    if obj is None:
-        # fall back to most recent brief if today missing? Prefer mock only when no real data at all
-        if has_real_data():
-            obj = DailyBrief.objects.order_by("-brief_date").first()
-            if obj is None:
-                return None
-        else:
-            return mock_data.daily_brief()
-
-    pick_ids = list(obj.item_ids or [])
+def _brief_row(obj: DailyBrief, resolve_items: bool) -> dict:
     items: list[dict] = []
-    if pick_ids:
-        rows = FeedItem.objects.filter(hub_id__in=pick_ids)
+    if resolve_items and obj.item_ids:
+        rows = FeedItem.objects.filter(hub_id__in=obj.item_ids)
         by_id = {r.hub_id: r for r in rows}
-        for hid in pick_ids:
-            if hid in by_id:
-                items.append(by_id[hid].as_view_dict())
-    if not items:
-        items = [
-            o.as_view_dict()
-            for o in FeedItem.objects.filter(featured=True).order_by("-published_at")[:5]
-        ]
+        items = [by_id[hid] for hid in obj.item_ids if hid in by_id]
+        items = [o.as_view_dict() for o in items]
     return obj.as_view_dict(items)
+
+
+def brief_list(limit: int = 30) -> list[dict]:
+    if not has_real_data():
+        return [mock_data.daily_brief()]
+    qs = DailyBrief.objects.order_by("-brief_date")[:limit]
+    return [_brief_row(o, resolve_items=False) for o in qs]
+
+
+def brief_detail(day: str | None = None) -> dict | None:
+    if not has_real_data():
+        return mock_data.daily_brief()
+    qs = DailyBrief.objects.all()
+    if day:
+        qs = qs.filter(brief_date=day)
+    obj = qs.order_by("-brief_date").first()
+    if obj is None:
+        return None
+    return _brief_row(obj, resolve_items=True)
 
 
 def new_count() -> int:
     if has_real_data():
-        return FeedItem.objects.filter(featured=True).count() or FeedItem.objects.count()
+        today = timezone.localdate()
+        return FeedItem.objects.filter(pulled_at__date=today).count()
     return len(mock_data.unread_items())
