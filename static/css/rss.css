@@ -93,15 +93,9 @@
     margin-bottom: var(--space-3);
 }
 
+/* 资讯页与其它页共用 .page-shell 的 1080px 宽度，只单独收紧顶部间距 */
 .page-shell:has(.feed-header) {
     padding-top: clamp(1rem, 2.5vh, 1.75rem);
-    width: min(1200px, calc(100% - 2rem));
-}
-
-@media (min-width: 768px) {
-    .page-shell:has(.feed-header) {
-        width: min(1200px, calc(100% - 3.5rem));
-    }
 }
 
 .feed-chip-meta {
@@ -190,6 +184,20 @@
     height: 100%;
     min-width: 0;
     padding: var(--space-5);
+    position: relative;
+    cursor: pointer;
+}
+
+.feed-card:hover {
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+/* 整卡可点：标题链接铺满整卡；按钮需要保持在覆盖层之上 */
+.feed-card-title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
 }
 
 .feed-card .nx-card-title,
@@ -202,10 +210,11 @@
     align-items: center;
     justify-content: flex-end;
     gap: var(--space-3);
-    margin-top: auto;
-    padding-top: var(--space-4);
+    flex-shrink: 0;
+    align-self: center;
+    padding-left: var(--space-3);
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .feed-featured-grid {

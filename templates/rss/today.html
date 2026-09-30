@@ -21,9 +21,9 @@
                     <p class="nx-card-desc mt-2 line-clamp-2">{{ brief.lead }}</p>
                     {% endif %}
                 </div>
-            </div>
-            <div class="feed-card-actions">
-                <a class="feed-btn feed-go" href="{% url 'rss:brief_day' brief.date %}">阅读全文 →</a>
+                <div class="feed-card-actions">
+                    <a class="feed-btn feed-go" href="{% url 'rss:brief_day' brief.date %}" tabindex="-1" aria-hidden="true">阅读全文 →</a>
+                </div>
             </div>
         </article>
         {% empty %}
