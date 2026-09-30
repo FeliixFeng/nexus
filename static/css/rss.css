@@ -93,13 +93,13 @@
     margin-bottom: var(--space-3);
 }
 
-.page-shell:has(.feed-seg) {
+.page-shell:has(.feed-header) {
     padding-top: clamp(1rem, 2.5vh, 1.75rem);
     width: min(1200px, calc(100% - 2rem));
 }
 
 @media (min-width: 768px) {
-    .page-shell:has(.feed-seg) {
+    .page-shell:has(.feed-header) {
         width: min(1200px, calc(100% - 3.5rem));
     }
 }
@@ -637,4 +637,27 @@
     .feed-btn {
         min-height: 44px;
     }
+}
+
+/* 日报详情：分组正文 */
+.brief-body {
+    margin-top: var(--space-5);
+}
+
+.brief-group .nx-section-label {
+    margin-bottom: var(--space-2);
+}
+
+.feed-brief-row .nx-row-title {
+    color: var(--color-gray-100);
+}
+
+.feed-brief-row .nx-row-desc {
+    color: var(--color-gray-500);
+}
+
+.feed-brief-row .feed-chip-src {
+    margin-left: auto;
+    align-self: flex-start;
+    margin-top: 2px;
 }

@@ -4,35 +4,24 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260929a">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260930a">
 {% endblock %}
 
 {% block content %}
 <div class="page-shell">
     <header class="page-header feed-header nx-enter">
         <p class="page-kicker">Feed</p>
-        <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
+        <h1><a class="feed-home-link" href="{% url 'rss:today' %}">资讯</a></h1>
         <div class="page-rule"></div>
     </header>
 
+    {% if is_editor %}
     <nav class="feed-seg nx-enter" aria-label="资讯视图">
         <a href="{% url 'rss:today' %}" class="feed-seg-btn {% if view == 'today' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>日报</a>
-        {% if is_editor %}
         <a href="{% url 'rss:lab' %}" class="feed-seg-btn {% if view == 'lab' %}active{% endif %}" title="临时：三种打开方式对比"><span class="feed-seg-dot" aria-hidden="true"></span>Lab</a>
-        {% endif %}
     </nav>
-
-    <div class="feed-meta nx-enter nx-delay-1">
-        <span class="nx-chip feed-chip-meta">{{ today_label }}</span>
-        <span class="nx-chip feed-chip-meta">新增约 {{ new_count }}</span>
-        {% if using_live %}
-        <span class="nx-chip feed-chip-muted">已接 hub</span>
-        {% else %}
-        <span class="nx-chip feed-chip-muted">占位 · 未接 hub</span>
-        {% endif %}
-    </div>
+    {% endif %}
 
     {% block feed_body %}{% endblock %}
 </div>
-<div id="feed-meta" data-today="{{ today_label }}" hidden></div>
 {% endblock %}

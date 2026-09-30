@@ -4,20 +4,16 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260929a">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260930a">
 {% endblock %}
 
 {% block content %}
 <div class="page-shell">
     <header class="page-header feed-header nx-enter">
         <p class="page-kicker">Feed</p>
-        <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
+        <h1><a class="feed-home-link" href="{% url 'rss:today' %}">资讯</a></h1>
         <div class="page-rule"></div>
     </header>
-
-    <nav class="feed-seg nx-enter" aria-label="资讯视图">
-        <a href="{% url 'rss:today' %}" class="feed-seg-btn"><span class="feed-seg-dot" aria-hidden="true"></span>日报</a>
-    </nav>
 
     <article class="feed-article nx-enter nx-delay-2" id="feed-article-item" data-id="{{ item.id }}">
         <div class="feed-card-meta mb-3">
@@ -45,9 +41,9 @@
             </div>
         </div>
 
-        <p class="feed-article-foot">
-            id: {{ item.id }} · fetched {{ item.fetched_at }}{% if not using_live %} · 正文为占位数据（接 hub 后为全文）{% endif %}
-        </p>
+        {% if not using_live %}
+        <p class="feed-article-foot">正文为占位数据（接 hub 后为全文）</p>
+        {% endif %}
     </article>
 </div>
 {% endblock %}

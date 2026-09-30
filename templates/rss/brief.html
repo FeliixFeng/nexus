@@ -4,20 +4,16 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260929a">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260930a">
 {% endblock %}
 
 {% block content %}
 <div class="page-shell">
     <header class="page-header feed-header nx-enter">
         <p class="page-kicker">Feed</p>
-        <h1><a class="feed-home-link" href="{% url 'rss:today' %}" onclick="if(location.pathname==='{% url 'rss:today' %}'){location.reload();return false;}">资讯</a></h1>
+        <h1><a class="feed-home-link" href="{% url 'rss:today' %}">资讯</a></h1>
         <div class="page-rule"></div>
     </header>
-
-    <nav class="feed-seg nx-enter" aria-label="资讯视图">
-        <a href="{% url 'rss:today' %}" class="feed-seg-btn"><span class="feed-seg-dot" aria-hidden="true"></span>日报</a>
-    </nav>
 
     <article class="feed-article nx-enter nx-delay-2">
         <div class="feed-card-meta mb-3">
@@ -34,9 +30,38 @@
         {% endif %}
 
         <div class="feed-article-actions">
-            <a class="view-all" href="{% url 'rss:today' %}">返回日报列表</a>
+            <a class="view-all" href="{% url 'rss:today' %}">← 返回日报列表</a>
         </div>
 
+        {% if brief.sections %}
+        <div class="brief-body">
+            {% for sec in brief.sections %}
+            <section class="brief-group{% if not forloop.first %} mt-5{% endif %}">
+                {% if sec.label %}
+                <h3 class="nx-section-label">{{ sec.label }}</h3>
+                {% endif %}
+                <div class="nx-card">
+                    <div class="nx-stack">
+                        {% for e in sec.items %}
+                        <div class="nx-item nx-row feed-brief-row">
+                            <span class="nx-icon" aria-hidden="true">{{ e.icon }}</span>
+                            <div class="min-w-0 flex-1">
+                                <a class="nx-row-title line-clamp-2" href="{{ e.url }}" target="_blank" rel="noopener noreferrer">{{ e.title }}</a>
+                                {% if e.note %}
+                                <div class="nx-row-desc line-clamp-2">{{ e.note }}</div>
+                                {% endif %}
+                            </div>
+                            {% if e.source %}
+                            <span class="nx-chip feed-chip-src shrink-0">{{ e.source }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="nx-card mt-5">
             <div class="prose feed-article-body">
                 {{ brief.body|render_body }}
@@ -52,26 +77,19 @@
                     <div class="nx-item nx-row feed-brief-row">
                         <span class="nx-icon" aria-hidden="true">{{ item.icon }}</span>
                         <div class="min-w-0 flex-1">
-                            <div class="feed-card-meta mb-1">
-                                <span class="nx-chip feed-chip-src">{{ item.source }}</span>
-                                <span class="nx-chip feed-chip-muted">{{ item.domain }}</span>
-                            </div>
-                            <a class="nx-row-title line-clamp-2 hover:text-indigo-300" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+                            <a class="nx-row-title line-clamp-2" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
                             {% if item.reason %}
                             <div class="nx-row-desc line-clamp-2">{{ item.reason }}</div>
                             {% endif %}
                         </div>
-                        <a class="feed-btn feed-go shrink-0" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a>
+                        <span class="nx-chip feed-chip-src shrink-0">{{ item.source }}</span>
                     </div>
                     {% endfor %}
                 </div>
             </div>
         </section>
         {% endif %}
-
-        <p class="feed-article-foot">
-            id: {{ brief.id }} · type: brief · 链接新标签打开原文
-        </p>
+        {% endif %}
     </article>
 </div>
 {% endblock %}

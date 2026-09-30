@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import timedelta
 from typing import Any
 
@@ -9,6 +10,7 @@ from django.utils import timezone
 
 from . import mock_data
 from .hub_client import fetch_items, parse_hub_time
+from .llm import DOMAIN_LABELS
 from .models import DailyBrief, FeedItem, PullCursor
 
 SOURCE_ICONS = {
@@ -158,6 +160,70 @@ def get_item(item_id: str) -> dict | None:
     return mock_data.get_item(item_id)
 
 
+_MD_ENTRY_RE = re.compile(
+    r"^(?:-\s+)?\*\*\[(?P<title>[^\]]+)\]\((?P<url>[^)\s]+)\)\*\*(?:\s*[—\-–]\s*(?P<note>.+))?$"
+)
+
+
+def parse_brief_body(body: str) -> list[dict[str, Any]]:
+    """日报正文按 ## 分组拆成结构化条目，供 brief 页渲染（兼容 LLM 段落式与回填列表式）。"""
+    sections: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for line in (body or "").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("## "):
+            current = {"label": line[3:].strip(), "items": []}
+            sections.append(current)
+            continue
+        m = _MD_ENTRY_RE.match(line)
+        if m:
+            if current is None:
+                current = {"label": "", "items": []}
+                sections.append(current)
+            current["items"].append(
+                {
+                    "title": m.group("title").strip(),
+                    "url": m.group("url").strip(),
+                    "note": (m.group("note") or "").strip(),
+                }
+            )
+    return [s for s in sections if s["items"]]
+
+
+def _brief_sections(body: str, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    parsed = parse_brief_body(body)
+    if not parsed:
+        return []
+    by_url = {i["url"]: i for i in items if i.get("url")}
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    order: list[str] = []
+    for sec in parsed:
+        for entry in sec["items"]:
+            db = by_url.get(entry["url"])
+            if db is not None:
+                note = entry["note"]
+                if note == db.get("source"):
+                    note = ""
+                label = DOMAIN_LABELS.get(db.get("domain") or "other", sec["label"] or "其他")
+                row = {
+                    "title": db.get("title") or entry["title"],
+                    "url": entry["url"],
+                    "note": note,
+                    "source": db.get("source") or "",
+                    "icon": db.get("icon") or "📰",
+                }
+            else:
+                label = sec["label"] or "其他"
+                row = {**entry, "source": "", "icon": "📰"}
+            if label not in grouped:
+                grouped[label] = []
+                order.append(label)
+            grouped[label].append(row)
+    return [{"label": lab, "items": grouped[lab]} for lab in order]
+
+
 def _brief_row(obj: DailyBrief, resolve_items: bool) -> dict:
     items: list[dict] = []
     if resolve_items and obj.item_ids:
@@ -165,7 +231,10 @@ def _brief_row(obj: DailyBrief, resolve_items: bool) -> dict:
         by_id = {r.hub_id: r for r in rows}
         items = [by_id[hid] for hid in obj.item_ids if hid in by_id]
         items = [o.as_view_dict() for o in items]
-    return obj.as_view_dict(items)
+    data = obj.as_view_dict(items)
+    if resolve_items:
+        data["sections"] = _brief_sections(obj.body, items)
+    return data
 
 
 def brief_list(limit: int = 30) -> list[dict]:
@@ -185,10 +254,3 @@ def brief_detail(day: str | None = None) -> dict | None:
     if obj is None:
         return None
     return _brief_row(obj, resolve_items=True)
-
-
-def new_count() -> int:
-    if has_real_data():
-        today = timezone.localdate()
-        return FeedItem.objects.filter(pulled_at__date=today).count()
-    return len(mock_data.unread_items())

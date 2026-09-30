@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
-
 from django.http import Http404
 from django.shortcuts import render
 
@@ -15,8 +13,6 @@ def _base(request, active: str, title: str) -> dict:
         "is_editor": is_pin_verified(request),
         "view": active,
         "page_title": title,
-        "today_label": date.today().isoformat(),
-        "new_count": data.new_count(),
         "using_live": data.has_real_data(),
     }
 
