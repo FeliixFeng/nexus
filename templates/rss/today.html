@@ -3,7 +3,7 @@
 {% block feed_body %}
 <section class="mt-4 nx-enter nx-delay-1">
     <h2 class="nx-section-label">日报 · {{ briefs|length }}</h2>
-    <div class="nx-stack">
+    <div class="nx-stack feed-brief-list">
         {% for brief in briefs %}
         <article class="nx-card feed-card">
             <div class="feed-card-top">
@@ -14,11 +14,11 @@
                         <span class="nx-chip feed-chip-muted">{{ brief.date }}</span>
                         <span class="feed-score">{{ brief.item_count }}</span>
                     </div>
-                    <h3 class="nx-card-title mt-2 line-clamp-2">
+                    <h3 class="nx-card-title mt-3 line-clamp-2">
                         <a class="feed-card-title-link" href="{% url 'rss:brief_day' brief.date %}">{{ brief.title }}</a>
                     </h3>
                     {% if brief.lead %}
-                    <p class="nx-card-desc mt-1 line-clamp-2">{{ brief.lead }}</p>
+                    <p class="nx-card-desc mt-2 line-clamp-2">{{ brief.lead }}</p>
                     {% endif %}
                 </div>
             </div>
