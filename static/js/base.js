@@ -81,6 +81,37 @@
     }, { passive: true });
 })();
 
+// ========== 导航进度条：点击内部链接立刻给出反馈，替代白屏等待 ==========
+(function() {
+    const bar = document.getElementById('nav-progress');
+    if (!bar) return;
+    let hideTimer = null;
+
+    function reset() {
+        clearTimeout(hideTimer);
+        bar.classList.remove('loading', 'done');
+    }
+
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest && e.target.closest('a[href]');
+        if (!a) return;
+        // 新窗口/下载/外链/锚点不参与：导航不会离开当前页或不受本页控制
+        if (a.target && a.target !== '_self') return;
+        if (a.hasAttribute('download') || a.hasAttribute('target')) return;
+        if (a.origin !== location.origin || a.pathname === location.pathname) return;
+        if (a.protocol !== 'http:' && a.protocol !== 'https:') return;
+        clearTimeout(hideTimer);
+        bar.classList.remove('done');
+        bar.classList.add('loading');
+    });
+
+    // bfcache 回退或到达新页时收尾，避免进度条卡住
+    window.addEventListener('pageshow', () => {
+        bar.classList.add('done');
+        hideTimer = setTimeout(reset, 400);
+    });
+})();
+
 // ========== 移动端菜单（已改为底部Tab栏） ==========
 
 

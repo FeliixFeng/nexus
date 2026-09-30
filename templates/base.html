@@ -24,11 +24,13 @@
     </script>
     
     <!-- Tailwind CSS CDN -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Display Font -->
+    <!-- Display Font：异步加载，fonts.googleapis.com 不可达时不能阻塞首屏渲染 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet"></noscript>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -44,16 +46,17 @@
         }
     </script>
     
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <!-- HTMX：defer 避免阻塞解析，仅研究页用到，DOMContentLoaded 前加载完即可 -->
+    <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260923c">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=20260923c">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=20260930b">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=20260930b">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col {% if is_editor %}pin-unlocked{% endif %}" tabindex="-1">
+    <div id="nav-progress" aria-hidden="true"></div>
     {% include 'components/navbar.html' %}
 
     <!-- 主内容 -->
@@ -74,7 +77,7 @@
 
     {% include 'components/pin_modal.html' %}
 
-    <script src="{% static 'js/base.js' %}?v=20260923"></script>
+    <script src="{% static 'js/base.js' %}?v=20260930b"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
