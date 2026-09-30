@@ -12,16 +12,14 @@ from django.utils import timezone
 
 from .models import DailyBrief, FeedItem
 
-DOMAINS = ("ai", "security", "dev", "product", "community", "paper", "other")
-THRESHOLDS = {"ai": 7, "security": 6, "dev": 8, "product": 8, "community": 8, "paper": 8, "other": 8}
-ICON_BY_DOMAIN = {
-    "ai": "🤖",
-    "security": "🛡️",
-    "dev": "📐",
-    "product": "✨",
-    "community": "🟧",
-    "paper": "📄",
-    "other": "📰",
+DOMAIN_LABELS = {
+    "ai": "AI",
+    "security": "安全",
+    "dev": "开发",
+    "product": "产品",
+    "community": "社区",
+    "paper": "论文",
+    "other": "其他",
 }
 
 
@@ -77,18 +75,94 @@ def chat(messages: list[dict[str, str]], *, temperature: float = 0.3, max_tokens
     raise LlmError(f"LLM retries exhausted: {last_err}")
 
 
-def _extract_json(text: str) -> Any:
-    text = text.strip()
-    if text.startswith("```"):
-        text = re.sub(r"^```(?:json)?\s*", "", text)
-        text = re.sub(r"\s*```$", "", text)
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        m = re.search(r"\{.*\}|\[.*\]", text, re.S)
-        if not m:
-            raise
-        return json.loads(m.group(0))
+_MD_LINK_RE = re.compile(r"\]\((https?://[^)\s]+)\)")
+_BOLD_RE = re.compile(r"\*\*([^*]+)\*\*")
+
+
+def _linkify_titles(body: str, items: list[FeedItem]) -> str:
+    """模型常把 **[标题](url)** 写成 **标题**：按标题反查条目回填链接。"""
+    for span in _BOLD_RE.findall(body):
+        if "](" in span:
+            continue
+        match = next((o for o in items if o.title == span), None)
+        if match is None and len(span) >= 20:
+            cands = [o for o in items if o.title.startswith(span)]
+            if len(cands) == 1:
+                match = cands[0]
+        if match is not None:
+            body = body.replace(
+                f"**{span}**", f"**[{match.title}]({match.url})**", 1
+            )
+    return body
+
+
+def _complete_coverage(body: str, items: list[FeedItem]) -> str:
+    """模型常漏写条目：把 body 里没有链接的条目按领域补回对应分组。"""
+    have = set(_MD_LINK_RE.findall(body))
+    missing = [o for o in items if o.url not in have]
+    if not missing:
+        return body
+
+    sections: list[tuple[str | None, list[str]]] = []
+    header: str | None = None
+    buf: list[str] = []
+    for line in body.splitlines():
+        if line.startswith("## "):
+            sections.append((header, buf))
+            header, buf = line[3:].strip(), []
+        else:
+            buf.append(line)
+    sections.append((header, buf))
+
+    for o in missing:
+        label = DOMAIN_LABELS.get(o.domain or "other", "其他")
+        entry = f"- **[{o.title}]({o.url})** — {o.source}"
+        for h, sec_buf in sections:
+            if h == label:
+                sec_buf.append(entry)
+                break
+        else:
+            sections.append((label, [entry]))
+
+    out: list[str] = []
+    for h, sec_buf in sections:
+        if h is not None:
+            out.append(f"## {h}")
+        out.extend(sec_buf)
+    return "\n".join(out).strip()
+
+
+def _parse_brief_markdown(raw: str, items: list[FeedItem], today: date) -> dict[str, Any]:
+    """把模型输出的日报 Markdown 拆成 title/lead/body，并按链接反查覆盖的条目。"""
+    text = raw.strip()
+    text = re.sub(r"^```(?:markdown|md)?\s*\n", "", text)
+    text = re.sub(r"\n```\s*$", "", text).strip()
+    lines = text.splitlines()
+
+    title = f"{today.isoformat()} 资讯日报"
+    body_start = 0
+    for i, line in enumerate(lines):
+        if line.startswith("# "):
+            title = line[2:].strip() or title
+            body_start = i + 1
+            break
+    else:
+        raise LlmError("brief missing '#' title line")
+
+    lead_lines: list[str] = []
+    j = body_start
+    while j < len(lines) and lines[j].startswith(">"):
+        lead_lines.append(lines[j].lstrip("> ").strip())
+        j += 1
+    body = "\n".join(lines[j:]).strip()
+    if not body:
+        raise LlmError("brief body empty")
+
+    body = _linkify_titles(body, items)
+    body = _complete_coverage(body, items)
+    urls = set(_MD_LINK_RE.findall(body))
+    used = [o.hub_id for o in items if o.url in urls] or [o.hub_id for o in items]
+    return {"title": title, "lead": " ".join(lead_lines).strip(), "body": body, "used": used}
 
 
 def _body_snippet(body: str, limit: int = 1200) -> str:
@@ -99,119 +173,56 @@ def _body_snippet(body: str, limit: int = 1200) -> str:
     return body[:limit] + "…"
 
 
-def score_items(items: list[FeedItem]) -> int:
-    if not items:
-        return 0
-
-    batch = []
-    for i, obj in enumerate(items[:8]):
-        batch.append(
-            {
-                "idx": i,
-                "source": obj.source,
-                "title": obj.title,
-                "excerpt": _body_snippet(obj.body),
-            }
-        )
-
-    system = (
-        "你是个人资讯筛选助手。按领域打分并给出一句中文理由。"
-        f"领域只能是: {','.join(DOMAINS)}。"
-        "分数 1-10。阈值参考: ai>=7, security>=6, 其余>=8 才算重点。"
-        "必须只输出 JSON 数组，不要其它文字。"
-        '每项: {"idx":int,"domain":str,"score":int,"reason":str,"summary":str}。'
-        "summary 为 40-60 字中文摘要。"
-    )
-    user = json.dumps(batch, ensure_ascii=False)
-
-    raw = chat(
-        [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        temperature=0.2,
-        max_tokens=4096,
-    )
-    parsed = _extract_json(raw)
-    if not isinstance(parsed, list):
-        raise LlmError("L1 expected JSON array")
-
-    by_idx = {}
-    for row in parsed:
-        if isinstance(row, dict) and "idx" in row:
-            try:
-                by_idx[int(row["idx"])] = row
-            except (TypeError, ValueError):
-                continue
-
-    from django.utils import timezone as tz
-
-    n = 0
-    for i, obj in enumerate(items[:8]):
-        row = by_idx.get(i)
-        if not row:
-            continue
-        domain = str(row.get("domain") or "other")
-        if domain not in DOMAINS:
-            domain = "other"
-        try:
-            score = int(row.get("score") or 0)
-        except (TypeError, ValueError):
-            score = 0
-        score = max(1, min(10, score))
-        reason = str(row.get("reason") or "").strip()
-        summary = str(row.get("summary") or "").strip()
-        thr = THRESHOLDS.get(domain, 8)
-        obj.domain = domain
-        obj.icon = ICON_BY_DOMAIN.get(domain, "📰")
-        obj.score = score
-        obj.reason = reason
-        obj.summary_short = summary
-        obj.featured = score >= thr
-        obj.processed_at = tz.now()
-        obj.save(
-            update_fields=[
-                "domain",
-                "icon",
-                "score",
-                "reason",
-                "summary_short",
-                "featured",
-                "processed_at",
-            ]
-        )
-        n += 1
-    return n
+def _item_payload(obj: FeedItem, idx: int, *, with_excerpt: bool = True) -> dict[str, Any]:
+    data: dict[str, Any] = {
+        "idx": idx,
+        "source": obj.source,
+        "domain": obj.domain or "other",
+        "title": obj.title,
+        "url": obj.url,
+    }
+    if with_excerpt:
+        data["excerpt"] = _body_snippet(obj.body, 400)
+    return data
 
 
-def process_unprocessed(batch_size: int = 8) -> dict[str, int]:
-    qs = FeedItem.objects.filter(processed_at__isnull=True).order_by("-published_at")
-    total = qs.count()
-    scored = failed = skipped = 0
-    remaining = total
-    while remaining > 0:
-        batch = list(qs[:batch_size])
-        if not batch:
-            break
-        try:
-            scored += score_items(batch)
-            remaining = max(0, remaining - len(batch))
-        except LlmError:
-            failed += len(batch)
-            # mark processed to avoid infinite loop on poison batch; leave score null
-            from django.utils import timezone as tz
-
-            for obj in batch:
-                if obj.processed_at is None:
-                    obj.processed_at = tz.now()
-                    obj.save(update_fields=["processed_at"])
-                    skipped += 1
-                    failed -= 1
-            remaining = max(0, remaining - len(batch))
-    return {"scored": scored, "failed": failed, "skipped": skipped}
+_SYSTEM_PROMPT = (
+    "你是中文科技资讯日报编辑。根据给定条目写一份中文日报，直接输出 Markdown 正文，"
+    "不要代码围栏、不要 JSON、不要任何前言或解释。\n"
+    "结构必须严格如下:\n"
+    "# 含日期的标题，加一句当日主题（不超过12字）\n"
+    "> 80-120字总起，概括今天最重要的2-3条线索\n"
+    "## 领域中文名\n"
+    "**[条目标题](条目url)** — 40-60字中文热点说明\n"
+    "（同领域条目连续排列，再起下一个 ## 分组）\n"
+    "要求:\n"
+    "- 领域名用给定 domain 的中文名（AI/安全/开发/产品/社区/论文/其他）\n"
+    "- 必须覆盖全部给定条目（完全重复的合并为一条），不得遗漏；"
+    "条目多于40条时说明压缩到20-30字\n"
+    "- 链接必须原样使用给定 url，标题原样使用给定 title，不得编造条目外事实"
+)
 
 
-def ensure_daily_brief(force: bool = False) -> dict[str, Any]:
+def _fallback_brief(items: list[FeedItem], today: date) -> dict[str, str]:
+    """LLM 不可用时的降级：纯标题分组列表，保证日报不断档。"""
+    lines: list[str] = []
+    by_domain: dict[str, list[FeedItem]] = {}
+    for obj in items:
+        by_domain.setdefault(obj.domain or "other", []).append(obj)
+    for domain, objs in by_domain.items():
+        lines.append(f"## {DOMAIN_LABELS.get(domain, domain)}")
+        for o in objs:
+            lines.append(f"- **[{o.title}]({o.url})** — {o.source}")
+        lines.append("")
+    return {
+        "title": f"{today.isoformat()} 资讯日报",
+        "lead": "",
+        "body": "\n".join(lines).strip(),
+    }
+
+
+def generate_daily_brief(items: list[FeedItem], *, force: bool = False) -> dict[str, Any]:
+    """一次 LLM 调用把当天条目综合成日报。items 为空且已有日报时返回 exists。"""
     today = timezone.localdate()
     existing = DailyBrief.objects.filter(brief_date=today).first()
     if existing and not force:
@@ -220,74 +231,47 @@ def ensure_daily_brief(force: bool = False) -> dict[str, Any]:
             "items": len(existing.item_ids or []),
             "action": "exists",
         }
-
-    featured = list(
-        FeedItem.objects.filter(featured=True, score__isnull=False).order_by(
-            "-score", "-published_at"
-        )[:8]
-    )
-    if not featured:
-        featured = list(FeedItem.objects.order_by("-published_at")[:5])
-
-    if not featured:
+    if not items:
         return {"date": today.isoformat(), "items": 0, "action": "empty"}
 
-    payload = [
-        {
-            "idx": i,
-            "source": o.source,
-            "domain": o.domain,
-            "score": o.score,
-            "title": o.title,
-            "summary": o.summary_short or _body_snippet(o.body, 200),
-            "reason": o.reason,
-        }
-        for i, o in enumerate(featured)
-    ]
+    # 智谱 1301 内容过滤常被正文 excerpt 触发：先带 excerpt，被拦则去 excerpt 重试一次
+    brief: dict[str, Any] | None = None
+    last_err: Exception | None = None
+    for with_excerpt in (True, False):
+        payload = [_item_payload(o, i, with_excerpt=with_excerpt) for i, o in enumerate(items)]
+        user = json.dumps({"date": today.isoformat(), "items": payload}, ensure_ascii=False)
+        try:
+            raw = chat(
+                [
+                    {"role": "system", "content": _SYSTEM_PROMPT},
+                    {"role": "user", "content": user},
+                ],
+                temperature=0.4,
+                max_tokens=4096,
+            )
+            brief = _parse_brief_markdown(raw, items, today)
+            break
+        except (LlmError, ValueError, TypeError) as exc:
+            last_err = exc
+            continue
 
-    system = (
-        "你是中文科技资讯日报编辑。根据给定条目写今日日报。"
-        "只输出 JSON 对象: {\"title\":str,\"lead\":str,\"body\":str,\"item_idxs\":[int,...]}。"
-        "title 含日期与不超过一句主题；lead 80-120 字；body 300-500 字，2-4 段，"
-        "覆盖主要线索并点名条目，不要编造条目外事实；item_idxs 为入选 idx 列表（5 条以内）。"
-    )
-    user = json.dumps({"date": today.isoformat(), "items": payload}, ensure_ascii=False)
-    raw = chat(
-        [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-        temperature=0.4,
-        max_tokens=2048,
-    )
-    data = _extract_json(raw)
-    if not isinstance(data, dict):
-        raise LlmError("L2 expected JSON object")
-
-    idxs = data.get("item_idxs") or data.get("items") or []
-    picked: list[str] = []
-    if isinstance(idxs, list):
-        for x in idxs:
-            try:
-                i = int(x)
-            except (TypeError, ValueError):
-                continue
-            if 0 <= i < len(featured):
-                picked.append(featured[i].hub_id)
-    if not picked:
-        picked = [o.hub_id for o in featured[:5]]
-
-    title = str(data.get("title") or f"{today} 资讯日报").strip()
-    lead = str(data.get("lead") or "").strip()
-    body = str(data.get("body") or "").strip()
+    if brief is not None:
+        title, lead, body, used = brief["title"], brief["lead"], brief["body"], brief["used"]
+        degraded = False
+    else:
+        fb = _fallback_brief(items, today)
+        title, lead, body = fb["title"], fb["lead"], fb["body"]
+        used = [o.hub_id for o in items]
+        degraded = True
+        print(f"brief degraded: {type(last_err).__name__}: {last_err}")
 
     DailyBrief.objects.update_or_create(
         brief_date=today,
-        defaults={
-            "title": title,
-            "lead": lead,
-            "body": body,
-            "item_ids": picked,
-        },
+        defaults={"title": title, "lead": lead, "body": body, "item_ids": used},
     )
-    return {"date": today.isoformat(), "items": len(picked), "action": "created"}
+    return {
+        "date": today.isoformat(),
+        "items": len(used),
+        "action": "created",
+        "degraded": degraded,
+    }
