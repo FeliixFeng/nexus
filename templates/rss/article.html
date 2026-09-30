@@ -4,7 +4,7 @@
 {% block title %}{{ page_title }} · Nexus{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260923f">
+<link rel="stylesheet" href="{% static 'css/rss.css' %}?v=20260929a">
 {% endblock %}
 
 {% block content %}
@@ -16,9 +16,7 @@
     </header>
 
     <nav class="feed-seg nx-enter" aria-label="资讯视图">
-        <a href="{% url 'rss:today' %}" class="feed-seg-btn {% if view == 'today' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>精选</a>
-        <a href="{% url 'rss:unread' %}" class="feed-seg-btn {% if view == 'unread' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>待读</a>
-        <a href="{% url 'rss:stream' %}" class="feed-seg-btn {% if view == 'stream' %}active{% endif %}"><span class="feed-seg-dot" aria-hidden="true"></span>全部</a>
+        <a href="{% url 'rss:today' %}" class="feed-seg-btn"><span class="feed-seg-dot" aria-hidden="true"></span>日报</a>
     </nav>
 
     <article class="feed-article nx-enter nx-delay-2" id="feed-article-item" data-id="{{ item.id }}">
@@ -38,7 +36,7 @@
 
         <div class="feed-article-actions">
             <a class="view-all" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">原文链接 ↗</a>
-            <a class="view-all" href="{% url 'rss:unread' %}">返回待读</a>
+            <a class="view-all" href="{% url 'rss:today' %}">返回日报</a>
         </div>
 
         <div class="nx-card mt-5">
