@@ -22,29 +22,9 @@ def _base(request, active: str, title: str) -> dict:
 
 
 def today(request):
-    ctx = _base(request, "today", "精选")
-    ctx.update(
-        brief=data.daily_brief(),
-        featured=data.featured_items(),
-        secondary=data.secondary_items(),
-    )
+    ctx = _base(request, "today", "资讯日报")
+    ctx.update(briefs=data.brief_list())
     return render(request, "rss/today.html", ctx)
-
-
-def unread(request):
-    ctx = _base(request, "unread", "待读")
-    ctx.update(items=data.pending_items())
-    return render(request, "rss/unread.html", ctx)
-
-
-def stream(request):
-    ctx = _base(request, "stream", "全部")
-    ctx.update(
-        items=data.all_items_sorted(),
-        sources=data.sources(),
-        domains=data.domains(),
-    )
-    return render(request, "rss/stream.html", ctx)
 
 
 def article(request, item_id: str):
@@ -56,12 +36,14 @@ def article(request, item_id: str):
     return render(request, "rss/article.html", ctx)
 
 
-def brief(request):
-    ctx = _base(request, "brief", "资讯日报")
-    brief_data = data.daily_brief()
-    if brief_data is None and data.has_real_data():
-        raise Http404("brief not found")
-    ctx.update(brief=brief_data or mock_data.daily_brief())
+def brief(request, day: str | None = None):
+    brief_data = data.brief_detail(day)
+    if brief_data is None:
+        if day is not None or data.has_real_data():
+            raise Http404("brief not found")
+        brief_data = mock_data.daily_brief()
+    ctx = _base(request, "today", brief_data["title"])
+    ctx.update(brief=brief_data)
     return render(request, "rss/brief.html", ctx)
 
 

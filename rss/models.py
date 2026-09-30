@@ -68,6 +68,7 @@ class DailyBrief(models.Model):
             "title": self.title,
             "lead": self.lead,
             "body": self.body,
+            "item_count": len(self.item_ids or []),
             "items": items,
             "unread": True,
         }
