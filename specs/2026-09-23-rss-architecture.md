@@ -109,7 +109,7 @@ class FeedItem(models.Model):
 | 任务 | 频率 | 说明 |
 |:-----|:-----|:-----|
 | Luna 抓取 | 约每小时（`POLL_INTERVAL=3600`） | systemd 常驻，已超原「5点+18点」计划 |
-| Ivory 拉取 | **暂未挂定时**（待办） | 曾挂 root cron 06:10/20:10，因 80 条存量内容过多已撤；**内容精简方案定稿后再挂**，命令 `pull_and_process --llm >> data/pull.log` |
+| Ivory 拉取 | **已挂 root cron 06:00（2026-09-30 起）** | `sudo docker exec nexus python manage.py pull_and_process --llm >> data/pull.log 2>&1`；曾因 80 条存量撤过，内容精简方案（限额+7 天清理）定稿后重挂 |
 | 手动刷新 | 用户触发 | 立刻拉一次；当前库内 80 条已全部打分 + 1 条日报 |
 
 **为什么不用 Webhook**：
