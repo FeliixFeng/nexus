@@ -223,9 +223,11 @@ def _fallback_brief(items: list[FeedItem], today: date) -> dict[str, str]:
     }
 
 
-def generate_daily_brief(items: list[FeedItem], *, force: bool = False) -> dict[str, Any]:
-    """一次 LLM 调用把当天条目综合成日报。items 为空且已有日报时返回 exists。"""
-    today = timezone.localdate()
+def generate_daily_brief(
+    items: list[FeedItem], *, force: bool = False, brief_date: date | None = None
+) -> dict[str, Any]:
+    """一次 LLM 调用把条目综合成日报。brief_date 缺省取当天，回填历史时显式传入。"""
+    today = brief_date or timezone.localdate()
     existing = DailyBrief.objects.filter(brief_date=today).first()
     if existing and not force:
         return {

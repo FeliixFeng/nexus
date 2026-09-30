@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Any
 
 from django.db import transaction
@@ -145,6 +145,17 @@ def items_for_brief(hours: int = 24, cap: int = 40) -> list[FeedItem]:
     since = timezone.now() - timedelta(hours=hours)
     fresh = FeedItem.objects.filter(
         Q(published_at__gte=since) | Q(published_at__isnull=True, pulled_at__gte=since)
+    )
+    return list(fresh.order_by("-published_at")[:cap])
+
+
+def items_for_brief_day(day: date, cap: int = 40) -> list[FeedItem]:
+    """回填用：选指定自然日（本地时区 00:00~次日 00:00）的条目，口径对齐 items_for_brief。"""
+    start = timezone.make_aware(datetime.combine(day, time.min))
+    end = start + timedelta(days=1)
+    fresh = FeedItem.objects.filter(
+        Q(published_at__gte=start, published_at__lt=end)
+        | Q(published_at__isnull=True, pulled_at__gte=start, pulled_at__lt=end)
     )
     return list(fresh.order_by("-published_at")[:cap])
 
